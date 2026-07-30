@@ -30,9 +30,45 @@
         header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 3rem 1rem;
+            padding: 2.5rem 1rem;
             text-align: center;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            max-width: 1100px;
+            width: 100%;
+            justify-content: center;
+            padding: 0 1rem;
+            position: relative;
+        }
+        .logo-img {
+            height: 75px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            background: white;
+            padding: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .header-text {
+            text-align: left;
+        }
+        .header-text h1 {
+            font-size: 2.3rem;
+            margin-bottom: 0.2rem;
+        }
+        .header-text p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.95;
         }
         /* Botão Discreto e Elegante para o E-book no Topo */
         .btn-ebook-top {
@@ -57,15 +93,6 @@
             background-color: white;
             color: var(--primary-color);
             transform: translateY(-2px);
-        }
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        header p {
-            font-size: 1.2rem;
-            font-weight: 300;
-            opacity: 0.9;
         }
         .container {
             max-width: 1100px;
@@ -92,7 +119,7 @@
         }
         .grid-results {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1.5rem;
             margin-top: 1.5rem;
         }
@@ -112,6 +139,35 @@
             font-size: 0.95rem;
             font-weight: 500;
             color: var(--dark-color);
+            margin-bottom: 0;
+        }
+        /* Linha do Tempo - Como Tudo Começou */
+        .timeline-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .timeline-step {
+            background: #faf5ff;
+            border: 1px solid #e9d5ff;
+            padding: 1.2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .timeline-step i {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+        }
+        .timeline-step h4 {
+            font-size: 0.95rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        .timeline-step p {
+            font-size: 0.85rem;
+            color: var(--text-color);
             margin-bottom: 0;
         }
         .donation-box {
@@ -139,14 +195,23 @@
             color: white;
             font-size: 0.9rem;
         }
+        footer a {
+            color: #c084fc;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
         @media(max-width: 768px) {
-            header h1 { font-size: 2rem; }
+            .header-brand { flex-direction: column; text-align: center; }
+            .header-text { text-align: center; }
+            header h1 { font-size: 1.8rem; }
             section { padding: 1.5rem; }
             .btn-ebook-top {
                 position: relative;
                 top: 0;
                 right: 0;
-                margin-bottom: 15px;
+                margin-bottom: 10px;
                 display: inline-flex;
             }
         }
@@ -159,16 +224,54 @@
         <a href="./ebook/" target="_blank" class="btn-ebook-top">
             <i class="fa-solid fa-book-open"></i> Acessar E-book
         </a>
-        <h1><i class="fa-solid fa-shower"></i> Banho Solidário</h1>
-        <p>Cada gota, um ato de amor! Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
+        <div class="header-brand">
+            <img src="./imagens/LogoSimplificado.png" alt="Logo Banho Solidário" class="logo-img" onerror="this.style.display='none'">
+            <div class="header-text">
+                <h1><i class="fa-solid fa-shower"></i> Banho Solidário</h1>
+                <p>Cada gota, um ato de amor! Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
+            </div>
+        </div>
     </header>
 
     <div class="container">
-        <!-- Apresentação -->
+        <!-- Apresentação / Nossa Missão -->
         <section>
             <h2><i class="fa-solid fa-heart-pulse"></i> Nossa Missão</h2>
             <p>O <strong>Projeto Banho Solidário</strong> nasceu em 2024 da sensibilidade do senhor Valdemar Zancanaro (Padrinho) diante da vulnerabilidade da população em situação de rua em Unaí-MG. Mais do que um banho quente, oferecemos acolhimento, escuta ativa, alimentação digna e oportunidades reais de reinserção social.</p>
             <p>Acreditamos que a verdadeira transformação social começa com respeito, empatia e corresponsabilidade entre sociedade civil, poder público e voluntariado.</p>
+        </section>
+
+        <!-- Como Tudo Começou -->
+        <section>
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> Como Tudo Começou (Início: 2024)</h2>
+            <p>O projeto foi estruturado com dedicação através de etapas fundamentais de planejamento e mobilização comunitária:</p>
+            <div class="timeline-container">
+                <div class="timeline-step">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    <h4>Pesquisas e Visitas</h4>
+                    <p>A projetos semelhantes em outras cidades.</p>
+                </div>
+                <div class="timeline-step">
+                    <i class="fa-solid fa-handshake"></i>
+                    <h4>Sensibilização</h4>
+                    <p>Da sociedade civil, empresários e autoridades.</p>
+                </div>
+                <div class="timeline-step">
+                    <i class="fa-solid fa-bus"></i>
+                    <h4>Elaboração do Projeto</h4>
+                    <p>Para adaptação e estruturação de um ônibus.</p>
+                </div>
+                <div class="timeline-step">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                    <h4>Arrecadação</h4>
+                    <p>De recursos financeiros e suprimentos.</p>
+                </div>
+                <div class="timeline-step">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <h4>Início das Atividades</h4>
+                    <p>Com apoio de voluntários e servidores municipais.</p>
+                </div>
+            </div>
         </section>
 
         <!-- Resultados -->
@@ -186,28 +289,52 @@
                 </div>
                 <div class="card-result">
                     <h3>42</h3>
-                    <p>Encaminhamentos para Clínicas de Reabilitação</p>
+                    <p>Encaminhadas para Comunidades Terapêuticas e Clínicas de Reabilitação</p>
                 </div>
                 <div class="card-result">
                     <h3>32</h3>
                     <p>Documentações Emitidas ou Regularizadas</p>
                 </div>
+                <div class="card-result">
+                    <h3>30</h3>
+                    <p>Pessoas encaminhadas para atendimento de saúde especializado na rede municipal</p>
+                </div>
+                <div class="card-result">
+                    <h3>18</h3>
+                    <p>Pessoas encaminhadas para atendimento psicossocial no CAPS AD (CREAS)</p>
+                </div>
+                <div class="card-result">
+                    <h3>12</h3>
+                    <p>Pessoas imunizadas contra influenza</p>
+                </div>
+                <div class="card-result">
+                    <h3>06</h3>
+                    <p>Pessoas encaminhadas ao mercado de trabalho</p>
+                </div>
+                <div class="card-result">
+                    <h3>03</h3>
+                    <p>Pessoas encaminhadas para clínicas fora do município</p>
+                </div>
+                <div class="card-result">
+                    <h3>02</h3>
+                    <p>Pessoas deixaram a situação de rua e passaram a residir em imóvel alugado</p>
+                </div>
             </div>
         </section>
 
-        <!-- o que Oferecemos -->
+        <!-- O que Oferecemos -->
         <section>
             <h2><i class="fa-solid fa-hands-holding-child"></i> O Que Oferecemos</h2>
             <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Banho Quente & Kits de Higiene:</strong> Estrutura móvel (motorhome) equipada com duchas, toalhas limpas, sabonete, escovas e vestuário completo.</p>
             <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Alimentação Digna:</strong> Jantar em espaço apropriado com mesas e cadeiras em parceria com a Janta Solidária.</p>
-            <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Saúde & Apoio Psicossocial:</strong> Parcerias estratégicas com la Secretaria de Saúde, CAPS AD, FACISA e Clínica Mente Aberta.</p>
+            <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Saúde & Apoio Psicossocial:</strong> Parcerias estratégicas com a Secretaria de Saúde, CAPS AD, FACISA e Clínica Mente Aberta.</p>
             <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Cuidados Estéticos:</strong> Cortes de cabelo e barba mensais com profissionais voluntários.</p>
         </section>
 
         <!-- Doações e Apoio -->
         <section>
             <h2><i class="fa-solid fa-hand-holding-dollar"></i> Contribua com o Projeto</h2>
-            <p>O projeto conta com o apoio institucional da <strong>Província Carmelitana Santo Elias</strong>. Você também pode fazer a diferença doando valores ou suprimentos de higiene (shampoo, sabonete, pastas de dente e toalhas)</p>
+            <p>O projeto conta com o apoio institucional da <strong>Província Carmelitana Santo Elias</strong>. Você também pode fazer a diferença doando valores ou suprimentos de higiene (shampoo, sabonete, pastas de dente e toalhas).</p>
             
             <div class="donation-box">
                 <h3>Dados Bancários Oficiais para Doações:</h3>
@@ -224,7 +351,7 @@
 
     <footer>
         <p>&copy; 2026 Projeto Banho Solidário - Unaí-MG.</p>
-        <p><small>© Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.</small></p>
+        <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
 
 </body>
