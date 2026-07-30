@@ -4,192 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projeto Banho Solidário - Unaí-MG</title>
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #6b21a8;
-            --secondary-color: #9333ea;
-            --accent-color: #f3e8ff;
-            --dark-color: #1f2937;
-            --light-color: #f9fafb;
-            --text-color: #4b5563;
-        }
-        * {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f9fc;
+            color: #333333;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            background-color: var(--light-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-        header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 3rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
             text-align: center;
-        }
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        header p {
-            font-size: 1.2rem;
-            font-weight: 300;
-            opacity: 0.9;
         }
         .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 2rem 1rem;
-        }
-        section {
-            background: white;
-            margin-bottom: 2rem;
-            padding: 2.5rem;
+            background: #ffffff;
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            max-width: 600px;
+            width: 90%;
         }
-        h2 {
-            color: var(--primary-color);
-            margin-bottom: 1.2rem;
-            font-size: 1.8rem;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 0.5rem;
+        h1 {
+            color: #0077b6;
+            margin-bottom: 10px;
+            font-size: 28px;
         }
         p {
-            margin-bottom: 1rem;
-            font-size: 1rem;
+            color: #555555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
         }
-        .grid-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        .card-result {
-            background: var(--accent-color);
-            padding: 1.5rem;
+        .btn-ebook {
+            background-color: #0077b6;
+            color: white;
+            padding: 14px 28px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
             border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+            display: inline-block;
+            transition: background 0.3s, transform 0.2s;
         }
-        .card-result h3 {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 0.3rem;
-        }
-        .card-result p {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--dark-color);
-            margin-bottom: 0;
-        }
-        .donation-box {
-            background: #fdf4ff;
-            border: 2px dashed var(--secondary-color);
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 1.5rem;
-        }
-        .donation-box ul {
-            list-style: none;
-            margin-top: 1rem;
-        }
-        .donation-box li {
-            margin-bottom: 0.8rem;
-            font-size: 1.05rem;
-        }
-        .donation-box li strong {
-            color: var(--primary-color);
+        .btn-ebook:hover {
+            background-color: #023e8a;
+            transform: translateY(-2px);
         }
         footer {
-            text-align: center;
-            padding: 2rem;
-            background: var(--dark-color);
-            color: white;
-            font-size: 0.9rem;
-        }
-        @media(max-width: 768px) {
-            header h1 { font-size: 2rem; }
-            section { padding: 1.5rem; }
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777777;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1><i class="fa-solid fa-shower"></i> Banho Solidário</h1>
-        <p>Cada gota, um ato de amor! Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
-    </header>
-
     <div class="container">
-        <!-- Apresentação -->
-        <section>
-            <h2><i class="fa-solid fa-heart-pulse"></i> Nossa Missão</h2>
-            <p>O <strong>Projeto Banho Solidário</strong> nasceu em 2024 da sensibilidade do senhor Valdemar Zancanaro (Padrinho) diante da vulnerabilidade da população em situação de rua em Unaí-MG[cite: 4]. Mais do que um banho quente, oferecemos acolhimento, escuta ativa, alimentação digna e oportunidades reais de reinserção social[cite: 1, 4].</p>
-            <p>Acreditamos que a verdadeira transformação social começa com respeito, empatia e corresponsabilidade entre sociedade civil, poder público e voluntariado[cite: 3, 4].</p>
-        </section>
+        <h1>Projeto Banho Solidário</h1>
+        <p>Restaurando a dignidade, a higiene e a esperança através do cuidado humanizado em Unaí-MG.</p>
+        
+        <!-- Botão de Acesso Direto ao E-book -->
+        <a href="./ebook/" target="_blank" class="btn-ebook">
+            📖 Acessar E-book Interativo
+        </a>
 
-        <!-- Resultados -->
-        <section>
-            <h2><i class="fa-solid fa-chart-line"></i> Resultados Concretos (2024 - 2025)</h2>
-            <p>O impacto do nosso trabalho coletivo reflete em números que transformam vidas:</p>
-            <div class="grid-results">
-                <div class="card-result">
-                    <h3>+780</h3>
-                    <p>Atendimentos Realizados (Banho, Rodas de Conversa e Refeições)</p>
-                </div>
-                <div class="card-result">
-                    <h3>55</h3>
-                    <p>Passagens para Retorno ao Município de Origem</p>
-                </div>
-                <div class="card-result">
-                    <h3>42</h3>
-                    <p>Encaminhamentos para Clínicas de Reabilitação</p>
-                </div>
-                <div class="card-result">
-                    <h3>32</h3>
-                    <p>Documentações Emitidas ou Regularizadas</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- O que Oferecemos -->
-        <section>
-            <h2><i class="fa-solid fa-hands-holding-child"></i> O Que Oferecemos</h2>
-            <p><i class="fa-solid fa-check text-success"></i> <strong>Banho Quente & Kits de Higiene:</strong> Estrutura móvel (motorhome) equipada com duchas, toalhas limpas, sabonete, escovas e vestuário completo[cite: 4, 8].</p>
-            <p><i class="fa-solid fa-check text-success"></i> <strong>Alimentação Digna:</strong> Jantar em espaço apropriado com mesas e cadeiras em parceria com a Janta Solidária[cite: 1, 4].</p>
-            <p><i class="fa-solid fa-check text-success"></i> <strong>Saúde & Apoio Psicossocial:</strong> Parcerias estratégicas com a Secretaria de Saúde, CAPS AD, FACISA e Clínica Mente Aberta[cite: 1, 4, 5].</p>
-            <p><i class="fa-solid fa-check text-success"></i> <strong>Cuidados Estéticos:</strong> Cortes de cabelo e barba mensais com profissionais voluntários[cite: 1, 4].</p>
-        </section>
-
-        <!-- Doações e Apoio -->
-        <section>
-            <h2><i class="fa-solid fa-hand-holding-dollar"></i> Contribua com o Projeto</h2>
-            <p>O projeto conta com o apoio institucional da <strong>Província Carmelitana Santo Elias</strong>. Você também pode fazer a diferença doando valores ou suprimentos de higiene (shampoo, sabonete, pastas de dente e toalhas)[cite: 4, 9].</p>
-            
-            <div class="donation-box">
-                <h3>Dados Bancários Oficiais para Doações:</h3>
-                <ul>
-                    <li><strong>Instituição:</strong> Banco do Brasil</li>
-                    <li><strong>Titular:</strong> Província Carmelita de Santo Elias[cite: 4, 9]</li>
-                    <li><strong>CNPJ:</strong> 33.621.319/0029-94[cite: 4, 9]</li>
-                    <li><strong>Agência:</strong> 0508-8 | <strong>Conta Corrente:</strong> 65.245-8[cite: 4, 9]</li>
-                    <li><strong>Chave PIX:</strong> <code>financeiro@nossamatriz.com.br</code>[cite: 4, 9]</li>
-                </ul>
-            </div>
-        </section>
+        <footer>
+            <p>© Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC</p>
+        </footer>
     </div>
-
-    <footer>
-        <p>&copy; 2026 Projeto Banho Solidário - Unaí-MG.</p>
-        <p><small>© Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.</small></p>
-    </footer>
 
 </body>
 </html>
