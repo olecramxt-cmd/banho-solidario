@@ -48,8 +48,9 @@
             width: 100%;
         }
         .logo-img {
-            max-height: 110px;
+            height: 95px;
             width: auto;
+            max-width: 100%;
             object-fit: contain;
             background: transparent;
             box-shadow: none;
@@ -263,6 +264,7 @@
                 display: inline-flex;
             }
             section { padding: 1.5rem; }
+            .logo-img { height: 70px; }
         }
     </style>
 </head>
@@ -274,7 +276,8 @@
             <i class="fa-solid fa-book-open"></i> Acessar E-book
         </a>
         <div class="header-brand">
-            <img src="./imagens/Logo2.png" alt="Logo Banho Solidário" class="logo-img" onerror="this.style.display='none'">
+            <!-- LOGO COM SISTEMA DE SEGURANÇA PARA TENTAR DIFERENTES EXTENSÕES CASO O ARQUIVO SEJA .JPG OU .JPEG -->
+            <img src="./imagens/Logo2.png" alt="Logo Banho Solidário" class="logo-img" onerror="if(this.src.includes('Logo2.png')){this.src='./imagens/Logo2.jpg';}else if(this.src.includes('Logo2.jpg')){this.src='./imagens/Logo2.jpeg';}else{this.style.display='none';}">
             <div class="header-text">
                 <p>Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
             </div>
@@ -393,7 +396,7 @@
             <p>O projeto conta com o apoio institucional da <strong>Província Carmelitana Santo Elias</strong>. Você também pode fazer a diferença doando valores ou suprimentos de higiene (shampoo, sabonete, pastas de dente e toalhas).</p>
             
             <div class="donation-box">
-                <h3>Dados Bancários Oficiais para Doações:</h3>
+                <h3>Dados Bancários Oficial para Doações:</h3>
                 <ul>
                     <li><strong>Instituição:</strong> Banco do Brasil</li>
                     <li><strong>Titular:</strong> Província Carmelita de Santo Elias</li>
