@@ -34,41 +34,37 @@
             text-align: center;
             position: relative;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
         }
         .header-brand {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 12px;
             max-width: 1100px;
             width: 100%;
-            justify-content: center;
-            padding: 0 1rem;
-            position: relative;
         }
         .logo-img {
-            height: 75px;
+            max-height: 90px;
             width: auto;
             object-fit: contain;
             border-radius: 8px;
             background: white;
-            padding: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            padding: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .header-text {
-            text-align: left;
-        }
-        .header-text h1 {
-            font-size: 2.3rem;
-            margin-bottom: 0.2rem;
+            text-align: center;
         }
         .header-text p {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 300;
             opacity: 0.95;
+            color: white;
+            margin: 0;
         }
         /* Botão Discreto e Elegante para o E-book no Topo */
         .btn-ebook-top {
@@ -116,12 +112,40 @@
         p {
             margin-bottom: 1rem;
             font-size: 1rem;
+            text-align: justify;
         }
-        .grid-results {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        /* Grade de Resultados - Layout 3x3 com Destaque no Topo */
+        .results-wrapper {
+            display: flex;
+            flex-direction: column;
             gap: 1.5rem;
             margin-top: 1.5rem;
+        }
+        .card-main {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(107, 33, 168, 0.2);
+        }
+        .card-main h3 {
+            font-size: 2.8rem;
+            color: #ffffff;
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+        .card-main p {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #f3e8ff;
+            margin-bottom: 0;
+            text-align: center;
+        }
+        .grid-results-3x3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
         }
         .card-result {
             background: var(--accent-color);
@@ -129,6 +153,9 @@
             border-radius: 8px;
             text-align: center;
             border-left: 4px solid var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .card-result h3 {
             font-size: 2rem;
@@ -140,6 +167,7 @@
             font-weight: 500;
             color: var(--dark-color);
             margin-bottom: 0;
+            text-align: center;
         }
         /* Linha do Tempo - Como Tudo Começou */
         .timeline-container {
@@ -169,6 +197,17 @@
             font-size: 0.85rem;
             color: var(--text-color);
             margin-bottom: 0;
+            text-align: center;
+        }
+        ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--text-color);
+        }
+        ul li {
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+            text-align: justify;
         }
         .donation-box {
             background: #fdf4ff;
@@ -180,10 +219,12 @@
         .donation-box ul {
             list-style: none;
             margin-top: 1rem;
+            padding-left: 0;
         }
         .donation-box li {
             margin-bottom: 0.8rem;
             font-size: 1.05rem;
+            text-align: left;
         }
         .donation-box li strong {
             color: var(--primary-color);
@@ -202,11 +243,13 @@
         footer a:hover {
             text-decoration: underline;
         }
+        @media(max-width: 900px) {
+            .grid-results-3x3 {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+        }
         @media(max-width: 768px) {
-            .header-brand { flex-direction: column; text-align: center; }
-            .header-text { text-align: center; }
-            header h1 { font-size: 1.8rem; }
-            section { padding: 1.5rem; }
+            header { padding: 3rem 1rem 2rem 1rem; }
             .btn-ebook-top {
                 position: relative;
                 top: 0;
@@ -214,6 +257,7 @@
                 margin-bottom: 10px;
                 display: inline-flex;
             }
+            section { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -225,10 +269,9 @@
             <i class="fa-solid fa-book-open"></i> Acessar E-book
         </a>
         <div class="header-brand">
-            <img src="./imagens/LogoSimplificado.png" alt="Logo Banho Solidário" class="logo-img" onerror="this.style.display='none'">
+            <img src="./imagens/Logo1.png" alt="Logo Banho Solidário" class="logo-img" onerror="this.style.display='none'">
             <div class="header-text">
-                <h1><i class="fa-solid fa-shower"></i> Banho Solidário</h1>
-                <p>Cada gota, um ato de amor! Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
+                <p>Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
             </div>
         </div>
     </header>
@@ -278,46 +321,52 @@
         <section>
             <h2><i class="fa-solid fa-chart-line"></i> Resultados Concretos (2024 - 2025)</h2>
             <p>O impacto do nosso trabalho coletivo reflete em números que transformam vidas:</p>
-            <div class="grid-results">
-                <div class="card-result">
+            
+            <div class="results-wrapper">
+                <!-- Destaque Principal no Topo -->
+                <div class="card-main">
                     <h3>+780</h3>
                     <p>Atendimentos Realizados (Banho, Rodas de Conversa e Refeições)</p>
                 </div>
-                <div class="card-result">
-                    <h3>55</h3>
-                    <p>Passagens para Retorno ao Município de Origem</p>
-                </div>
-                <div class="card-result">
-                    <h3>42</h3>
-                    <p>Encaminhadas para Comunidades Terapêuticas e Clínicas de Reabilitação</p>
-                </div>
-                <div class="card-result">
-                    <h3>32</h3>
-                    <p>Documentações Emitidas ou Regularizadas</p>
-                </div>
-                <div class="card-result">
-                    <h3>30</h3>
-                    <p>Pessoas encaminhadas para atendimento de saúde especializado na rede municipal</p>
-                </div>
-                <div class="card-result">
-                    <h3>18</h3>
-                    <p>Pessoas encaminhadas para atendimento psicossocial no CAPS AD (CREAS)</p>
-                </div>
-                <div class="card-result">
-                    <h3>12</h3>
-                    <p>Pessoas imunizadas contra influenza</p>
-                </div>
-                <div class="card-result">
-                    <h3>06</h3>
-                    <p>Pessoas encaminhadas ao mercado de trabalho</p>
-                </div>
-                <div class="card-result">
-                    <h3>03</h3>
-                    <p>Pessoas encaminhadas para clínicas fora do município</p>
-                </div>
-                <div class="card-result">
-                    <h3>02</h3>
-                    <p>Pessoas deixaram a situação de rua e passaram a residir em imóvel alugado</p>
+
+                <!-- Grade 3x3 para os demais resultados -->
+                <div class="grid-results-3x3">
+                    <div class="card-result">
+                        <h3>55</h3>
+                        <p>Passagens para Retorno ao Município de Origem</p>
+                    </div>
+                    <div class="card-result">
+                        <h3>42</h3>
+                        <p>Encaminhadas para Comunidades Terapêuticas e Clínicas de Reabilitação</p>
+                    </div>
+                    <div class="card-result">
+                        <h3>32</h3>
+                        <p>Documentações Emitidas ou Regularizadas</p>
+                    </div>
+                    <div class="card-result">
+                        <h3>30</h3>
+                        <p>Pessoas encaminhadas para atendimento de saúde especializado na rede municipal</p>
+                    </div>
+                    <div class="card-result">
+                        <h3>18</h3>
+                        <p>Pessoas encaminhadas para atendimento psicossocial no CAPS AD (CREAS)</p>
+                    </div>
+                    <div class="card-result">
+                        <h3>12</h3>
+                        <p>Pessoas imunizadas contra influenza</p>
+                    </div>
+                    <div class="card-result">
+                        <h3>06</h3>
+                        <p>Pessoas encaminhadas ao mercado de trabalho</p>
+                    </div>
+                    <div class="card-result">
+                        <h3>03</h3>
+                        <p>Pessoas encaminhadas para clínicas fora do município</p>
+                    </div>
+                    <div class="card-result">
+                        <h3>02</h3>
+                        <p>Pessoas deixaram a situação de rua e passaram a residir em imóvel alugado</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -325,10 +374,12 @@
         <!-- O que Oferecemos -->
         <section>
             <h2><i class="fa-solid fa-hands-holding-child"></i> O Que Oferecemos</h2>
-            <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Banho Quente & Kits de Higiene:</strong> Estrutura móvel (motorhome) equipada com duchas, toalhas limpas, sabonete, escovas e vestuário completo.</p>
-            <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Alimentação Digna:</strong> Jantar em espaço apropriado com mesas e cadeiras em parceria com a Janta Solidária.</p>
-            <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Saúde & Apoio Psicossocial:</strong> Parcerias estratégicas com a Secretaria de Saúde, CAPS AD, FACISA e Clínica Mente Aberta.</p>
-            <p><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Cuidados Estéticos:</strong> Cortes de cabelo e barba mensais com profissionais voluntários.</p>
+            <ul>
+                <li><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Banho Quente & Kits de Higiene:</strong> Estrutura móvel (motorhome) equipada com duchas, toalhas limpas, sabonete, escovas e vestuário completo.</li>
+                <li><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Alimentação Digna:</strong> Jantar em espaço apropriado com mesas e cadeiras em parceria com a Janta Solidária.</li>
+                <li><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Saúde & Apoio Psicossocial:</strong> Parcerias estratégicas com a Secretaria de Saúde, CAPS AD, FACISA e Clínica Mente Aberta.</li>
+                <li><i class="fa-solid fa-check" style="color: #10b981;"></i> <strong>Cuidados Estéticos:</strong> Cortes de cabelo e barba mensais com profissionais voluntários.</li>
+            </ul>
         </section>
 
         <!-- Doações e Apoio -->
