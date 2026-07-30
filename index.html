@@ -5,172 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projeto Banho Solidário - Unaí-MG</title>
     <style>
-        :root {
-            --primary-color: #6a1b9a;
-            --primary-light: #f3e5f5;
-            --text-dark: #333333;
-            --text-muted: #555555;
-            --bg-light: #f9f9fb;
-            --white: #ffffff;
-            --border-color: #e0e0e0;
-        }
         body {
             font-family: Arial, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
+            background-color: #f4f4f4;
+            color: #333333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+        }
+        /* Faixa Roxa do Topo */
+        .header-banner {
+            background-color: #6a1b9a;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .header-banner h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .main-container {
-            background: var(--white);
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            max-width: 800px;
-            width: 100%;
-            box-sizing: border-box;
+        .header-banner p {
+            margin: 0;
+            font-size: 16px;
         }
-        /* Topo com o Botão Discreto do E-book */
-        .top-bar {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-        }
-        .btn-ebook-discreto {
-            background-color: var(--primary-color);
-            color: var(--white);
+        /* Botão Discreto no Topo */
+        .btn-ebook-topo {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background-color: #ffffff;
+            color: #6a1b9a;
             padding: 8px 16px;
             text-decoration: none;
             font-size: 14px;
             font-weight: bold;
             border-radius: 6px;
-            box-shadow: 0 2px 5px rgba(106, 27, 154, 0.3);
-            transition: background 0.3s, transform 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background 0.3s;
         }
-        .btn-ebook-discreto:hover {
-            background-color: #4a148c;
-            transform: translateY(-1px);
+        .btn-ebook-topo:hover {
+            background-color: #f3e5f5;
         }
-        header {
-            text-align: center;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+        /* Conteúdo Principal */
+        .main-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
         }
-        h1 {
-            color: var(--primary-color);
-            margin: 0 0 10px 0;
-            font-size: 28px;
-        }
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 15px;
-            margin: 0;
-        }
-        .section-box {
-            background: var(--white);
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--primary-color);
-            padding: 20px;
+        .card {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
+            padding: 25px;
             margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .section-box h2 {
-            color: var(--primary-color);
-            font-size: 18px;
+        .card h2 {
+            color: #6a1b9a;
+            font-size: 20px;
             margin-top: 0;
-            margin-bottom: 12px;
+            border-bottom: 1px solid #f3e5f5;
+            padding-bottom: 10px;
         }
         p {
-            color: var(--text-muted);
-            font-size: 15px;
             line-height: 1.6;
-            margin: 0 0 10px 0;
-        }
-        ul {
-            margin: 0;
-            padding-left: 20px;
-            color: var(--text-muted);
-        }
-        ul li {
-            margin-bottom: 8px;
+            color: #555555;
             font-size: 15px;
         }
+        /* Grid de Resultados */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
-            margin-bottom: 25px;
+            margin-top: 15px;
         }
         .stat-card {
-            background: var(--primary-light);
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
             padding: 15px;
-            border-radius: 8px;
             text-align: center;
         }
         .stat-number {
-            color: var(--primary-color);
-            font-size: 22px;
+            color: #6a1b9a;
+            font-size: 24px;
             font-weight: bold;
             margin-bottom: 5px;
         }
         .stat-text {
-            color: var(--text-dark);
             font-size: 13px;
+            color: #555555;
         }
-        .bank-details {
+        ul {
+            padding-left: 20px;
+            color: #555555;
+        }
+        ul li {
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        .bank-box {
+            border: 1px dashed #6a1b9a;
             background: #faf5fb;
-            border: 1px dashed var(--primary-color);
             padding: 15px 20px;
-            border-radius: 8px;
+            border-radius: 6px;
+            margin-top: 15px;
         }
-        .bank-details p {
-            margin-bottom: 6px;
+        .bank-box p {
+            margin: 5px 0;
             font-size: 14px;
         }
         footer {
+            background-color: #1a202c;
+            color: #a0aec0;
             text-align: center;
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
+            padding: 20px;
             font-size: 13px;
-            color: #777777;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
 
+    <!-- Faixa Roxa do Topo -->
+    <div class="header-banner">
+        <a href="./ebook/" target="_blank" class="btn-ebook-topo">📖 Acessar E-book</a>
+        <h1>🚿 Banho Solidário</h1>
+        <p>Cada gota, um ato de amor! Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
+    </div>
+
     <div class="main-container">
         
-        <!-- Botão Discreto no Topo para o E-book -->
-        <div class="top-bar">
-            <a href="./ebook/" target="_blank" class="btn-ebook-discreto">
-                📖 Acessar E-book Interativo
-            </a>
-        </div>
-
-        <header>
-            <h1>Banho Solidário</h1>
-            <p class="subtitle">Cada gota, um ato de amor! Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
-        </header>
-
         <!-- Nossa Missão -->
-        <div class="section-box">
+        <div class="card">
             <h2>❤️ Nossa Missão</h2>
             <p>O Projeto Banho Solidário nasceu em 2024 da sensibilidade do senhor Valdemar Zancanara (Padrinho) diante da vulnerabilidade da população em situação de rua em Unaí-MG. Mais do que um banho quente, oferecemos acolhimento, escuta ativa, alimentação digna e oportunidades reais de reinserção social.</p>
             <p>Acreditamos que a verdadeira transformação social começa com respeito, empatia e corresponsabilidade entre sociedade civil, poder público e voluntariado.</p>
         </div>
 
         <!-- Resultados Concretos -->
-        <div class="section-box">
-            <h2>📊 Resultados Concretos (2024 - 2025)</h2>
-            <p style="margin-bottom: 15px;">O impacto do nosso trabalho coletivo reflete em números que transformam vidas:</p>
+        <div class="card">
+            <h2>📈 Resultados Concretos (2024 - 2025)</h2>
+            <p>O impacto do nosso trabalho coletivo reflete em números que transformam vidas:</p>
             
             <div class="stats-grid">
                 <div class="stat-card">
@@ -193,7 +173,7 @@
         </div>
 
         <!-- O Que Oferecemos -->
-        <div class="section-box">
+        <div class="card">
             <h2>🎯 O Que Oferecemos</h2>
             <ul>
                 <li><strong>Banho Quente & Kits de Higiene:</strong> Estrutura móvel (motorhome) equipada com duchas, toalhas limpas, sabonete, escovas e vestuário completo.</li>
@@ -204,11 +184,11 @@
         </div>
 
         <!-- Contribua com o Projeto -->
-        <div class="section-box">
+        <div class="card">
             <h2>🤝 Contribua com o Projeto</h2>
-            <p style="margin-bottom: 15px;">O projeto conta com o apoio institucional da Província Carmelita Santa Elias. Você também pode fazer a diferença doando valores ou suprimentos de higiene (shampoo, sabonete, pastas de dente e toalhas).</p>
+            <p>O projeto conta com o apoio institucional da Província Carmelita Santa Elias. Você também pode fazer a diferença doando valores ou suprimentos de higiene (shampoo, sabonete, pastas de dente e toalhas).</p>
             
-            <div class="bank-details">
+            <div class="bank-box">
                 <p><strong>Dados Bancários Oficiais para Doações:</strong></p>
                 <p><strong>Instituição:</strong> Banco do Brasil</p>
                 <p><strong>Titular:</strong> Província Carmelita de Santa Elias</p>
@@ -218,11 +198,12 @@
             </div>
         </div>
 
-        <footer>
-            <p>© 2026 Projeto Banho Solidário - Unaí-MG.</p>
-            <p>© Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC</p>
-        </footer>
     </div>
+
+    <footer>
+        <p>© 2026 Projeto Banho Solidário - Unaí-MG.</p>
+        <p>© Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC</p>
+    </footer>
 
 </body>
 </html>
