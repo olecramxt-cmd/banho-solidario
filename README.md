@@ -1,2 +1,6 @@
 # banho-solidario
-O banho que por si só é um direito básico muitas vezes negado, o projeto  proporciona escuta ativa, rodas de conversas, alimentação, doação de roupas, encaminhamentos para a  rede de saúde, assistência social e oportunidades de reinserção social. O banho semanal  repre-senta, nesse contexto, um símbolo de cuida-do, saúde física e mental...
+Mais do que a oferta de um banho que por si só é um direito básico muitas vezes negado, o projeto 
+proporciona escuta ativa, rodas de conversas, alimentação, doação de roupas, encaminhamentos para a 
+rede de saúde, assistência social e oportunidades de reinserção social. O banho semanal 
+repre-senta, nesse contexto, um símbolo de cuida-do, saúde física e mental, resgate da autoes-tima 
+e, sobretudo, de reconhecimento da condição humana dessas pessoas.
