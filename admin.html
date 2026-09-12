@@ -2,11 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
-<!-- Programa admin.html. Versão do Código: v.1.1.020                               -->
-<!-- Data de atualização: 12/09/2026 - 08:10                                        -->
+<!-- Programa admin.html. Versão do Código: v.1.1.021                               -->
+<!-- Data de atualização: 12/09/2026 - 10:46                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Adição do botão de Encerrar Sessão (Logout) e do recurso de edição de        -->
-<!--   dados carregando diretamente no formulário superior.                         -->
+<!-- - Correção na lógica de atualização de dados e nome de usuário no painel.      -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -172,7 +171,7 @@
                 usuarios.push({ nome, username, senha, tipo, foto });
                 alert('Voluntário cadastrado com sucesso!');
             } else {
-                // Atualização de cadastro existente
+                // Atualização de cadastro existente (garantindo alteração do nome e username)
                 usuarios[editIndex] = { nome, username, senha, tipo, foto };
                 alert('Dados atualizados com sucesso!');
                 document.getElementById('editIndex').value = -1;
