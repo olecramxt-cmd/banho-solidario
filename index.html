@@ -1,3 +1,12 @@
+# ==============================================================================
+# QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
+# ==============================================================================
+# © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.
+# Programa index.html. Versão do Código: v.1.2.046
+# Data de atualização: 12/09/2026 - 06:44
+# Descrição das Alterações:
+# - Consolidação do código principal com o link de login no menu e o quadro iPeC.
+# ==============================================================================
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -322,8 +331,8 @@
                 <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="side-menu-links">
-                <a href="./cadastro.html" class="menu-link-item">
-                    <i class="fa-solid fa-user-plus"></i> Nova Triagem
+                <a href="./login.html" class="menu-link-item">
+                    <i class="fa-solid fa-user-lock"></i> Área Restrita (Login)
                 </a>
                 <a href="./ebook/" target="_blank" class="menu-link-item">
                     <i class="fa-solid fa-book-open"></i> Acessar E-book
@@ -331,7 +340,7 @@
             </div>
         </nav>
 
-        <!-- Imagem de Banner Principal Exata (Sem cortes em PC e Notebook) -->
+        <!-- Imagem de Banner Principal Exata (Sem cortes em PC e Notebook)[cite: 1] -->
         <img src="./imagens/PagCentral.png" alt="Banner Projeto Banho Solidário" class="banner-img">
     </header>
 
@@ -464,7 +473,7 @@
         <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
 
-    <!-- Script JavaScript para controlar o menu hambúrguer -->
+    <!-- Script JavaScript para controlar o menu hambúrguer[cite: 1] -->
     <script>
         function toggleMenu() {
             const sideMenu = document.getElementById('sideMenu');
