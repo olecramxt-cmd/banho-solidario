@@ -2,11 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
-<!-- Programa login.html. Versão do Código: v.1.0.011                               -->
-<!-- Data de atualização: 12/09/2026 - 06:55                                        -->
+<!-- Programa login.html. Versão do Código: v.1.1.020                               -->
+<!-- Data de atualização: 12/09/2026 - 07:10                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Correção da exibição do quadro de controle de versão transformando-o em      -->
-<!--   comentário HTML oculto.                                                      -->
+<!-- - Adição do recurso de recuperação de senha por nome de usuário.               -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -145,14 +144,19 @@
             margin-top: 10px;
             display: none;
         }
-        .back-home {
+        .links-container {
             margin-top: 1.5rem;
-            display: block;
-            color: var(--text-color);
-            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             font-size: 0.9rem;
         }
-        .back-home:hover {
+        .links-container a {
+            color: var(--text-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .links-container a:hover {
             color: var(--secondary-color);
             text-decoration: underline;
         }
@@ -177,7 +181,7 @@
                 <label for="usuario">Nome de Usuário</label>
                 <div class="input-icon">
                     <i class="fa-solid fa-user"></i>
-                    <input type="text" id="usuario" class="form-control" placeholder="Digite seu usuário (ex: marcelo)" required oninput="atualizarFotoVoluntario()">
+                    <input type="text" id="usuario" class="form-control" placeholder="Digite seu usuário" required oninput="atualizarFotoVoluntario()">
                 </div>
             </div>
 
@@ -194,7 +198,10 @@
             <button type="submit" class="btn-login">Entrar no Sistema</button>
         </form>
 
-        <a href="./index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Voltar para a Página Inicial</a>
+        <div class="links-container">
+            <a onclick="esqueciSenha()"><i class="fa-solid fa-key"></i> Esqueci minha senha</a>
+            <a href="./index.html"><i class="fa-solid fa-arrow-left"></i> Voltar para a Página Inicial</a>
+        </div>
     </div>
 
     <script>
@@ -258,9 +265,29 @@
                     loginTime: new Date().toLocaleString()
                 }));
 
+                // Redireciona para o painel de triagem ou admin
                 window.location.href = "./cadastro.html";
             } else {
                 errorMsg.style.display = 'block';
+            }
+        }
+
+        function esqueciSenha() {
+            const username = prompt("Digite o seu nome de usuário para recuperação de senha:");
+            if (!username) return;
+
+            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
+            let userIndex = usuarios.findIndex(u => u.username.toLowerCase() === username.trim().toLowerCase());
+
+            if (userIndex !== -1) {
+                let novaSenha = prompt("Usuário localizado! Digite a nova senha de acesso:");
+                if (novaSenha) {
+                    usuarios[userIndex].senha = novaSenha.trim();
+                    localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
+                    alert("Senha alterada com sucesso! Faça o login com a nova senha.");
+                }
+            } else {
+                alert("Usuário não encontrado no sistema.");
             }
         }
     </script>
