@@ -2,10 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
-<!-- Programa admin.html. Versão do Código: v.1.1.021                               -->
-<!-- Data de atualização: 12/09/2026 - 10:46                                        -->
+<!-- Programa admin.html. Versão do Código: v.1.1.022                               -->
+<!-- Data de atualização: 12/09/2026 - 10:54                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Correção na lógica de atualização de dados e nome de usuário no painel.      -->
+<!-- - Inclusão da chamada carregarUsuarios() ao salvar para atualização imediata   -->
+<!--   da tabela visual.                                                            -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -180,6 +181,8 @@
 
             localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
             document.getElementById('userForm').reset();
+            
+            // ATUALIZAÇÃO INSTANTÂNEA DA TABELA NA TELA
             carregarUsuarios();
         }
 
