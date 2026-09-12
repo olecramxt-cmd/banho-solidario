@@ -2,10 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
-<!-- Programa admin.html. Versão do Código: v.1.0.010                               -->
-<!-- Data de atualização: 12/09/2026 - 07:10                                        -->
+<!-- Programa admin.html. Versão do Código: v.1.1.020                               -->
+<!-- Data de atualização: 12/09/2026 - 08:10                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Criação do painel administrativo para cadastro e manutenção de usuários.    -->
+<!-- - Adição do botão de Encerrar Sessão (Logout) e do recurso de edição de        -->
+<!--   dados carregando diretamente no formulário superior.                         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -31,15 +32,21 @@
             background-color: var(--light-color); color: var(--text-color); padding: 2rem 1rem;
         }
         .container {
-            max-width: 900px; margin: auto; background: white; padding: 2rem; border-radius: 12px;
+            max-width: 950px; margin: auto; background: white; padding: 2rem; border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        h2 { color: var(--secondary-color); margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; }
+        .header-flex {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem;
+        }
+        h2 { color: var(--secondary-color); font-size: 1.5rem; border: none; margin: 0; padding: 0; }
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
         .form-group label { display: block; font-weight: 500; margin-bottom: 5px; font-size: 0.9rem; }
         .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
         .btn { background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn:hover { opacity: 0.9; }
+        .btn-logout { background: #ef4444; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 6px; text-decoration: none; }
+        .btn-logout:hover { background: #dc2626; }
         table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
         th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 0.9rem; }
         th { background: var(--accent-color); color: var(--secondary-color); }
@@ -47,13 +54,13 @@
         .actions-btn { display: flex; gap: 8px; }
         .btn-danger { background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
         .btn-warning { background: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-info { background: #3b82f6; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
         .back-link { display: inline-block; margin-top: 1.5rem; color: var(--secondary-color); text-decoration: none; font-weight: 500; }
     </style>
 </head>
 <body>
 
     <script>
-        // Restringe acesso apenas a administradores
         const ativo = JSON.parse(localStorage.getItem('usuario_ativo'));
         if (!ativo || ativo.tipo !== 'admin') {
             alert('Acesso negado! Área restrita para administradores.');
@@ -62,9 +69,13 @@
     </script>
 
     <div class="container">
-        <h2><i class="fa-solid fa-users-gear"></i> Painel de Gestão de Voluntários</h2>
+        <div class="header-flex">
+            <h2><i class="fa-solid fa-users-gear"></i> Painel de Gestão de Voluntários</h2>
+            <button class="btn-logout" onclick="encerrarSessao()"><i class="fa-solid fa-right-from-bracket"></i> Sair do Sistema</button>
+        </div>
         
         <form id="userForm" onsubmit="salvarUsuario(event)">
+            <input type="hidden" id="editIndex" value="-1">
             <div class="form-row">
                 <div class="form-group">
                     <label>Nome Completo</label>
@@ -92,12 +103,12 @@
                     <input type="text" id="foto" class="form-control" placeholder="./imagens/foto.png">
                 </div>
                 <div class="form-group" style="display: flex; align-items: flex-end;">
-                    <button type="submit" class="btn"><i class="fa-solid fa-user-plus"></i> Salvar Voluntário</button>
+                    <button type="submit" class="btn" id="btnSalvar"><i class="fa-solid fa-user-plus"></i> Salvar Voluntário</button>
                 </div>
             </div>
         </form>
 
-        <h2 style="margin-top: 2rem;"><i class="fa-solid fa-list"></i> Voluntários Cadastrados</h2>
+        <h2 style="margin-top: 2rem; font-size: 1.3rem;"><i class="fa-solid fa-list"></i> Voluntários Cadastrados</h2>
         <table>
             <thead>
                 <tr>
@@ -113,7 +124,7 @@
             </tbody>
         </table>
 
-        <a href="./cadastro.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Voltar para a Triagem</a>
+        <a href="./index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Voltar para a Página Inicial</a>
     </div>
 
     <script>
@@ -131,8 +142,9 @@
                         <td>${u.tipo === 'admin' ? 'Administrador' : 'Comum'}</td>
                         <td>
                             <div class="actions-btn">
-                                <button class="btn-warning" onclick="alterarSenha(${index})"><i class="fa-solid fa-key"></i></button>
-                                <button class="btn-danger" onclick="excluirUsuario(${index})"><i class="fa-solid fa-trash"></i></button>
+                                <button class="btn-info" title="Editar Dados" onclick="prepararEdicao(${index})"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="btn-warning" title="Alterar Senha" onclick="alterarSenha(${index})"><i class="fa-solid fa-key"></i></button>
+                                <button class="btn-danger" title="Excluir Usuário" onclick="excluirUsuario(${index})"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </td>
                     </tr>
@@ -142,6 +154,7 @@
 
         function salvarUsuario(event) {
             event.preventDefault();
+            const editIndex = parseInt(document.getElementById('editIndex').value);
             const nome = document.getElementById('nome').value.trim();
             const username = document.getElementById('username').value.trim().toLowerCase();
             const senha = document.getElementById('senha').value.trim();
@@ -150,18 +163,40 @@
 
             let usuarios = JSON.parse(localStorage.getItem('banho_usuarios')) || [];
             
-            // Verifica se usuario ja existe
-            if(usuarios.some(u => u.username === username)) {
-                alert('Este nome de usuário já está cadastrado!');
-                return;
+            if (editIndex === -1) {
+                // Novo cadastro
+                if(usuarios.some(u => u.username === username)) {
+                    alert('Este nome de usuário já está cadastrado!');
+                    return;
+                }
+                usuarios.push({ nome, username, senha, tipo, foto });
+                alert('Voluntário cadastrado com sucesso!');
+            } else {
+                // Atualização de cadastro existente
+                usuarios[editIndex] = { nome, username, senha, tipo, foto };
+                alert('Dados atualizados com sucesso!');
+                document.getElementById('editIndex').value = -1;
+                document.getElementById('btnSalvar').innerHTML = `<i class="fa-solid fa-user-plus"></i> Salvar Voluntário`;
             }
 
-            usuarios.push({ nome, username, senha, tipo, foto });
             localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
-            
-            alert('Voluntário cadastrado com sucesso!');
             document.getElementById('userForm').reset();
             carregarUsuarios();
+        }
+
+        function prepararEdicao(index) {
+            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
+            let u = usuarios[index];
+
+            document.getElementById('editIndex').value = index;
+            document.getElementById('nome').value = u.nome;
+            document.getElementById('username').value = u.username;
+            document.getElementById('senha').value = u.senha;
+            document.getElementById('tipo').value = u.tipo;
+            document.getElementById('foto').value = u.foto || '';
+
+            document.getElementById('btnSalvar').innerHTML = `<i class="fa-solid fa-user-pen"></i> Atualizar Voluntário`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function alterarSenha(index) {
@@ -185,6 +220,11 @@
                 localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
                 carregarUsuarios();
             }
+        }
+
+        function encerrarSessao() {
+            localStorage.removeItem('usuario_ativo');
+            window.location.href = './login.html';
         }
 
         carregarUsuarios();
