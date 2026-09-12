@@ -1,0 +1,193 @@
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
+<!-- Programa admin.html. Versão do Código: v.1.0.010                               -->
+<!-- Data de atualização: 12/09/2026 - 07:10                                        -->
+<!-- Descrição das Alterações:                                                      -->
+<!-- - Criação do painel administrativo para cadastro e manutenção de usuários.    -->
+<!-- ============================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Banho Solidário</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #7c3aed;
+            --accent-color: #e0f2fe;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --text-color: #4b5563;
+        }
+        * {
+            margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background-color: var(--light-color); color: var(--text-color); padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 900px; margin: auto; background: white; padding: 2rem; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h2 { color: var(--secondary-color); margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 5px; font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+        .btn { background: var(--secondary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .btn:hover { opacity: 0.9; }
+        table { width: 100%; border-collapse: collapse; margin-top: 2rem; }
+        th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; font-size: 0.9rem; }
+        th { background: var(--accent-color); color: var(--secondary-color); }
+        .user-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .actions-btn { display: flex; gap: 8px; }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-warning { background: #f59e0b; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+        .back-link { display: inline-block; margin-top: 1.5rem; color: var(--secondary-color); text-decoration: none; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <script>
+        // Restringe acesso apenas a administradores
+        const ativo = JSON.parse(localStorage.getItem('usuario_ativo'));
+        if (!ativo || ativo.tipo !== 'admin') {
+            alert('Acesso negado! Área restrita para administradores.');
+            window.location.href = './login.html';
+        }
+    </script>
+
+    <div class="container">
+        <h2><i class="fa-solid fa-users-gear"></i> Painel de Gestão de Voluntários</h2>
+        
+        <form id="userForm" onsubmit="salvarUsuario(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="nome" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Nome de Usuário</label>
+                    <input type="text" id="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="senha" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tipo de Perfil</label>
+                    <select id="tipo" class="form-control">
+                        <option value="comum">Voluntário Comum</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Link da Foto (URL ou ./imagens/...)</label>
+                    <input type="text" id="foto" class="form-control" placeholder="./imagens/foto.png">
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn"><i class="fa-solid fa-user-plus"></i> Salvar Voluntário</button>
+                </div>
+            </div>
+        </form>
+
+        <h2 style="margin-top: 2rem;"><i class="fa-solid fa-list"></i> Voluntários Cadastrados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Foto</th>
+                    <th>Nome</th>
+                    <th>Usuário</th>
+                    <th>Perfil</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaUsuarios">
+                <!-- Preenchido via JavaScript -->
+            </tbody>
+        </table>
+
+        <a href="./cadastro.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Voltar para a Triagem</a>
+    </div>
+
+    <script>
+        function carregarUsuarios() {
+            const usuarios = JSON.parse(localStorage.getItem('banho_usuarios')) || [];
+            const tbody = document.getElementById('tabelaUsuarios');
+            tbody.innerHTML = '';
+
+            usuarios.forEach((u, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${u.foto ? `<img src="${u.foto}" class="user-img">` : `<i class="fa-solid fa-user-circle" style="font-size:2rem; color:#7c3aed;"></i>`}</td>
+                        <td>${u.nome}</td>
+                        <td>${u.username}</td>
+                        <td>${u.tipo === 'admin' ? 'Administrador' : 'Comum'}</td>
+                        <td>
+                            <div class="actions-btn">
+                                <button class="btn-warning" onclick="alterarSenha(${index})"><i class="fa-solid fa-key"></i></button>
+                                <button class="btn-danger" onclick="excluirUsuario(${index})"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function salvarUsuario(event) {
+            event.preventDefault();
+            const nome = document.getElementById('nome').value.trim();
+            const username = document.getElementById('username').value.trim().toLowerCase();
+            const senha = document.getElementById('senha').value.trim();
+            const tipo = document.getElementById('tipo').value;
+            const foto = document.getElementById('foto').value.trim();
+
+            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios')) || [];
+            
+            // Verifica se usuario ja existe
+            if(usuarios.some(u => u.username === username)) {
+                alert('Este nome de usuário já está cadastrado!');
+                return;
+            }
+
+            usuarios.push({ nome, username, senha, tipo, foto });
+            localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
+            
+            alert('Voluntário cadastrado com sucesso!');
+            document.getElementById('userForm').reset();
+            carregarUsuarios();
+        }
+
+        function alterarSenha(index) {
+            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
+            let novaSenha = prompt(`Digite a nova senha para ${usuarios[index].nome}:`);
+            if (novaSenha) {
+                usuarios[index].senha = novaSenha.trim();
+                localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
+                alert('Senha alterada com sucesso!');
+            }
+        }
+
+        function excluirUsuario(index) {
+            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
+            if(usuarios.length === 1) {
+                alert('Não é possível excluir o único usuário restante do sistema.');
+                return;
+            }
+            if(confirm(`Deseja realmente excluir o usuário ${usuarios[index].nome}?`)) {
+                usuarios.splice(index, 1);
+                localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
+                carregarUsuarios();
+            }
+        }
+
+        carregarUsuarios();
+    </script>
+</body>
+</html>
