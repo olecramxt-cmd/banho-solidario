@@ -28,42 +28,50 @@
             line-height: 1.6;
         }
         header {
-            background: linear-gradient(rgba(124, 58, 237, 0.4), rgba(14, 165, 233, 0.4)), url('./imagens/PagCentral.png');
+            position: relative;
+            width: 100%;
+            min-height: 480px;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            color: white;
-            padding: 4rem 1rem;
-            text-align: center;
-            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 450px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 3rem 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        /* Camada translúcida para destacar o conteúdo sobre a imagem */
+        .header-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(45, 27, 105, 0.35);
+            z-index: 1;
         }
         /* Botão do Menu Hambúrguer (Três traços) */
         .menu-toggle {
             position: absolute;
             top: 20px;
             right: 25px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.7);
             color: white;
-            font-size: 1.2rem;
-            padding: 8px 14px;
-            border-radius: 6px;
+            font-size: 1.3rem;
+            padding: 10px 16px;
+            border-radius: 8px;
             cursor: pointer;
             backdrop-filter: blur(5px);
             transition: all 0.3s ease;
-            z-index: 100;
+            z-index: 10;
         }
         .menu-toggle:hover {
             background: white;
             color: var(--secondary-color);
         }
-        /* Painel Lateral Oculto por padrão */
+        /* Painel Lateral do Menu (Gaveta) */
         .side-menu {
             position: fixed;
             top: 0;
@@ -122,8 +130,8 @@
             background: var(--accent-color);
             transform: translateX(5px);
         }
-        /* Overlay Escuro */
-        .overlay {
+        /* Overlay Escuro de Fundo do Menu */
+        .menu-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -134,21 +142,19 @@
             display: none;
             z-index: 999;
         }
-        .overlay.active {
+        .menu-overlay.active {
             display: block;
         }
 
         .header-brand {
+            position: relative;
+            z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 12px;
             max-width: 1100px;
             width: 100%;
-            background: rgba(0, 0, 0, 0.35);
-            padding: 1.5rem;
-            border-radius: 12px;
-            backdrop-filter: blur(4px);
         }
         .logo-img {
             height: 95px;
@@ -166,7 +172,7 @@
             color: #ffffff;
             margin: 0;
             text-align: center;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 2px 6px rgba(0,0,0,0.7);
         }
         .container {
             max-width: 1100px;
@@ -332,7 +338,7 @@
             }
         }
         @media(max-width: 768px) {
-            header { padding: 3rem 1rem; }
+            header { min-height: 380px; padding: 2.5rem 1rem; }
             section { padding: 1.5rem; }
             .logo-img { height: 70px; }
         }
@@ -340,14 +346,17 @@
 </head>
 <body>
 
-    <header>
+    <!-- APLICAÇÃO DA IMAGEM FIXA DIRETO NO BANNER DO TOPO -->
+    <header style="background-image: url('./imagens/PagCentral.png');">
+        <div class="header-overlay"></div>
+
         <!-- Botão Menu Hambúrguer (Três traços) -->
         <button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir Menu">
             <i class="fa-solid fa-bars"></i>
         </button>
 
         <!-- Painel Lateral (Menu) -->
-        <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+        <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
         <nav class="side-menu" id="sideMenu">
             <div class="side-menu-header">
                 <h3>Menu do Sistema</h3>
