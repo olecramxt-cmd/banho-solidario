@@ -1,3 +1,12 @@
+# ==============================================================================
+# QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
+# ==============================================================================
+# © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.
+# Programa login.html. Versão do Código: v.1.0.010
+# Data de atualização: 12/09/2026 - 06:35
+# Descrição das Alterações:
+# - Criação da tela de autenticação com exibição dinâmica de avatar/foto do voluntário.
+# ==============================================================================
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -167,7 +176,7 @@
                 <label for="usuario">Nome de Usuário</label>
                 <div class="input-icon">
                     <i class="fa-solid fa-user"></i>
-                    <input type="text" id="usuario" class="form-control" placeholder="Digite seu nome" required oninput="atualizarFotoVoluntario()">
+                    <input type="text" id="usuario" class="form-control" placeholder="Digite seu usuário (ex: marcelo)" required oninput="atualizarFotoVoluntario()">
                 </div>
             </div>
 
@@ -188,26 +197,23 @@
     </div>
 
     <script>
-        // Base inicial de usuários cadastrados (Administrador e Voluntário de Exemplo)
-        // O Administrador poderá gerenciar novos usuários posteriormente.
         const usuariosCadastrados = [
             {
                 nome: "Marcelo Travassos",
                 username: "marcelo",
                 senha: "123",
                 tipo: "admin",
-                foto: "./imagens/Logo2.png" // Exemplo de foto ou ícone
+                foto: "./imagens/Logo2.png"
             },
             {
                 nome: "Voluntário Padrão",
                 username: "voluntario",
                 senha: "123",
                 tipo: "comum",
-                foto: "" // Se vazio, exibe o ícone padrão
+                foto: ""
             }
         ];
 
-        // Inicializa o banco local de usuários se não existir
         if (!localStorage.getItem('banho_usuarios')) {
             localStorage.setItem('banho_usuarios', JSON.stringify(usuariosCadastrados));
         }
@@ -243,7 +249,6 @@
             const usuarioValido = usuarios.find(u => u.username.toLowerCase() === usuarioInput && u.senha === senhaInput);
 
             if (usuarioValido) {
-                // Salva a sessão ativa do voluntário/admin
                 localStorage.setItem('usuario_ativo', JSON.stringify({
                     nome: usuarioValido.nome,
                     username: usuarioValido.username,
@@ -252,7 +257,6 @@
                     loginTime: new Date().toLocaleString()
                 }));
 
-                // Redireciona para o painel de triagem ou painel administrativo
                 window.location.href = "./cadastro.html";
             } else {
                 errorMsg.style.display = 'block';
