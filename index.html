@@ -44,11 +44,11 @@
             position: absolute;
             top: 20px;
             right: 25px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             color: white;
-            font-size: 1.3rem;
-            padding: 8px 12px;
+            font-size: 1.2rem;
+            padding: 8px 14px;
             border-radius: 6px;
             cursor: pointer;
             backdrop-filter: blur(5px);
@@ -59,15 +59,15 @@
             background: white;
             color: var(--secondary-color);
         }
-        /* Painel Lateral do Menu (Modal / Gaveta) */
+        /* Painel Lateral Oculto por padrão */
         .side-menu {
             position: fixed;
             top: 0;
-            right: -300px;
+            right: -320px;
             width: 300px;
             height: 100%;
             background: white;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
             transition: right 0.4s ease;
             z-index: 1000;
             display: flex;
@@ -118,14 +118,14 @@
             background: var(--accent-color);
             transform: translateX(5px);
         }
-        /* Overlay Escuro ao abrir o menu */
+        /* Overlay Escuro */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             backdrop-filter: blur(3px);
             display: none;
             z-index: 999;
@@ -494,7 +494,7 @@
         <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
 
-    <!-- Script JavaScript para controlar a abertura e fechamento do menu lateral -->
+    <!-- Script JavaScript para controlar a gaveta lateral do menu -->
     <script>
         function toggleMenu() {
             const sideMenu = document.getElementById('sideMenu');
