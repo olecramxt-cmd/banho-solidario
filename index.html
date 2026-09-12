@@ -30,14 +30,41 @@
         header {
             background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
             color: white;
-            padding: 2.5rem 1rem;
+            padding: 2rem 1rem 2.5rem 1rem;
             text-align: center;
-            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 20px;
+        }
+        /* Barra de Abas no Topo */
+        .nav-abas {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 5px;
+        }
+        .btn-aba {
+            background-color: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: white;
+            padding: 8px 18px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 6px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-aba:hover {
+            background-color: white;
+            color: var(--secondary-color);
+            transform: translateY(-2px);
         }
         .header-brand {
             display: flex;
@@ -66,34 +93,6 @@
             color: white;
             margin: 0;
             text-align: center;
-        }
-        /* Sistema de Abas no Topo (Cadastro e E-book) */
-        .nav-abas {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            display: flex;
-            gap: 10px;
-        }
-        .btn-aba {
-            background-color: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            color: white;
-            padding: 8px 16px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border-radius: 6px;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-aba:hover {
-            background-color: white;
-            color: var(--secondary-color);
-            transform: translateY(-2px);
         }
         .container {
             max-width: 1100px;
@@ -259,15 +258,6 @@
             }
         }
         @media(max-width: 768px) {
-            header { padding: 3.5rem 1rem 2rem 1rem; }
-            .nav-abas {
-                position: relative;
-                top: 0;
-                right: 0;
-                margin-bottom: 10px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
             section { padding: 1.5rem; }
             .logo-img { height: 70px; }
         }
@@ -276,7 +266,7 @@
 <body>
 
     <header>
-        <!-- Sistema de Abas no Topo para Cadastro e E-book -->
+        <!-- Sistema de Abas no Topo -->
         <div class="nav-abas">
             <a href="./cadastro.html" class="btn-aba">
                 <i class="fa-solid fa-user-plus"></i> Nova Triagem
