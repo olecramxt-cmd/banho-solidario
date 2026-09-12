@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triagem e Recepção - Banho Solidário</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #7c3aed;
+            --accent-color: #e0f2fe;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --text-color: #4b5563;
+            --border-color: #cbd5e1;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .header-content h1 {
+            font-size: 2rem;
+            margin-bottom: 0.3rem;
+        }
+        .header-content p {
+            font-size: 1rem;
+            font-weight: 300;
+            opacity: 0.95;
+        }
+        .btn-voltar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 6px 14px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .btn-voltar:hover {
+            background-color: white;
+            color: var(--secondary-color);
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .form-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            background: #fff;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.3rem;
+        }
+        .radio-label, .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        .section-subtitle {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 1.5rem 0 0.8rem 0;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.3s, transform 0.2s;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+        }
+        .btn-submit:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: var(--dark-color);
+            color: white;
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="./index.html" class="btn-voltar"><i class="fa-solid fa-arrow-left"></i> Voltar ao Site</a>
+        <div class="header-content">
+            <h1><i class="fa-solid fa-clipboard-user"></i> Triagem e Recepção</h1>
+            <p>Sistema de Cadastro e Controle - Projeto Banho Solidário</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <form id="formTriagem" class="form-card" onsubmit="event.preventDefault(); alert('Dados salvos com sucesso!');">
+            
+            <!-- 1. TRIAGEM - RECEPÇÃO -->
+            <h2><i class="fa-solid fa-user-pen"></i> Triagem - Recepção</h2>
+            
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="nome">Nome Completo:</label>
+                    <input type="text" id="nome" required placeholder="Digite o nome completo">
+                </div>
+
+                <div class="form-group">
+                    <label for="nascimento">Data de Nascimento:</label>
+                    <input type="date" id="nascimento">
+                </div>
+
+                <div class="form-group">
+                    <label for="idade">Idade:</label>
+                    <input type="text" id="idade" placeholder="Ex: 35 anos">
+                </div>
+
+                <div class="form-group">
+                    <label>Sexo:</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="sexo" value="F"> F</label>
+                        <label class="radio-label"><input type="radio" name="sexo" value="M"> M</label>
+                        <label class="radio-label"><input type="radio" name="sexo" value="Nao declarado"> Não declarado</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="escolaridade">Escolaridade:</label>
+                    <input type="text" id="escolaridade" placeholder="Ex: Ensino Fundamental Incompleto">
+                </div>
+
+                <div class="form-group">
+                    <label for="naturalidade">Naturalidade:</label>
+                    <input type="text" id="naturalidade" placeholder="Cidade/Estado">
+                </div>
+
+                <div class="form-group">
+                    <label for="rg">RG:</label>
+                    <input type="text" id="rg" placeholder="Número do RG">
+                </div>
+
+                <div class="form-group">
+                    <label for="cpf">CPF:</label>
+                    <input type="text" id="cpf" placeholder="Número do CPF">
+                </div>
+
+                <div class="form-group">
+                    <label for="cor">Cor / Raça:</label>
+                    <input type="text" id="cor" placeholder="Ex: Pardo, Branco, Preto">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="mae">Filiação (Mãe):</label>
+                    <input type="text" id="mae" placeholder="Nome da mãe">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="pai">Filiação (Pai):</label>
+                    <input type="text" id="pai" placeholder="Nome do pai">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="endereco">Endereço (ou Ponto de Referência se em situação de rua):</label>
+                    <input type="text" id="endereco" placeholder="Endereço atual">
+                </div>
+
+                <div class="form-group">
+                    <label for="cidade">Cidade:</label>
+                    <input type="text" id="cidade" value="Unaí-MG">
+                </div>
+
+                <div class="form-group">
+                    <label for="tel">Telefone / Contato:</label>
+                    <input type="tel" id="tel" placeholder="(38) 90000-0000">
+                </div>
+            </div>
+
+            <!-- 2. ATENDIMENTO TÉCNICO -->
+            <h2 style="margin-top: 2rem;"><i class="fa-solid fa-stethoscope"></i> Atendimento Técnico</h2>
+
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Possui residência ou familiares em Unaí?</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="residencia" value="Nao"> Não</label>
+                        <label class="radio-label"><input type="radio" name="residencia" value="Sim"> Sim</label>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Tipo de usuário:</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="tipo_usuario" value="Idoso"> Idoso</label>
+                        <label class="radio-label"><input type="radio" name="tipo_usuario" value="Adulto"> Adulto</label>
+                        <label class="radio-label"><input type="radio" name="tipo_usuario" value="Crianca/Adolescente"> Criança/Adolescente</label>
+                        <label class="radio-label"><input type="radio" name="tipo_usuario" value="Pessoa com deficiencia"> Pessoa com deficiência</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="section-subtitle" style="margin-top:0;">Tempo de Permanência na rua:</label>
+                    <div class="radio-group" style="flex-direction: column; gap: 0.5rem;">
+                        <label class="radio-label"><input type="radio" name="tempo_rua" value="Ate 30 dias"> Até 30 dias</label>
+                        <label class="radio-label"><input type="radio" name="tempo_rua" value="30 a 90 dias"> 30 à 90 dias</label>
+                        <label class="radio-label"><input type="radio" name="tempo_rua" value="90 ate 01 ano"> 90 até 01 ano</label>
+                        <label class="radio-label"><input type="radio" name="tempo_rua" value="01 ano ou mais"> 01 ano ou mais</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="section-subtitle" style="margin-top:0;">Tempo de permanência em Unaí:</label>
+                    <div class="radio-group" style="flex-direction: column; gap: 0.5rem;">
+                        <label class="radio-label"><input type="radio" name="tempo_unai" value="Ate 30 dias"> Até 30 dias</label>
+                        <label class="radio-label"><input type="radio" name="tempo_unai" value="30 a 90 dias"> 30 à 90 dias</label>
+                        <label class="radio-label"><input type="radio" name="tempo_unai" value="01 ano ou mais"> 01 ano ou mais</label>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="section-subtitle">Principais motivos dessa permanência:</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label"><input type="checkbox" name="motivo" value="Alcoolismo e/ou drogas"> Alcoolismo e/ou drogas</label>
+                        <label class="checkbox-label"><input type="checkbox" name="motivo" value="Conflitos Familiares"> Conflitos Familiares</label>
+                        <label class="checkbox-label"><input type="checkbox" name="motivo" value="Separacao Conjugal"> Separação Conjugal</label>
+                        <label class="checkbox-label"><input type="checkbox" name="motivo" value="Desemprego"> Desemprego</label>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="outro_motivo">Outros motivos:</label>
+                    <input type="text" id="outro_motivo" placeholder="Especifique se houver outro motivo">
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="section-subtitle">Já passou por atendimento:</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label"><input type="checkbox" name="atendimento" value="CAPS"> CAPS</label>
+                        <label class="checkbox-label"><input type="checkbox" name="atendimento" value="CAPS AD"> CAPS AD</label>
+                        <label class="checkbox-label"><input type="checkbox" name="atendimento" value="Clinica de recuperacao"> Clínica de recuperação</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Recebe auxílio benefício?</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="beneficio" value="Sim"> Sim</label>
+                        <label class="radio-label"><input type="radio" name="beneficio" value="Nao"> Não</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="qual_beneficio">Qual benefício?</label>
+                    <input type="text" id="qual_beneficio" placeholder="Ex: Bolsa Família, BPC...">
+                </div>
+
+                <div class="form-group">
+                    <label>Possui todos os documentos?</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="documentos" value="Sim"> Sim</label>
+                        <label class="radio-label"><input type="radio" name="documentos" value="Nao"> Não</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="quais_faltam">Quais documentos faltam?</label>
+                    <input type="text" id="quais_faltam" placeholder="Ex: CPF, RG, Certidão...">
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Possui carteira de trabalho?</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="carteira_trabalho" value="Sim"> Sim</label>
+                        <label class="radio-label"><input type="radio" name="carteira_trabalho" value="Nao"> Não</label>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Cadastro de Triagem
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Projeto Banho Solidário - Unaí-MG.</p>
+        <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
+    </footer>
+
+</body>
+</html>
+  <body>
