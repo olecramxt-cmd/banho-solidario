@@ -28,23 +28,27 @@
             line-height: 1.6;
         }
         header {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            background: linear-gradient(rgba(124, 58, 237, 0.4), rgba(14, 165, 233, 0.4)), url('./imagens/PagCentral.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             color: white;
-            padding: 2.5rem 1rem;
+            padding: 4rem 1rem;
             text-align: center;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            min-height: 450px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         /* Botão do Menu Hambúrguer (Três traços) */
         .menu-toggle {
             position: absolute;
             top: 20px;
             right: 25px;
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.6);
             color: white;
             font-size: 1.2rem;
@@ -141,6 +145,10 @@
             gap: 12px;
             max-width: 1100px;
             width: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 1.5rem;
+            border-radius: 12px;
+            backdrop-filter: blur(4px);
         }
         .logo-img {
             height: 95px;
@@ -148,19 +156,17 @@
             max-width: 100%;
             object-fit: contain;
             background: transparent;
-            box-shadow: none;
-            border: none;
         }
         .header-text {
             text-align: center;
         }
         .header-text p {
             font-size: 1.15rem;
-            font-weight: 300;
-            opacity: 0.95;
-            color: white;
+            font-weight: 400;
+            color: #ffffff;
             margin: 0;
             text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .container {
             max-width: 1100px;
@@ -326,6 +332,7 @@
             }
         }
         @media(max-width: 768px) {
+            header { padding: 3rem 1rem; }
             section { padding: 1.5rem; }
             .logo-img { height: 70px; }
         }
@@ -494,7 +501,7 @@
         <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
 
-    <!-- Script JavaScript para controlar a gaveta lateral do menu -->
+    <!-- Script JavaScript para controlar o menu hambúrguer -->
     <script>
         function toggleMenu() {
             const sideMenu = document.getElementById('sideMenu');
