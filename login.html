@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Triagem | Banho Solidário</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #7c3aed;
+            --accent-color: #e0f2fe;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --text-color: #4b5563;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .login-card {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .login-card h2 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        .login-card p {
+            color: var(--text-color);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+        .volunteer-preview {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .avatar-container {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--secondary-color);
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-container i {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        .input-icon {
+            position: relative;
+        }
+        .input-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+        .btn-login:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+        }
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
+        .back-home {
+            margin-top: 1.5rem;
+            display: block;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-home:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Área Restrita</h2>
+        <p>Projeto Banho Solidário - Sistema de Triagem</p>
+
+        <!-- Pré-visualização da Foto do Voluntário -->
+        <div class="volunteer-preview">
+            <div class="avatar-container" id="avatarBox">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <span id="volNameLabel" style="font-weight: 500; font-size: 0.95rem; color: var(--dark-color);">Identifique-se</span>
+        </div>
+
+        <form id="loginForm" onsubmit="realizarLogin(event)">
+            <div class="form-group">
+                <label for="usuario">Nome de Usuário</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="usuario" class="form-control" placeholder="Digite seu nome" required oninput="atualizarFotoVoluntario()">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha de Acesso</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="senha" class="form-control" placeholder="Digite sua senha" required>
+                </div>
+            </div>
+
+            <div class="error-msg" id="errorMsg">Usuário ou senha incorretos.</div>
+
+            <button type="submit" class="btn-login">Entrar no Sistema</button>
+        </form>
+
+        <a href="./index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Voltar para a Página Inicial</a>
+    </div>
+
+    <script>
+        // Base inicial de usuários cadastrados (Administrador e Voluntário de Exemplo)
+        // O Administrador poderá gerenciar novos usuários posteriormente.
+        const usuariosCadastrados = [
+            {
+                nome: "Marcelo Travassos",
+                username: "marcelo",
+                senha: "123",
+                tipo: "admin",
+                foto: "./imagens/Logo2.png" // Exemplo de foto ou ícone
+            },
+            {
+                nome: "Voluntário Padrão",
+                username: "voluntario",
+                senha: "123",
+                tipo: "comum",
+                foto: "" // Se vazio, exibe o ícone padrão
+            }
+        ];
+
+        // Inicializa o banco local de usuários se não existir
+        if (!localStorage.getItem('banho_usuarios')) {
+            localStorage.setItem('banho_usuarios', JSON.stringify(usuariosCadastrados));
+        }
+
+        function atualizarFotoVoluntario() {
+            const digitado = document.getElementById('usuario').value.trim().toLowerCase();
+            const usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
+            const avatarBox = document.getElementById('avatarBox');
+            const volNameLabel = document.getElementById('volNameLabel');
+
+            const encontrado = usuarios.find(u => u.username.toLowerCase() === digitado);
+
+            if (encontrado) {
+                volNameLabel.textContent = encontrado.nome;
+                if (encontrado.foto && encontrado.foto !== "") {
+                    avatarBox.innerHTML = `<img src="${encontrado.foto}" alt="${encontrado.nome}">`;
+                } else {
+                    avatarBox.innerHTML = `<i class="fa-solid fa-user-check" style="color: #10b981;"></i>`;
+                }
+            } else {
+                volNameLabel.textContent = digitado ? "Usuário não reconhecido" : "Identifique-se";
+                avatarBox.innerHTML = `<i class="fa-solid fa-user"></i>`;
+            }
+        }
+
+        function realizarLogin(event) {
+            event.preventDefault();
+            const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
+            const senhaInput = document.getElementById('senha').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+
+            const usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
+            const usuarioValido = usuarios.find(u => u.username.toLowerCase() === usuarioInput && u.senha === senhaInput);
+
+            if (usuarioValido) {
+                // Salva a sessão ativa do voluntário/admin
+                localStorage.setItem('usuario_ativo', JSON.stringify({
+                    nome: usuarioValido.nome,
+                    username: usuarioValido.username,
+                    tipo: usuarioValido.tipo,
+                    foto: usuarioValido.foto,
+                    loginTime: new Date().toLocaleString()
+                }));
+
+                // Redireciona para o painel de triagem ou painel administrativo
+                window.location.href = "./cadastro.html";
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>
