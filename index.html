@@ -1,15 +1,15 @@
-# ==============================================================================
-# QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
-# ==============================================================================
-# © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.
-# Programa index.html. Versão do Código: v.1.2.046
-# Data de atualização: 12/09/2026 - 06:44
-# Descrição das Alterações:
-# - Consolidação do código principal com o link de login no menu e o quadro iPeC.
-# ==============================================================================
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- ============================================================================== -->
+    <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+    <!-- ============================================================================== -->
+    <!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
+    <!-- Programa index.html. Versão do Código: v.1.2.047                               -->
+    <!-- Data de atualização: 12/09/2026 - 06:58                                        -->
+    <!-- Descrição das Alterações:                                                      -->
+    <!-- - Posicionamento correto do quadro iPeC dentro da tag head como comentário.    -->
+    <!-- ============================================================================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projeto Banho Solidário - Unaí-MG</title>
@@ -46,7 +46,6 @@
             justify-content: center;
             align-items: center;
         }
-        /* Garantir que a imagem apareça 100% inteira sem cortes em PCs e Notebooks */
         .banner-img {
             width: 100%;
             height: auto;
@@ -55,7 +54,6 @@
             display: block;
             margin: 0 auto;
         }
-        /* Botão do Menu Hambúrguer (Três traços) */
         .menu-toggle {
             position: absolute;
             top: 20px;
@@ -75,7 +73,6 @@
             background: white;
             color: var(--secondary-color);
         }
-        /* Painel Lateral do Menu (Gaveta) */
         .side-menu {
             position: fixed;
             top: 0;
@@ -134,7 +131,6 @@
             background: var(--accent-color);
             transform: translateX(5px);
         }
-        /* Overlay Escuro de Fundo do Menu */
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -149,7 +145,6 @@
         .menu-overlay.active {
             display: block;
         }
-
         .container {
             max-width: 1100px;
             margin: auto;
@@ -174,7 +169,6 @@
             font-size: 1rem;
             text-align: justify;
         }
-        /* Grade de Resultados - Layout 3x3 com Destaque no Topo */
         .results-wrapper {
             display: flex;
             flex-direction: column;
@@ -229,7 +223,6 @@
             margin-bottom: 0;
             text-align: center;
         }
-        /* Linha do Tempo - Como Tudo Começou */
         .timeline-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -340,7 +333,7 @@
             </div>
         </nav>
 
-        <!-- Imagem de Banner Principal Exata (Sem cortes em PC e Notebook)[cite: 1] -->
+        <!-- Imagem de Banner Principal Exata -->
         <img src="./imagens/PagCentral.png" alt="Banner Projeto Banho Solidário" class="banner-img">
     </header>
 
@@ -473,7 +466,7 @@
         <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
 
-    <!-- Script JavaScript para controlar o menu hambúrguer[cite: 1] -->
+    <!-- Script JavaScript para controlar o menu hambúrguer -->
     <script>
         function toggleMenu() {
             const sideMenu = document.getElementById('sideMenu');
