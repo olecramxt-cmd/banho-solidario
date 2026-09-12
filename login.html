@@ -2,10 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
-<!-- Programa login.html. Versão do Código: v.1.1.020                               -->
-<!-- Data de atualização: 12/09/2026 - 07:10                                        -->
+<!-- Programa login.html. Versão do Código: v.1.1.022                               -->
+<!-- Data de atualização: 12/09/2026 - 10:32                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Adição do recurso de recuperação de senha por nome de usuário.               -->
+<!-- - Ajuste no redirecionamento inteligente pós-login para administradores e      -->
+<!--   voluntários comuns.                                                          -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -265,8 +266,12 @@
                     loginTime: new Date().toLocaleString()
                 }));
 
-                // Redireciona para o painel de triagem ou admin
-                window.location.href = "./cadastro.html";
+                // Redirecionamento inteligente: Admin vai para o painel, Comum vai para o cadastro
+                if (usuarioValido.tipo === 'admin') {
+                    window.location.href = "./admin.html";
+                } else {
+                    window.location.href = "./cadastro.html";
+                }
             } else {
                 errorMsg.style.display = 'block';
             }
