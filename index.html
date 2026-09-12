@@ -30,27 +30,22 @@
         header {
             position: relative;
             width: 100%;
-            overflow: hidden;
+            height: 480px;
+            background-image: url('./imagens/PagCentral.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
-        /* Imagem de Banner Fixa Exata */
-        .banner-img {
-            width: 100%;
-            height: auto;
-            max-height: 500px;
-            object-fit: cover;
-            display: block;
-        }
-        /* Botão do Menu Hambúrguer (Três traços) sobreposto ao banner */
+        /* Botão do Menu Hambúrguer (Três traços) */
         .menu-toggle {
             position: absolute;
             top: 20px;
             right: 25px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.8);
             color: white;
             font-size: 1.3rem;
@@ -302,6 +297,9 @@
             .grid-results-3x3 {
                 grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             }
+            header {
+                height: 280px;
+            }
         }
     </style>
 </head>
@@ -329,9 +327,6 @@
                 </a>
             </div>
         </nav>
-
-        <!-- Imagem de Banner Fixa Inserida Diretamente -->
-        <img src="./imagens/PagCentral.png" alt="Banner Projeto Banho Solidário" class="banner-img" onerror="if(this.src.includes('PagCentral.png')){this.src='./imagens/PagCentral.jpg';}else{this.style.display='none';}">
     </header>
 
     <div class="container">
