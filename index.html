@@ -30,34 +30,27 @@
         header {
             position: relative;
             width: 100%;
-            min-height: 480px;
-            background-image: url('./imagens/PagCentral.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 3rem 1rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
-        /* Camada translúcida sofisticada sobre o banner */
-        .header-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
+        /* Imagem de Banner Fixa Exata */
+        .banner-img {
             width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(45, 27, 105, 0.4), rgba(14, 165, 233, 0.4));
-            z-index: 1;
+            height: auto;
+            max-height: 500px;
+            object-fit: cover;
+            display: block;
         }
-        /* Botão do Menu Hambúrguer (Três traços) */
+        /* Botão do Menu Hambúrguer (Três traços) sobreposto ao banner */
         .menu-toggle {
             position: absolute;
             top: 20px;
             right: 25px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.8);
             color: white;
             font-size: 1.3rem;
@@ -147,34 +140,6 @@
             display: block;
         }
 
-        .header-brand {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            max-width: 1100px;
-            width: 100%;
-        }
-        .logo-img {
-            height: 95px;
-            width: auto;
-            max-width: 100%;
-            object-fit: contain;
-            background: transparent;
-        }
-        .header-text {
-            text-align: center;
-        }
-        .header-text p {
-            font-size: 1.15rem;
-            font-weight: 400;
-            color: #ffffff;
-            margin: 0;
-            text-align: center;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.7);
-        }
         .container {
             max-width: 1100px;
             margin: auto;
@@ -338,18 +303,11 @@
                 grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             }
         }
-        @media(max-width: 768px) {
-            header { min-height: 380px; padding: 2.5rem 1rem; }
-            section { padding: 1.5rem; }
-            .logo-img { height: 70px; }
-        }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-overlay"></div>
-
         <!-- Botão Menu Hambúrguer (Três traços) -->
         <button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir Menu">
             <i class="fa-solid fa-bars"></i>
@@ -372,13 +330,8 @@
             </div>
         </nav>
 
-        <div class="header-brand">
-            <!-- LOGO COM SISTEMA DE SEGURANÇA PARA DIFERENTES EXTENSÕES -->
-            <img src="./imagens/Logo2.png" alt="Logo Banho Solidário" class="logo-img" onerror="if(this.src.includes('Logo2.png')){this.src='./imagens/Logo2.jpg';}else if(this.src.includes('Logo2.jpg')){this.src='./imagens/Logo2.jpeg';}else{this.style.display='none';}">
-            <div class="header-text">
-                <p>Promovendo dignidade, cuidado e esperança em Unaí-MG.</p>
-            </div>
-        </div>
+        <!-- Imagem de Banner Fixa Inserida Diretamente -->
+        <img src="./imagens/PagCentral.png" alt="Banner Projeto Banho Solidário" class="banner-img" onerror="if(this.src.includes('PagCentral.png')){this.src='./imagens/PagCentral.jpg';}else{this.style.display='none';}">
     </header>
 
     <div class="container">
