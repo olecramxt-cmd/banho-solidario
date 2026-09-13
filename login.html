@@ -2,11 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
-<!-- Programa login.html. Versão do Código: v.1.1.022                               -->
-<!-- Data de atualização: 12/09/2026 - 10:32                                        -->
+<!-- Programa login.html. Versão do Código: v.1.2.000                               -->
+<!-- Data de atualização: 13/09/2026 - 09:03                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Ajuste no redirecionamento inteligente pós-login para administradores e      -->
-<!--   voluntários comuns.                                                          -->
+<!-- - Migração do sistema de login e usuários locais para nuvem Google Sheets.     -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -206,94 +205,78 @@
     </div>
 
     <script>
-        const usuariosCadastrados = [
-            {
-                nome: "Marcelo Travassos",
-                username: "marcelo",
-                senha: "123",
-                tipo: "admin",
-                foto: "./imagens/Logo2.png"
-            },
-            {
-                nome: "Voluntário Padrão",
-                username: "voluntario",
-                senha: "123",
-                tipo: "comum",
-                foto: ""
-            }
-        ];
+        // URL da API do Google Apps Script na nuvem
+        const API_URL = "https://script.google.com/macros/s/AKfycbwVpMnTcTFNWvQQv-72danZhWU1DuFlv5NVXd2qqKF5ts4dqIhISOVcc49BJwoKewIC/exec";
 
-        if (!localStorage.getItem('banho_usuarios')) {
-            localStorage.setItem('banho_usuarios', JSON.stringify(usuariosCadastrados));
-        }
-
-        function atualizarFotoVoluntario() {
+        async function atualizarFotoVoluntario() {
             const digitado = document.getElementById('usuario').value.trim().toLowerCase();
-            const usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
             const avatarBox = document.getElementById('avatarBox');
             const volNameLabel = document.getElementById('volNameLabel');
 
-            const encontrado = usuarios.find(u => u.username.toLowerCase() === digitado);
-
-            if (encontrado) {
-                volNameLabel.textContent = encontrado.nome;
-                if (encontrado.foto && encontrado.foto !== "") {
-                    avatarBox.innerHTML = `<img src="${encontrado.foto}" alt="${encontrado.nome}">`;
-                } else {
-                    avatarBox.innerHTML = `<i class="fa-solid fa-user-check" style="color: #10b981;"></i>`;
-                }
-            } else {
-                volNameLabel.textContent = digitado ? "Usuário não reconhecido" : "Identifique-se";
+            if (!digitado) {
+                volNameLabel.textContent = "Identifique-se";
                 avatarBox.innerHTML = `<i class="fa-solid fa-user"></i>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL);
+                const usuarios = await response.json();
+                const encontrado = usuarios.find(u => u.username.toLowerCase() === digitado);
+
+                if (encontrado) {
+                    volNameLabel.textContent = encontrado.nome;
+                    if (encontrado.foto && encontrado.foto !== "") {
+                        avatarBox.innerHTML = `<img src="${encontrado.foto}" alt="${encontrado.nome}">`;
+                    } else {
+                        avatarBox.innerHTML = `<i class="fa-solid fa-user-check" style="color: #10b981;"></i>`;
+                    }
+                } else {
+                    volNameLabel.textContent = "Usuário não reconhecido";
+                    avatarBox.innerHTML = `<i class="fa-solid fa-user"></i>`;
+                }
+            } catch (error) {
+                console.error("Erro ao buscar usuário:", error);
             }
         }
 
-        function realizarLogin(event) {
+        async function realizarLogin(event) {
             event.preventDefault();
             const usuarioInput = document.getElementById('usuario').value.trim().toLowerCase();
             const senhaInput = document.getElementById('senha').value.trim();
             const errorMsg = document.getElementById('errorMsg');
 
-            const usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
-            const usuarioValido = usuarios.find(u => u.username.toLowerCase() === usuarioInput && u.senha === senhaInput);
+            try {
+                const response = await fetch(API_URL);
+                const usuarios = await response.json();
+                const usuarioValido = usuarios.find(u => u.username.toLowerCase() === usuarioInput && u.senha === senhaInput);
 
-            if (usuarioValido) {
-                localStorage.setItem('usuario_ativo', JSON.stringify({
-                    nome: usuarioValido.nome,
-                    username: usuarioValido.username,
-                    tipo: usuarioValido.tipo,
-                    foto: usuarioValido.foto,
-                    loginTime: new Date().toLocaleString()
-                }));
+                if (usuarioValido) {
+                    localStorage.setItem('usuario_ativo', JSON.stringify({
+                        nome: usuarioValido.nome,
+                        username: usuarioValido.username,
+                        tipo: usuarioValido.tipo,
+                        foto: usuarioValido.foto,
+                        loginTime: new Date().toLocaleString()
+                    }));
 
-                // Redirecionamento inteligente: Admin vai para o painel, Comum vai para o cadastro
-                if (usuarioValido.tipo === 'admin') {
-                    window.location.href = "./admin.html";
+                    // Redirecionamento inteligente: Admin vai para o painel, Comum vai para o cadastro
+                    if (usuarioValido.tipo === 'admin') {
+                        window.location.href = "./admin.html";
+                    } else {
+                        window.location.href = "./cadastro.html";
+                    }
                 } else {
-                    window.location.href = "./cadastro.html";
+                    errorMsg.style.display = 'block';
                 }
-            } else {
-                errorMsg.style.display = 'block';
+            } catch (error) {
+                console.error("Erro na conexão de login:", error);
+                alert("Erro ao conectar com o servidor em nuvem.");
             }
         }
 
         function esqueciSenha() {
-            const username = prompt("Digite o seu nome de usuário para recuperação de senha:");
-            if (!username) return;
-
-            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
-            let userIndex = usuarios.findIndex(u => u.username.toLowerCase() === username.trim().toLowerCase());
-
-            if (userIndex !== -1) {
-                let novaSenha = prompt("Usuário localizado! Digite a nova senha de acesso:");
-                if (novaSenha) {
-                    usuarios[userIndex].senha = novaSenha.trim();
-                    localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
-                    alert("Senha alterada com sucesso! Faça o login com a nova senha.");
-                }
-            } else {
-                alert("Usuário não encontrado no sistema.");
-            }
+            alert("Para recuperação de senha na nuvem, por favor contacte o Administrador do Sistema.");
         }
     </script>
 
