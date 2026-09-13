@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Marcelo Xavier Travassos - SISTEMAS iPeC.                              -->
-<!-- Programa admin.html. Versão do Código: v.1.1.025                               -->
-<!-- Data de atualização: 13/09/2026 - 08:12                                        -->
+<!-- Programa admin.html. Versão do Código: v.1.2.000                               -->
+<!-- Data de atualização: 13/09/2026 - 09:05                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Correção definitiva da rotina de edição, salvamento e atualização imediata.  -->
+<!-- - Integração total do Painel Administrativo com o Google Sheets via API.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -74,7 +74,6 @@
         </div>
         
         <form id="userForm" onsubmit="salvarUsuario(event)">
-            <input type="hidden" id="editIndex" value="-1">
             <div class="form-row">
                 <div class="form-group">
                     <label>Nome Completo</label>
@@ -119,7 +118,7 @@
                 </tr>
             </thead>
             <tbody id="tabelaUsuarios">
-                <!-- Preenchido via JavaScript -->
+                <!-- Preenchido via nuvem -->
             </tbody>
         </table>
 
@@ -127,105 +126,146 @@
     </div>
 
     <script>
-        function carregarUsuarios() {
-            const usuarios = JSON.parse(localStorage.getItem('banho_usuarios')) || [];
-            const tbody = document.getElementById('tabelaUsuarios');
-            tbody.innerHTML = '';
+        const API_URL = "https://script.google.com/macros/s/AKfycbwVpMnTcTFNWvQQv-72danZhWU1DuFlv5NVXd2qqKF5ts4dqIhISOVcc49BJwoKewIC/exec";
+        let listaUsuariosCache = [];
 
-            usuarios.forEach((u, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${u.foto ? `<img src="${u.foto}" class="user-img">` : `<i class="fa-solid fa-user-circle" style="font-size:2rem; color:#7c3aed;"></i>`}</td>
-                        <td>${u.nome}</td>
-                        <td>${u.username}</td>
-                        <td>${u.tipo === 'admin' ? 'Administrador' : 'Comum'}</td>
-                        <td>
-                            <div class="actions-btn">
-                                <button class="btn-info" title="Editar Dados" onclick="prepararEdicao(${index})"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button class="btn-warning" title="Alterar Senha" onclick="alterarSenha(${index})"><i class="fa-solid fa-key"></i></button>
-                                <button class="btn-danger" title="Excluir Usuário" onclick="excluirUsuario(${index})"><i class="fa-solid fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
+        async function carregarUsuarios() {
+            try {
+                const response = await fetch(API_URL);
+                listaUsuariosCache = await response.json();
+                const tbody = document.getElementById('tabelaUsuarios');
+                tbody.innerHTML = '';
+
+                listaUsuariosCache.forEach((u, index) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${u.foto ? `<img src="${u.foto}" class="user-img">` : `<i class="fa-solid fa-user-circle" style="font-size:2rem; color:#7c3aed;"></i>`}</td>
+                            <td>${u.nome}</td>
+                            <td>${u.username}</td>
+                            <td>${u.tipo === 'admin' ? 'Administrador' : 'Comum'}</td>
+                            <td>
+                                <div class="actions-btn">
+                                    <button class="btn-info" title="Editar Dados" onclick="prepararEdicao(${index})"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button class="btn-warning" title="Alterar Senha" onclick="alterarSenha(${index})"><i class="fa-solid fa-key"></i></button>
+                                    <button class="btn-danger" title="Excluir Usuário" onclick="excluirUsuario(${index})"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error("Erro ao carregar usuários da nuvem:", error);
+            }
         }
 
-        function salvarUsuario(event) {
+        async function salvarUsuario(event) {
             event.preventDefault();
-            const editIndex = parseInt(document.getElementById('editIndex').value);
             const nome = document.getElementById('nome').value.trim();
             const username = document.getElementById('username').value.trim().toLowerCase();
             const senha = document.getElementById('senha').value.trim();
             const tipo = document.getElementById('tipo').value;
             const foto = document.getElementById('foto').value.trim();
 
-            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios')) || [];
-            
-            if (editIndex === -1) {
-                // Novo cadastro
-                if(usuarios.some(u => u.username.toLowerCase() === username)) {
-                    alert('Este nome de usuário já está cadastrado!');
-                    return;
-                }
-                usuarios.push({ nome, username, senha, tipo, foto });
-                alert('Voluntário cadastrado com sucesso!');
-            } else {
-                // Atualização segura do registro existente
-                usuarios[editIndex] = { nome, username, senha, tipo, foto };
-                alert('Dados atualizados com sucesso!');
-                
-                // Reseta o estado do botão para o modo de inclusão padrão
-                document.getElementById('editIndex').value = -1;
-                document.getElementById('btnSalvar').innerHTML = `<i class="fa-solid fa-user-plus"></i> Salvar Voluntário`;
-            }
+            const dados = {
+                action: 'cadastrar',
+                nome: nome,
+                username: username,
+                senha: senha,
+                tipo: tipo,
+                foto: foto
+            };
 
-            localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
-            document.getElementById('userForm').reset();
-            carregarUsuarios();
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(dados)
+                });
+                const resultado = await response.json();
+
+                if (resultado.status === "sucesso") {
+                    alert('Voluntário salvo com sucesso na nuvem!');
+                    document.getElementById('userForm').reset();
+                    carregarUsuarios();
+                } else {
+                    alert('Erro ao salvar no servidor.');
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                alert("Erro de conexão com a nuvem.");
+            }
         }
 
         function prepararEdicao(index) {
-            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
-            let u = usuarios[index];
-
-            document.getElementById('editIndex').value = index;
+            let u = listaUsuariosCache[index];
             document.getElementById('nome').value = u.nome;
             document.getElementById('username').value = u.username;
             document.getElementById('senha').value = u.senha;
             document.getElementById('tipo').value = u.tipo;
             document.getElementById('foto').value = u.foto || '';
 
-            document.getElementById('btnSalvar').innerHTML = `<i class="fa-solid fa-user-pen"></i> Atualizar Voluntário`;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function alterarSenha(index) {
-            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
-            let novaSenha = prompt(`Digite a nova senha para ${usuarios[index].nome}:`);
-            if (novaSenha) {
-                usuarios[index].senha = novaSenha.trim();
-                localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
-                alert('Senha alterada com sucesso!');
+        async function alterarSenha(index) {
+            let u = listaUsuariosCache[index];
+            let novaSenha = prompt(`Digite a nova senha para ${u.nome}:`);
+            if (!novaSenha) return;
+
+            const dados = {
+                action: 'atualizar',
+                nome: u.nome,
+                username: u.username,
+                senha: novaSenha.trim(),
+                tipo: u.tipo,
+                foto: u.foto
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(dados)
+                });
+                const resultado = await response.json();
+                if (resultado.status === "sucesso") {
+                    alert('Senha alterada com sucesso na nuvem!');
+                    carregarUsuarios();
+                }
+            } catch (error) {
+                alert('Erro ao alterar senha.');
             }
         }
 
-        function excluirUsuario(index) {
-            let usuarios = JSON.parse(localStorage.getItem('banho_usuarios'));
-            if(usuarios.length === 1) {
+        async function excluirUsuario(index) {
+            let u = listaUsuariosCache[index];
+            if (listaUsuariosCache.length === 1) {
                 alert('Não é possível excluir o único usuário restante do sistema.');
                 return;
             }
-            if(confirm(`Deseja realmente excluir o usuário ${usuarios[index].nome}?`)) {
-                usuarios.splice(index, 1);
-                localStorage.setItem('banho_usuarios', JSON.stringify(usuarios));
-                carregarUsuarios();
+            if (confirm(`Deseja realmente excluir o usuário ${u.nome}?`)) {
+                const dados = {
+                    action: 'excluir',
+                    username: u.username
+                };
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(dados)
+                    });
+                    const resultado = await response.json();
+                    if (resultado.status === "sucesso") {
+                        alert('Usuário excluído com sucesso!');
+                        carregarUsuarios();
+                    }
+                } catch (error) {
+                    alert('Erro ao excluir usuário.');
+                }
             }
         }
 
         function encerrarSessao() {
             localStorage.removeItem('usuario_ativo');
-            window.location.href = './login.html';
+            window.location.href = './index.html';
         }
 
         carregarUsuarios();
