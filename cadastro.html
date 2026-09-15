@@ -1,3 +1,12 @@
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
+<!-- Programa cadastro.html. Versão do Código: v.1.3.000                            -->
+<!-- Data de atualização: 15/09/2026 - 06:11                                        -->
+<!-- Descrição das Alterações:                                                      -->
+<!-- - Integração completa do formulário de Triagem com a API do Google Sheets.     -->
+<!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -184,20 +193,20 @@
     </header>
 
     <div class="container">
-        <form id="formTriagem" class="form-card" onsubmit="event.preventDefault(); alert('Dados salvos com sucesso!');">
+        <form id="formTriagem" class="form-card" onsubmit="salvarCadastroTriagem(event)">
             
             <!-- 1. TRIAGEM - RECEPÇÃO -->
             <h2><i class="fa-solid fa-user-pen"></i> Triagem - Recepção</h2>
             
             <div class="form-grid">
                 <div class="form-group full-width">
-                    <label for="nome">Nome Completo:</label>
-                    <input type="text" id="nome" required placeholder="Digite o nome completo">
+                    <label for="nomeCompleto">Nome Completo:</label>
+                    <input type="text" id="nomeCompleto" required placeholder="Digite o nome completo">
                 </div>
 
                 <div class="form-group">
-                    <label for="nascimento">Data de Nascimento:</label>
-                    <input type="date" id="nascimento">
+                    <label for="dataNascimento">Data de Nascimento:</label>
+                    <input type="date" id="dataNascimento">
                 </div>
 
                 <div class="form-group">
@@ -210,7 +219,7 @@
                     <div class="radio-group">
                         <label class="radio-label"><input type="radio" name="sexo" value="F"> F</label>
                         <label class="radio-label"><input type="radio" name="sexo" value="M"> M</label>
-                        <label class="radio-label"><input type="radio" name="sexo" value="Nao declarado"> Não declarado</label>
+                        <label class="radio-label"><input type="radio" name="sexo" value="Não declarado"> Não declarado</label>
                     </div>
                 </div>
 
@@ -235,18 +244,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="cor">Cor / Raça:</label>
-                    <input type="text" id="cor" placeholder="Ex: Pardo, Branco, Preto">
+                    <label for="corRaca">Cor / Raça:</label>
+                    <input type="text" id="corRaca" placeholder="Ex: Pardo, Branco, Preto">
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="mae">Filiação (Mãe):</label>
-                    <input type="text" id="mae" placeholder="Nome da mãe">
+                    <label for="filiacaoMae">Filiação (Mãe):</label>
+                    <input type="text" id="filiacaoMae" placeholder="Nome da mãe">
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="pai">Filiação (Pai):</label>
-                    <input type="text" id="pai" placeholder="Nome do pai">
+                    <label for="filiacaoPai">Filiação (Pai):</label>
+                    <input type="text" id="filiacaoPai" placeholder="Nome do pai">
                 </div>
 
                 <div class="form-group full-width">
@@ -260,8 +269,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="tel">Telefone / Contato:</label>
-                    <input type="tel" id="tel" placeholder="(38) 90000-0000">
+                    <label for="telefone">Telefone / Contato:</label>
+                    <input type="tel" id="telefone" placeholder="(38) 90000-0000">
                 </div>
             </div>
 
@@ -272,101 +281,101 @@
                 <div class="form-group full-width">
                     <label>Possui residência ou familiares em Unaí?</label>
                     <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="residencia" value="Nao"> Não</label>
-                        <label class="radio-label"><input type="radio" name="residencia" value="Sim"> Sim</label>
+                        <label class="radio-label"><input type="radio" name="residenciaUnaí" value="Não"> Não</label>
+                        <label class="radio-label"><input type="radio" name="residenciaUnaí" value="Sim"> Sim</label>
                     </div>
                 </div>
 
                 <div class="form-group full-width">
                     <label>Tipo de usuário:</label>
                     <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="tipo_usuario" value="Idoso"> Idoso</label>
-                        <label class="radio-label"><input type="radio" name="tipo_usuario" value="Adulto"> Adulto</label>
-                        <label class="radio-label"><input type="radio" name="tipo_usuario" value="Crianca/Adolescente"> Criança/Adolescente</label>
-                        <label class="radio-label"><input type="radio" name="tipo_usuario" value="Pessoa com deficiencia"> Pessoa com deficiência</label>
+                        <label class="radio-label"><input type="radio" name="tipoUsuario" value="Idoso"> Idoso</label>
+                        <label class="radio-label"><input type="radio" name="tipoUsuario" value="Adulto"> Adulto</label>
+                        <label class="radio-label"><input type="radio" name="tipoUsuario" value="Criança/Adolescente"> Criança/Adolescente</label>
+                        <label class="radio-label"><input type="radio" name="tipoUsuario" value="Pessoa com deficiência"> Pessoa com deficiência</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="section-subtitle" style="margin-top:0;">Tempo de Permanência na rua:</label>
                     <div class="radio-group" style="flex-direction: column; gap: 0.5rem;">
-                        <label class="radio-label"><input type="radio" name="tempo_rua" value="Ate 30 dias"> Até 30 dias</label>
-                        <label class="radio-label"><input type="radio" name="tempo_rua" value="30 a 90 dias"> 30 à 90 dias</label>
-                        <label class="radio-label"><input type="radio" name="tempo_rua" value="90 ate 01 ano"> 90 até 01 ano</label>
-                        <label class="radio-label"><input type="radio" name="tempo_rua" value="01 ano ou mais"> 01 ano ou mais</label>
+                        <label class="radio-label"><input type="radio" name="tempoRua" value="Até 30 dias"> Até 30 dias</label>
+                        <label class="radio-label"><input type="radio" name="tempoRua" value="30 à 90 dias"> 30 à 90 dias</label>
+                        <label class="radio-label"><input type="radio" name="tempoRua" value="90 até 01 ano"> 90 até 01 ano</label>
+                        <label class="radio-label"><input type="radio" name="tempoRua" value="01 ano ou mais"> 01 ano ou mais</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="section-subtitle" style="margin-top:0;">Tempo de permanência em Unaí:</label>
                     <div class="radio-group" style="flex-direction: column; gap: 0.5rem;">
-                        <label class="radio-label"><input type="radio" name="tempo_unai" value="Ate 30 dias"> Até 30 dias</label>
-                        <label class="radio-label"><input type="radio" name="tempo_unai" value="30 a 90 dias"> 30 à 90 dias</label>
-                        <label class="radio-label"><input type="radio" name="tempo_unai" value="01 ano ou mais"> 01 ano ou mais</label>
+                        <label class="radio-label"><input type="radio" name="tempoUnaí" value="Até 30 dias"> Até 30 dias</label>
+                        <label class="radio-label"><input type="radio" name="tempoUnaí" value="30 à 90 dias"> 30 à 90 dias</label>
+                        <label class="radio-label"><input type="radio" name="tempoUnaí" value="01 ano ou mais"> 01 ano ou mais</label>
                     </div>
                 </div>
 
                 <div class="form-group full-width">
                     <label class="section-subtitle">Principais motivos dessa permanência:</label>
                     <div class="checkbox-group">
-                        <label class="checkbox-label"><input type="checkbox" name="motivo" value="Alcoolismo e/ou drogas"> Alcoolismo e/ou drogas</label>
-                        <label class="checkbox-label"><input type="checkbox" name="motivo" value="Conflitos Familiares"> Conflitos Familiares</label>
-                        <label class="checkbox-label"><input type="checkbox" name="motivo" value="Separacao Conjugal"> Separação Conjugal</label>
-                        <label class="checkbox-label"><input type="checkbox" name="motivo" value="Desemprego"> Desemprego</label>
+                        <label class="checkbox-label"><input type="checkbox" name="motivosPermanencia" value="Alcoolismo e/ou drogas"> Alcoolismo e/ou drogas</label>
+                        <label class="checkbox-label"><input type="checkbox" name="motivosPermanencia" value="Conflitos Familiares"> Conflitos Familiares</label>
+                        <label class="checkbox-label"><input type="checkbox" name="motivosPermanencia" value="Separação Conjugal"> Separação Conjugal</label>
+                        <label class="checkbox-label"><input type="checkbox" name="motivosPermanencia" value="Desemprego"> Desemprego</label>
                     </div>
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="outro_motivo">Outros motivos:</label>
-                    <input type="text" id="outro_motivo" placeholder="Especifique se houver outro motivo">
+                    <label for="outrosMotivos">Outros motivos:</label>
+                    <input type="text" id="outrosMotivos" placeholder="Especifique se houver outro motivo">
                 </div>
 
                 <div class="form-group full-width">
                     <label class="section-subtitle">Já passou por atendimento:</label>
                     <div class="checkbox-group">
-                        <label class="checkbox-label"><input type="checkbox" name="atendimento" value="CAPS"> CAPS</label>
-                        <label class="checkbox-label"><input type="checkbox" name="atendimento" value="CAPS AD"> CAPS AD</label>
-                        <label class="checkbox-label"><input type="checkbox" name="atendimento" value="Clinica de recuperacao"> Clínica de recuperação</label>
+                        <label class="checkbox-label"><input type="checkbox" name="passouAtendimento" value="CAPS"> CAPS</label>
+                        <label class="checkbox-label"><input type="checkbox" name="passouAtendimento" value="CAPS AD"> CAPS AD</label>
+                        <label class="checkbox-label"><input type="checkbox" name="passouAtendimento" value="Clínica de recuperação"> Clínica de recuperação</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Recebe auxílio benefício?</label>
                     <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="beneficio" value="Sim"> Sim</label>
-                        <label class="radio-label"><input type="radio" name="beneficio" value="Nao"> Não</label>
+                        <label class="radio-label"><input type="radio" name="recebeAuxilio" value="Sim"> Sim</label>
+                        <label class="radio-label"><input type="radio" name="recebeAuxilio" value="Não"> Não</label>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="qual_beneficio">Qual benefício?</label>
-                    <input type="text" id="qual_beneficio" placeholder="Ex: Bolsa Família, BPC...">
+                    <label for="qualBeneficio">Qual benefício?</label>
+                    <input type="text" id="qualBeneficio" placeholder="Ex: Bolsa Família, BPC...">
                 </div>
 
                 <div class="form-group">
                     <label>Possui todos os documentos?</label>
                     <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="documentos" value="Sim"> Sim</label>
-                        <label class="radio-label"><input type="radio" name="documentos" value="Nao"> Não</label>
+                        <label class="radio-label"><input type="radio" name="possuiDocumentos" value="Sim"> Sim</label>
+                        <label class="radio-label"><input type="radio" name="possuiDocumentos" value="Não"> Não</label>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="quais_faltam">Quais documentos faltam?</label>
-                    <input type="text" id="quais_faltam" placeholder="Ex: CPF, RG, Certidão...">
+                    <label for="documentosFaltam">Quais documentos faltam?</label>
+                    <input type="text" id="documentosFaltam" placeholder="Ex: CPF, RG, Certidão...">
                 </div>
 
                 <div class="form-group full-width">
                     <label>Possui carteira de trabalho?</label>
                     <div class="radio-group">
-                        <label class="radio-label"><input type="radio" name="carteira_trabalho" value="Sim"> Sim</label>
-                        <label class="radio-label"><input type="radio" name="carteira_trabalho" value="Nao"> Não</label>
+                        <label class="radio-label"><input type="radio" name="carteiraTrabalho" value="Sim"> Sim</label>
+                        <label class="radio-label"><input type="radio" name="carteiraTrabalho" value="Não"> Não</label>
                     </div>
                 </div>
             </div>
 
             <div style="margin-top: 2rem;">
-                <button type="submit" class="btn-submit">
+                <button type="submit" class="btn-submit" id="btnSalvar">
                     <i class="fa-solid fa-floppy-disk"></i> Salvar Cadastro de Triagem
                 </button>
             </div>
@@ -378,6 +387,82 @@
         <p>&copy; 2026 Projeto Banho Solidário - Unaí-MG.</p>
         <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
+
+    <!-- Script de Integração com a Nuvem (Google Apps Script) -->
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwVpMnTcTFNWvQQv-72danZhWU1DuFlv5NVXd2qqKF5ts4dqIhISOVcc49BJwoKewIC/exec";
+
+        function getRadioVal(name) {
+            const el = document.querySelector(`input[name="${name}"]:checked`);
+            return el ? el.value : '';
+        }
+
+        function getCheckboxesVal(name) {
+            const els = document.querySelectorAll(`input[name="${name}"]:checked`);
+            let valores = [];
+            els.forEach(e => valores.push(e.value));
+            return valores.join(', ');
+        }
+
+        async function salvarCadastroTriagem(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btnSalvar');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando na nuvem...';
+
+            const dadosTriagem = {
+                action: 'salvarTriagem',
+                nomeCompleto: document.getElementById('nomeCompleto').value.trim(),
+                dataNascimento: document.getElementById('dataNascimento').value,
+                idade: document.getElementById('idade').value.trim(),
+                sexo: getRadioVal('sexo'),
+                escolaridade: document.getElementById('escolaridade').value.trim(),
+                naturalidade: document.getElementById('naturalidade').value.trim(),
+                rg: document.getElementById('rg').value.trim(),
+                cpf: document.getElementById('cpf').value.trim(),
+                corRaca: document.getElementById('corRaca').value.trim(),
+                filiacaoMae: document.getElementById('filiacaoMae').value.trim(),
+                filiacaoPai: document.getElementById('filiacaoPai').value.trim(),
+                endereco: document.getElementById('endereco').value.trim(),
+                cidade: document.getElementById('cidade').value.trim(),
+                telefone: document.getElementById('telefone').value.trim(),
+                residenciaUnaí: getRadioVal('residenciaUnaí'),
+                tipoUsuario: getRadioVal('tipoUsuario'),
+                tempoRua: getRadioVal('tempoRua'),
+                tempoUnaí: getRadioVal('tempoUnaí'),
+                motivosPermanencia: getCheckboxesVal('motivosPermanencia'),
+                outrosMotivos: document.getElementById('outrosMotivos').value.trim(),
+                passouAtendimento: getCheckboxesVal('passouAtendimento'),
+                recebeAuxilio: getRadioVal('recebeAuxilio'),
+                qualBeneficio: document.getElementById('qualBeneficio').value.trim(),
+                possuiDocumentos: getRadioVal('possuiDocumentos'),
+                documentosFaltam: document.getElementById('documentosFaltam').value.trim(),
+                carteiraTrabalho: getRadioVal('carteiraTrabalho')
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(dadosTriagem)
+                });
+                const resultado = await response.json();
+
+                if (resultado.status === "sucesso") {
+                    alert('Cadastro de triagem salvo com sucesso na nuvem!');
+                    document.getElementById('formTriagem').reset();
+                } else {
+                    alert('Erro ao salvar no servidor em nuvem.');
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                alert("Erro de conexão com a nuvem do Google.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar Cadastro de Triagem';
+            }
+        }
+    </script>
 
 </body>
 </html>
