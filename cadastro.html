@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa cadastro.html. Versão do Código: v.1.3.000                            -->
-<!-- Data de atualização: 15/09/2026 - 06:11                                        -->
+<!-- Programa cadastro.html. Versão do Código: v.1.3.001                            -->
+<!-- Data de atualização: 16/09/2026 - 04:22                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Integração completa do formulário de Triagem com a API do Google Sheets.     -->
+<!-- - Substituição integral e correção da constante API_URL para a nuvem.          -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -388,9 +388,10 @@
         <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
 
-        <!-- Script de Integração com a Nuvem (Google Apps Script) -->
+    <!-- Script de Integração com a Nuvem (Google Apps Script) -->
     <script>
-       https://script.google.com/macros/s/AKfycbydEGtKeZZAmxNqM26-2JDZb9DtMl5loLF4BPjusmhVIEFeTTxt3DKVX8-sBHYwFzsZ/exec
+        const API_URL = "https://script.google.com/macros/s/AKfycbydEGtKeZZAmxNqM26-2JDZb9DtMl5loLF4BPjusmhVIEFeTTxt3DKVX8-sBHYwFzsZ/exec";
+
         function getRadioVal(name) {
             const el = document.querySelector(`input[name="${name}"]:checked`);
             return el ? el.value : '';
