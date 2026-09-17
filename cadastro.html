@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa cadastro.html. Versão do Código: v.1.3.001                            -->
-<!-- Data de atualização: 16/09/2026 - 04:22                                        -->
+<!-- Programa cadastro.html. Versão do Código: v.1.5.000                            -->
+<!-- Data de atualização: 17/09/2026 - 05:40                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Substituição integral e correção da constante API_URL para a nuvem.          -->
+<!-- - Remocao da obrigatoriedade do CPF e ajuste na validacao inteligente.         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -204,6 +204,11 @@
                     <input type="text" id="nomeCompleto" required placeholder="Digite o nome completo">
                 </div>
 
+                <div class="form-group full-width">
+                    <label for="nomeSocial">Nome Social:</label>
+                    <input type="text" id="nomeSocial" placeholder="Digite o nome social (se houver)">
+                </div>
+
                 <div class="form-group">
                     <label for="dataNascimento">Data de Nascimento:</label>
                     <input type="date" id="dataNascimento">
@@ -239,7 +244,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="cpf">CPF:</label>
+                    <label for="cpf">CPF (Opcional caso não possua):</label>
                     <input type="text" id="cpf" placeholder="Número do CPF">
                 </div>
 
@@ -414,6 +419,7 @@
             const dadosTriagem = {
                 action: 'salvarTriagem',
                 nomeCompleto: document.getElementById('nomeCompleto').value.trim(),
+                nomeSocial: document.getElementById('nomeSocial').value.trim(),
                 dataNascimento: document.getElementById('dataNascimento').value,
                 idade: document.getElementById('idade').value.trim(),
                 sexo: getRadioVal('sexo'),
@@ -449,8 +455,10 @@
                 const resultado = await response.json();
 
                 if (resultado.status === "sucesso") {
-                    alert('Cadastro de triagem salvo com sucesso na nuvem!');
+                    alert('Cadastro salvo com sucesso! Matrícula gerada: ' + resultado.matricula);
                     document.getElementById('formTriagem').reset();
+                } else if (resultado.status === "duplicado") {
+                    alert(resultado.message);
                 } else {
                     alert('Erro ao salvar no servidor em nuvem.');
                 }
