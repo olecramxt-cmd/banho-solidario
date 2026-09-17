@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa cadastro.html. Versão do Código: v.1.5.000                            -->
-<!-- Data de atualização: 17/09/2026 - 05:40                                        -->
+<!-- Programa cadastro.html. Versão do Código: v.1.5.001                            -->
+<!-- Data de atualização: 17/09/2026 - 16:50                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Remocao da obrigatoriedade do CPF e ajuste na validacao inteligente.         -->
+<!-- - Ajuste no payload fetch com Content-Type text/plain para contornar CORS do GAS.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -450,6 +450,9 @@
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
                     body: JSON.stringify(dadosTriagem)
                 });
                 const resultado = await response.json();
