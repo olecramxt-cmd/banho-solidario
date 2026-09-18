@@ -3,14 +3,15 @@
 QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 ==============================================================================
 © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-Programa: consulta.html. Versão do Módulo: v.1.7.000
-Data de atualização: 18/09/2026 - 04:40
+Programa: consulta.html. Versão do Módulo: v.1.7.002
+Data de atualização: 18/09/2026 - 05:24
 Diretriz de Backup: Requer clasp push após alteração local e versionamento GitHub.
 Descrição das Alterações:
-- Implementação do Menu do Sistema com a nova hierarquia (Voluntários, Assistidos, Painel, Sobre).
-- Adição de cálculo automático de idade (anos, meses, dias) com opção de edição manual.
-- Inclusão dos menus suspensos de Escolaridade e Cor/Raça oficiais.
-- Validador flexível de CPF e máscara para Telefone ((xx) x.xxxx-xxxx).
+- Atualização do menu lateral sanduíche na página consulta.html com a hierarquia oficial:
+  1. Voluntários (1.1- Consulta)
+  2. Assistidos (Área Restrita / Consulta)
+  3. Painel Administrativo
+  4. Sobre (Acessar E-book)
 ==============================================================================
 -->
 <!DOCTYPE html>
@@ -19,6 +20,8 @@ Descrição das Alterações:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SISTEMAS iPeC - Consulta e Atualização / Banho Solidário</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #0284c7;
@@ -32,7 +35,7 @@ Descrição das Alterações:
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -43,95 +46,137 @@ Descrição das Alterações:
         .navbar {
             background-color: #0f172a;
             color: white;
-            padding: 15px 20px;
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         .menu-toggle {
-            background: none;
-            border: none;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             color: white;
-            font-size: 24px;
+            font-size: 1.1rem;
+            padding: 8px 14px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: white;
+            color: var(--primary-dark);
         }
 
         .side-menu {
             position: fixed;
             top: 0;
-            left: -300px;
-            width: 280px;
+            right: -320px;
+            width: 300px;
             height: 100%;
-            background-color: #1e293b;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.3);
-            transition: left 0.3s ease;
+            background: white;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
+            transition: right 0.4s ease;
             z-index: 1000;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
             box-sizing: border-box;
-            color: white;
             overflow-y: auto;
         }
 
-        .side-menu.open {
-            left: 0;
+        .side-menu.active {
+            right: 0;
         }
 
-        .side-menu h3 {
-            border-bottom: 1px solid #475569;
-            padding-bottom: 10px;
-            margin-top: 0;
-            color: #38bdf8;
-            font-size: 18px;
+        .side-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e0f2fe;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .side-menu ul {
-            list-style: none;
-            padding: 0;
+        .side-menu-header h3 {
+            color: var(--primary-dark);
+            font-size: 1.2rem;
             margin: 0;
         }
 
-        .side-menu li {
-            margin: 12px 0;
-            font-weight: 600;
+        .close-menu {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
         }
 
-        .side-menu li ul {
-            padding-left: 15px;
-            margin-top: 5px;
+        .side-menu-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .side-menu li ul li {
-            font-weight: normal;
-            font-size: 14px;
-            color: #94a3b8;
-            margin: 8px 0;
-        }
-
-        .side-menu a {
-            color: #e2e8f0;
+        .menu-link-item {
+            background: var(--bg-color);
+            color: var(--primary-dark);
+            padding: 12px 16px;
+            border-radius: 8px;
             text-decoration: none;
-            display: block;
-            transition: color 0.2s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s;
         }
 
-        .side-menu a:hover {
-            color: #38bdf8;
+        .menu-link-item:hover {
+            background: #e0f2fe;
+            transform: translateX(5px);
         }
 
-        .overlay {
+        .side-menu-sublinks {
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .menu-sublink-item {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .menu-sublink-item:hover {
+            background: #e0f2fe;
+            color: var(--primary-dark);
+        }
+
+        .menu-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(3px);
             display: none;
             z-index: 999;
         }
 
-        .overlay.active {
+        .menu-overlay.active {
             display: block;
         }
 
@@ -280,31 +325,45 @@ Descrição das Alterações:
 
     <!-- Menu Sanduíche -->
     <div class="navbar">
-        <button class="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
-        <span style="font-weight: bold; font-size: 18px;">SISTEMAS iPeC - Banho Solidário</span>
+        <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+        <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Banho Solidário</span>
     </div>
 
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
-    <div class="side-menu" id="sideMenu">
-        <h3>MENU DO SISTEMA</h3>
-        <ul>
-            <li>
-                1. Voluntários
-                <ul>
-                    <li><a href="#">1.1- Consulta</a></li>
-                </ul>
-            </li>
-            <li>
-                2. Assistidos (Área Restrita)
-                <ul>
-                    <li><a href="consulta.html">2.1- Consulta</a></li>
-                </ul>
-            </li>
-            <li><a href="#">3. Painel Administrativo</a></li>
-            <li><a href="#" target="_blank">4. Sobre (Acessar E-book)</a></li>
-        </ul>
-    </div>
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h3>Menu do Sistema</h3>
+            <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-menu-links">
+            <!-- 1. Voluntários -->
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
+            <div class="side-menu-sublinks">
+                <a href="#" class="menu-sublink-item">
+                    <i class="fa-solid fa-magnifying-glass"></i> 1.1- Consulta
+                </a>
+            </div>
+
+            <!-- 2. Assistidos -->
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
+            <div class="side-menu-sublinks">
+                <a href="consulta.html" class="menu-sublink-item">
+                    <i class="fa-solid fa-magnifying-glass"></i> 2.1- Consulta
+                </a>
+            </div>
+
+            <!-- 3. Painel Administrativo -->
+            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;">
+                <i class="fa-solid fa-users-gear"></i> 3. Painel Administrativo
+            </a>
+
+            <!-- 4. Sobre (Acessar E-book) -->
+            <a href="./ebook/" target="_blank" class="menu-link-item">
+                <i class="fa-solid fa-book-open"></i> 4. Sobre (Acessar E-book)
+            </a>
+        </div>
+    </nav>
 
     <div class="container">
         <h2>Consulta e Atualização Cadastral</h2>
@@ -343,7 +402,7 @@ Descrição das Alterações:
                 </div>
                 <div class="form-group">
                     <label>Idade (Anos, Meses e Dias)</label>
-                    <input type="text" id="idade" placeholder="Ex: 45 anos 3 meses 15 dias (ou digite manualmente)">
+                    <input type="text" id="idade" placeholder="Ex: 45 anos 3 meses 15 dias">
                 </div>
                 <div class="form-group">
                     <label>CPF</label>
@@ -419,11 +478,10 @@ Descrição das Alterações:
         let dadosAtuais = {};
 
         function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('open');
+            document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        // Máscara de Telefone: (xx) x.xxxx-xxxx
         function mascaraTelefone(input) {
             let v = input.value.replace(/\D/g, "");
             if (v.length > 11) v = v.slice(0, 11);
@@ -437,7 +495,6 @@ Descrição das Alterações:
             input.value = v;
         }
 
-        // Validador de CPF flexível (permite salvar mesmo incorreto, mas avisa)
         function validarCpfInput(input) {
             let cpf = input.value.replace(/\D/g, '');
             const aviso = document.getElementById('avisoCpf');
@@ -466,7 +523,6 @@ Descrição das Alterações:
             return Resto === parseInt(strCPF.substring(10, 11));
         }
 
-        // Cálculo Automático de Idade (Anos, Meses, Dias)
         function calcularIdadeAutomatica() {
             const dataNascStr = document.getElementById('dataNascimento').value;
             const campoIdade = document.getElementById('idade');
