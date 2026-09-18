@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta e Atualização - SISTEMAS iPeC / Banho Solidário</title>
+    <style>
+        :root {
+            --primary-color: #0284c7;
+            --primary-dark: #0369a1;
+            --success-color: #16a34a;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-dark);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+
+        /* Área de Resultado e Perfil */
+        #resultadoContainer {
+            display: none;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .avatar-box {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e2e8f0;
+        }
+
+        .avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h3 {
+            margin: 0 0 5px 0;
+            color: #0f172a;
+        }
+
+        .profile-info p {
+            margin: 3px 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .actions-bar {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        #mensagemStatus {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Consulta e Atualização Cadastral</h2>
+        
+        <!-- Barra de Busca -->
+        <div class="search-box">
+            <input type="text" id="termoBusca" placeholder="Digite o Nº da Matrícula (ex: PBS-2609-0001) ou o CPF...">
+            <button class="btn" onclick="consultarCadastro()">Pesquisar</button>
+        </div>
+
+        <div id="mensagemStatus"></div>
+
+        <!-- Formulário de Exibição e Edição -->
+        <div id="resultadoContainer">
+            <input type="hidden" id="linhaPlanilha">
+            
+            <div class="profile-header">
+                <div class="avatar-box" id="avatarContainer">
+                    <!-- Foto ou Avatar será injetado aqui -->
+                </div>
+                <div class="profile-info">
+                    <h3 id="lblMatriculaDisplay">MATRÍCULA</h3>
+                    <p id="lblDataCadastro">Data do Cadastro: --/--/----</p>
+                    <p>Status: <span style="color: var(--success-color); font-weight: bold;">Ativo no Sistema</span></p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="nomeCompleto">
+                </div>
+                <div class="form-group">
+                    <label>Nome Social</label>
+                    <input type="text" id="nomeSocial">
+                </div>
+                <div class="form-group">
+                    <label>CPF</label>
+                    <input type="text" id="cpf">
+                </div>
+                <div class="form-group">
+                    <label>RG</label>
+                    <input type="text" id="rg">
+                </div>
+                <div class="form-group">
+                    <label>Sexo</label>
+                    <select id="sexo">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Feminino">Feminino</option>
+                        <option value="Outro">Outro / Não Informado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Telefone / Contato</label>
+                    <input type="text" id="telefone">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Endereço</label>
+                    <input type="text" id="endereco">
+                </div>
+                <div class="form-group">
+                    <label>URL da Foto (Opcional)</label>
+                    <input type="text" id="foto" placeholder="https://exemplo.com/foto.jpg" oninput="atualizarPreviewFoto()">
+                </div>
+            </div>
+
+            <div class="actions-bar">
+                <button class="btn btn-success" onclick="atualizarCadastro()">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwnOOIssv-hAnscC1y2CID5GoSP_IGT_8x_iBVunIg8EjbF-Qp8J06jQDDFTbqlQgJs/exec";
+
+        // Links de Avatares Padrão (Baseados em ícones públicos ou seguros)
+        const AVATAR_MASCULINO = "https://cdn-icons-png.flaticon.com/512/145/145867.png";
+        const AVATAR_FEMININO = "https://cdn-icons-png.flaticon.com/512/145/145852.png";
+        const AVATAR_NEUTRO = "https://cdn-icons-png.flaticon.com/512/1144/1144760.png";
+
+        let dadosAtuais = {};
+
+        function consultarCadastro() {
+            const termo = document.getElementById('termoBusca').value.trim();
+            const statusDiv = document.getElementById('mensagemStatus');
+            
+            if (!termo) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Por favor, digite uma Matrícula ou CPF para pesquisar.";
+                return;
+            }
+
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "Pesquisando no banco de dados...";
+            document.getElementById('resultadoContainer').style.display = "none";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarTriagem", termo: termo })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "encontrado") {
+                    statusDiv.innerText = "";
+                    preencherFormulario(data.registro, data.linha);
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Nenhum cadastro encontrado.";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão com o servidor.";
+            });
+        }
+
+        function preencherFormulario(reg, linha) {
+            document.getElementById('resultadoContainer').style.display = "block";
+            document.getElementById('linhaPlanilha').value = linha;
+
+            document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
+            document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + (reg.dataHora || "---");
+
+            document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
+            document.getElementById('nomeSocial').value = reg.nomeSocial || "";
+            document.getElementById('cpf').value = reg.cpf || "";
+            document.getElementById('rg').value = reg.rg || "";
+            document.getElementById('sexo').value = reg.sexo || "Masculino";
+            document.getElementById('telefone').value = reg.telefone || "";
+            document.getElementById('endereco').value = reg.endereco || "";
+            document.getElementById('foto').value = reg.foto || "";
+
+            dadosAtuais = reg;
+            atualizarPreviewFoto();
+        }
+
+        function atualizarPreviewFoto() {
+            const urlFoto = document.getElementById('foto').value.trim();
+            const sexo = document.getElementById('sexo').value;
+            const avatarContainer = document.getElementById('avatarContainer');
+
+            let imagemSrc = urlFoto;
+            if (!imagemSrc) {
+                if (sexo === "Masculino") {
+                    imagemSrc = AVATAR_MASCULINO;
+                } else if (sexo === "Feminino") {
+                    imagemSrc = AVATAR_FEMININO;
+                } else {
+                    imagemSrc = AVATAR_NEUTRO;
+                }
+            }
+
+            avatarContainer.innerHTML = `<img src="${imagemSrc}" alt="Foto / Avatar" onerror="this.src='${AVATAR_NEUTRO}'">`;
+        }
+
+        // Atualiza a prévia caso o usuário mude o sexo no select e não tenha foto
+        document.getElementById('sexo').addEventListener('change', atualizarPreviewFoto);
+
+        function atualizarCadastro() {
+            const linha = document.getElementById('linhaPlanilha').value;
+            const statusDiv = document.getElementById('mensagemStatus');
+
+            const payload = {
+                action: "atualizarTriagem",
+                linha: parseInt(linha),
+                nomeCompleto: document.getElementById('nomeCompleto').value,
+                nomeSocial: document.getElementById('nomeSocial').value,
+                dataNascimento: dadosAtuais.dataNascimento || "",
+                idade: dadosAtuais.idade || "",
+                sexo: document.getElementById('sexo').value,
+                escolaridade: dadosAtuais.escolaridade || "",
+                naturalidade: dadosAtuais.naturalidade || "",
+                rg: document.getElementById('rg').value,
+                cpf: document.getElementById('cpf').value,
+                corRaca: dadosAtuais.corRaca || "",
+                filiacaoMae: dadosAtuais.filiacaoMae || "",
+                filiacaoPai: dadosAtuais.filiacaoPai || "",
+                endereco: document.getElementById('endereco').value,
+                cidade: dadosAtuais.cidade || "",
+                telefone: document.getElementById('telefone').value,
+                residenciaUnaí: dadosAtuais.residenciaUnaí || "",
+                tipoUsuario: dadosAtuais.tipoUsuario || "",
+                tempoRua: dadosAtuais.tempoRua || "",
+                tempoUnaí: dadosAtuais.tempoUnaí || "",
+                motivosPermanencia: dadosAtuais.motivosPermanencia || "",
+                outrosMotivos: dadosAtuais.outrosMotivos || "",
+                passouAtendimento: dadosAtuais.passouAtendimento || "",
+                recebeAuxilio: dadosAtuais.recebeAuxilio || "",
+                qualBeneficio: dadosAtuais.qualBeneficio || "",
+                possuiDocumentos: dadosAtuais.possuiDocumentos || "",
+                documentosFaltam: dadosAtuais.documentosFaltam || "",
+                carteiraTrabalho: dadosAtuais.carteiraTrabalho || "",
+                foto: document.getElementById('foto').value
+            };
+
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "Atualizando cadastro...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "sucesso") {
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = data.message;
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Erro ao atualizar.";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão ao salvar.";
+            });
+        }
+    </script>
+</body>
+</html>
