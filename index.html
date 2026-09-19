@@ -3,15 +3,14 @@
 QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 ==============================================================================
 © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-Programa: index.html. Versão do Código: v.1.9.000
-Data de atualização: 19/09/2026 - 04:20
+Programa: index.html. Versão do Código: v.1.9.001
+Data de atualização: 19/09/2026 - 04:23
 Diretriz de Backup: Requer clasp push após alteração local e versionamento GitHub.
 Descrição das Alterações:
-- Reorganização e inversão da numeração dos subitens no menu lateral sanduíche:
-  1. Voluntários (1.1- Cadastro, 1.2- Consulta)
-  2. Assistidos (2.1- Cadastro, 2.2- Consulta)
-  3. Painel Administrativo
-  4. Sobre (Acessar E-book)
+- Ajuste final das rotas de navegação no menu lateral sanduíche:
+  1. Voluntários: Links inativos (#) aguardando desenvolvimento.
+  2. Assistidos: 2.1- Cadastro (cadastro.html) e 2.2- Consulta (consulta.html).
+- Versionamento oficial sob a autoria do Prof. Esp. Marcelo Xavier Travassos.
 ==============================================================================
 -->
 <!DOCTYPE html>
@@ -347,7 +346,7 @@ Descrição das Alterações:
             <i class="fa-solid fa-bars"></i>
         </button>
 
-        <!-- Painel Lateral (Menu do Sistema Atualizado e Reordenado) -->
+        <!-- Painel Lateral (Menu do Sistema Corrigido) -->
         <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
         <nav class="side-menu" id="sideMenu">
             <div class="side-menu-header">
@@ -355,18 +354,18 @@ Descrição das Alterações:
                 <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="side-menu-links">
-                <!-- 1. Voluntários -->
+                <!-- 1. Voluntários (Inativos / Sem redirecionamento) -->
                 <div style="font-weight: 600; color: var(--secondary-color); margin-top: 5px;">1. Voluntários</div>
                 <div class="side-menu-sublinks">
-                    <a href="cadastro.html" class="menu-sublink-item">
+                    <a href="#" class="menu-sublink-item">
                         <i class="fa-solid fa-user-plus"></i> 1.1- Cadastro
                     </a>
-                    <a href="consulta.html" class="menu-sublink-item">
+                    <a href="#" class="menu-sublink-item">
                         <i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta
                     </a>
                 </div>
 
-                <!-- 2. Assistidos -->
+                <!-- 2. Assistidos (Rotas Corrigidas) -->
                 <div style="font-weight: 600; color: var(--secondary-color); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
                 <div class="side-menu-sublinks">
                     <a href="cadastro.html" class="menu-sublink-item">
