@@ -3,12 +3,12 @@
 QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 ==============================================================================
 © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-Programa: consulta.html. Versão do Módulo: v.1.9.004
-Data de atualização: 19/09/2026 - 04:54
+Programa: consulta.html. Versão do Módulo: v.1.9.006
+Data de atualização: 19/09/2026 - 06:18
 Diretriz de Backup: Requer clasp push após alteração local e versionamento GitHub.
 Descrição das Alterações:
-- Inclusão definitiva do botão "Sair / Limpar Cache" na barra de ações.
-- Ajuste das rotas e padronização do menu sanduíche.
+- Correção definitiva das variáveis 'dadosAtuais' (removido o erro de digitação dadosAtuals).
+- Blindagem completa do formulário de consulta e atualização cadastral.
 ==============================================================================
 -->
 <!DOCTYPE html>
@@ -372,7 +372,7 @@ Descrição das Alterações:
         <h2>Consulta e Atualização Cadastral</h2>
         
         <div class="search-box">
-            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF ou o Nome (parcial/completo)...">
+            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF ou o Nome (parcial/completo)..." onkeypress="if(event.key === 'Enter') consultarCadastro();">
             <button class="btn" onclick="consultarCadastro()">Pesquisar</button>
         </div>
 
@@ -473,7 +473,14 @@ Descrição das Alterações:
     </div>
 
     <script>
-        /* © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. */
+        /**
+         * ==============================================================================
+         * QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
+         * ==============================================================================
+         * © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
+         * Programa: consulta.html (Script). Versão: v.1.9.006
+         * ==============================================================================
+         */
         const API_URL = "https://script.google.com/macros/s/AKfycbxL4VZdVEWOOcHcru0FrlE_UlzhblY9GFr8MixtQh4sBskNpOUCIklE5yyifatr8bVJ/exec";
 
         const AVATAR_MASCULINO = "https://cdn-icons-png.flaticon.com/512/145/145867.png";
@@ -672,8 +679,8 @@ Descrição das Alterações:
                 recebeAuxilio: dadosAtuais.recebeAuxilio || "",
                 qualBeneficio: dadosAtuais.qualBeneficio || "",
                 possuiDocumentos: dadosAtuais.possuiDocumentos || "",
-                documentosFaltam: dadosAtuals.documentosFaltam || "",
-                carteiraTrabalho: dadosAtuals.carteiraTrabalho || "",
+                documentosFaltam: dadosAtuais.documentosFaltam || "",
+                carteiraTrabalho: dadosAtuais.carteiraTrabalho || "",
                 foto: document.getElementById('foto').value
             };
 
