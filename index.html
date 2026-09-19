@@ -3,13 +3,13 @@
 QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 ==============================================================================
 © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-Programa: index.html. Versão do Código: v.1.8.000
-Data de atualização: 18/09/2026 - 05:50
+Programa: index.html. Versão do Código: v.1.9.000
+Data de atualização: 19/09/2026 - 04:20
 Diretriz de Backup: Requer clasp push após alteração local e versionamento GitHub.
 Descrição das Alterações:
-- Atualização completa do menu lateral sanduíche na página principal com a hierarquia unificada:
-  1. Voluntários (1.2- Cadastro, 1.1- Consulta)
-  2. Assistidos (2.2- Cadastro, 2.1- Consulta)
+- Reorganização e inversão da numeração dos subitens no menu lateral sanduíche:
+  1. Voluntários (1.1- Cadastro, 1.2- Consulta)
+  2. Assistidos (2.1- Cadastro, 2.2- Consulta)
   3. Painel Administrativo
   4. Sobre (Acessar E-book)
 ==============================================================================
@@ -347,7 +347,7 @@ Descrição das Alterações:
             <i class="fa-solid fa-bars"></i>
         </button>
 
-        <!-- Painel Lateral (Menu do Sistema Atualizado) -->
+        <!-- Painel Lateral (Menu do Sistema Atualizado e Reordenado) -->
         <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
         <nav class="side-menu" id="sideMenu">
             <div class="side-menu-header">
@@ -358,11 +358,11 @@ Descrição das Alterações:
                 <!-- 1. Voluntários -->
                 <div style="font-weight: 600; color: var(--secondary-color); margin-top: 5px;">1. Voluntários</div>
                 <div class="side-menu-sublinks">
-                    <a href="#" class="menu-sublink-item">
-                        <i class="fa-solid fa-user-plus"></i> 1.2- Cadastro
+                    <a href="cadastro.html" class="menu-sublink-item">
+                        <i class="fa-solid fa-user-plus"></i> 1.1- Cadastro
                     </a>
                     <a href="consulta.html" class="menu-sublink-item">
-                        <i class="fa-solid fa-magnifying-glass"></i> 1.1- Consulta
+                        <i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta
                     </a>
                 </div>
 
@@ -370,10 +370,10 @@ Descrição das Alterações:
                 <div style="font-weight: 600; color: var(--secondary-color); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
                 <div class="side-menu-sublinks">
                     <a href="cadastro.html" class="menu-sublink-item">
-                        <i class="fa-solid fa-user-plus"></i> 2.2- Cadastro
+                        <i class="fa-solid fa-user-plus"></i> 2.1- Cadastro
                     </a>
                     <a href="consulta.html" class="menu-sublink-item">
-                        <i class="fa-solid fa-magnifying-glass"></i> 2.1- Consulta
+                        <i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta
                     </a>
                 </div>
 
