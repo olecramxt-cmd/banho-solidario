@@ -3,13 +3,12 @@
 QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 ==============================================================================
 © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-Programa: consulta.html. Versão do Módulo: v.1.9.002
-Data de atualização: 19/09/2026 - 04:35
+Programa: consulta.html. Versão do Módulo: v.1.9.003
+Data de atualização: 19/09/2026 - 04:42
 Diretriz de Backup: Requer clasp push após alteração local e versionamento GitHub.
 Descrição das Alterações:
-- Correção definitiva das rotas no menu lateral: 2.1- Cadastro aponta para cadastro.html.
-- Inclusão do botão "Sair / Limpar Cache" para retornar à tela inicial limpando os dados locais.
-- Ajustes finos de layout, menus de Escolaridade, Cor/Raça, máscara de telefone e busca flexível.
+- Inclusão do botão "Sair / Limpar Cache" na barra de ações.
+- Correção de rotas e padronização do menu sanduíche.
 ==============================================================================
 -->
 <!DOCTYPE html>
@@ -141,7 +140,7 @@ Descrição das Alterações:
             padding-left: 20px;
             display: flex;
             flex-direction: column;
-            gap: 0.5srem;
+            gap: 0.5rem;
         }
 
         .menu-sublink-item {
@@ -329,7 +328,7 @@ Descrição das Alterações:
 </head>
 <body>
 
-    <!-- Menu Sanduíche Atualizado com Rotas Corrigidas -->
+    <!-- Menu Sanduíche -->
     <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
         <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Banho Solidário</span>
@@ -465,7 +464,7 @@ Descrição das Alterações:
                 </div>
             </div>
 
-            <!-- Botão de Sair / Limpar Cache e Retornar + Botão Salvar -->
+            <!-- Ações com Sair / Limpar Cache -->
             <div class="actions-bar">
                 <button class="btn btn-danger" onclick="sairLimparCache()"><i class="fa-solid fa-right-from-bracket"></i> Sair / Limpar Cache</button>
                 <button class="btn btn-success" onclick="atualizarCadastro()"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
@@ -488,7 +487,6 @@ Descrição das Alterações:
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        // Função para Sair, Limpar Cache Local/Sessão e retornar à tela principal
         function sairLimparCache() {
             localStorage.clear();
             sessionStorage.clear();
