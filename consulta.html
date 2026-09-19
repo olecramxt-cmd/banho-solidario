@@ -3,12 +3,12 @@
 QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 ==============================================================================
 © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-Programa: consulta.html. Versão do Módulo: v.1.9.003
-Data de atualização: 19/09/2026 - 04:42
+Programa: consulta.html. Versão do Módulo: v.1.9.004
+Data de atualização: 19/09/2026 - 04:54
 Diretriz de Backup: Requer clasp push após alteração local e versionamento GitHub.
 Descrição das Alterações:
-- Inclusão do botão "Sair / Limpar Cache" na barra de ações.
-- Correção de rotas e padronização do menu sanduíche.
+- Inclusão definitiva do botão "Sair / Limpar Cache" na barra de ações.
+- Ajuste das rotas e padronização do menu sanduíche.
 ==============================================================================
 -->
 <!DOCTYPE html>
@@ -464,7 +464,7 @@ Descrição das Alterações:
                 </div>
             </div>
 
-            <!-- Ações com Sair / Limpar Cache -->
+            <!-- Botão de Sair / Limpar Cache e Retornar + Botão Salvar -->
             <div class="actions-bar">
                 <button class="btn btn-danger" onclick="sairLimparCache()"><i class="fa-solid fa-right-from-bracket"></i> Sair / Limpar Cache</button>
                 <button class="btn btn-success" onclick="atualizarCadastro()"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
@@ -474,7 +474,7 @@ Descrição das Alterações:
 
     <script>
         /* © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. */
-        const API_URL = "https://script.google.com/macros/s/AKfycbwnOOIssv-hAnscC1y2CID5GoSP_IGT_8x_iBVunIg8EjbF-Qp8J06jQDDFTbqlQgJs/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxL4VZdVEWOOcHcru0FrlE_UlzhblY9GFr8MixtQh4sBskNpOUCIklE5yyifatr8bVJ/exec";
 
         const AVATAR_MASCULINO = "https://cdn-icons-png.flaticon.com/512/145/145867.png";
         const AVATAR_FEMININO = "https://cdn-icons-png.flaticon.com/512/145/145852.png";
@@ -672,8 +672,8 @@ Descrição das Alterações:
                 recebeAuxilio: dadosAtuais.recebeAuxilio || "",
                 qualBeneficio: dadosAtuais.qualBeneficio || "",
                 possuiDocumentos: dadosAtuais.possuiDocumentos || "",
-                documentosFaltam: dadosAtuais.documentosFaltam || "",
-                carteiraTrabalho: dadosAtuais.carteiraTrabalho || "",
+                documentosFaltam: dadosAtuals.documentosFaltam || "",
+                carteiraTrabalho: dadosAtuals.carteiraTrabalho || "",
                 foto: document.getElementById('foto').value
             };
 
