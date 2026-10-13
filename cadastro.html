@@ -2,11 +2,12 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Código: v.1.5.000                           -->
-<!-- Data de atualização: 13/10/2026 - 05:30                                        -->
+<!-- Programa: cadastro.html. Versão do Código: v.1.5.001                           -->
+<!-- Data de atualização: 13/10/2026 - 06:40                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Restauração completa do layout de cadastro com as 30 colunas oficiais.       -->
-<!-- - Implementação de bloqueio de segurança exigindo sessão ativa em login.html.  -->
+<!-- - Restauração completa do formulário de cadastro com as 30 colunas oficiais.   -->
+<!-- - Atualização da constante API_URL com o novo endpoint de implantação.         -->
+<!-- - Validação unificada de sessão ativa.                                         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -234,9 +235,11 @@
 </head>
 <body>
 
-    <!-- Verificação de Sessão Obrigatória -->
+    <!-- Verificação de Sessão Unificada -->
     <script>
-        if (sessionStorage.getItem('pbs_autorizado') !== 'true') {
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
             alert('Acesso negado! Faça o login primeiro.');
             window.location.href = 'login.html';
         }
@@ -455,7 +458,7 @@
     </div>
 
     <script>
-        const API_URL="https://script.google.com/macros/s/AKfycbw61tX1IbdwUSVVJ28zkdxRDGcsZvUGiNuTX18_ow3gSj9pzNVzeqNoWBiLrHYsjunH_Q/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw61tX1IbdwUSVVJ28zkdxRDGcsZvUGiNuTX18_ow3gSj9pzNVzeqNoWBiLrHYsjunH_Q/exec";
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
@@ -464,6 +467,7 @@
 
         function sairLimpar() {
             sessionStorage.removeItem('pbs_autorizado');
+            localStorage.removeItem('usuario_ativo');
             window.location.href = 'login.html';
         }
 
