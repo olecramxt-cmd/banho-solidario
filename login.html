@@ -2,10 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Código: v.1.1.000                              -->
-<!-- Data de atualização: 13/10/2026 - 05:30                                        -->
+<!-- Programa: login.html. Versão do Código: v.1.2.000                              -->
+<!-- Data de atualização: 13/10/2026 - 06:40                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Implementação do controle de sessão unificado e autenticação restrita.       -->
+<!-- - Integração oficial do login dinâmico com a aba Usuarios da planilha via API. -->
+<!-- - Padronização do sistema de sessão para compatibilidade total com o admin.     -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -94,12 +95,12 @@
         <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Projeto Banho Solidário - Área Restrita</p>
         
         <div class="form-group">
-            <label>Usuário / E-mail Autorizado</label>
-            <input type="text" id="usuario" placeholder="Digite o usuário...">
+            <label>Usuário (Username)</label>
+            <input type="text" id="usuario" placeholder="Ex: marcelo">
         </div>
         <div class="form-group">
             <label>Senha de Acesso</label>
-            <input type="password" id="senha" placeholder="Digite a senha..." onkeypress="if(event.key === 'Enter') realizarLogin()">
+            <input type="password" id="senha" placeholder="Digite sua senha..." onkeypress="if(event.key === 'Enter') realizarLogin()">
         </div>
         
         <button class="btn-login" onclick="realizarLogin()">Entrar no Sistema</button>
@@ -107,16 +108,55 @@
     </div>
 
     <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbw61tX1IbdwUSVVJ28zkdxRDGcsZvUGiNuTX18_ow3gSj9pzNVzeqNoWBiLrHYsjunH_Q/exec";
+
         function realizarLogin() {
-            var user = document.getElementById('usuario').value.trim();
+            var user = document.getElementById('usuario').value.trim().toLowerCase();
             var pass = document.getElementById('senha').value.trim();
-            
-            if (user === 'projbsolidario@gmail.com' && pass === 'pbs2026') {
-                sessionStorage.setItem('pbs_autorizado', 'true');
-                window.location.href = 'cadastro.html';
-            } else {
-                document.getElementById('msgErro').innerText = 'Usuário ou senha inválidos!';
+            var msgDiv = document.getElementById('msgErro');
+
+            if (!user || !pass) {
+                msgDiv.innerText = 'Preencha o usuário e a senha!';
+                return;
             }
+
+            msgDiv.style.color = '#0284c7';
+            msgDiv.innerText = 'A validar acesso na nuvem...';
+
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'loginUsuario',
+                    username: user,
+                    senha: pass
+                })
+            })
+            .then(res => res.json())
+            .then(resposta => {
+                if (resposta.status === 'sucesso') {
+                    // Gravação unificada para compatibilidade de sessão
+                    const dadosUsuario = {
+                        nome: resposta.nome,
+                        username: user,
+                        tipo: resposta.tipo
+                    };
+                    localStorage.setItem('usuario_ativo', JSON.stringify(dadosUsuario));
+                    sessionStorage.setItem('pbs_autorizado', 'true');
+                    
+                    if (resposta.tipo === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'cadastro.html';
+                    }
+                } else {
+                    msgDiv.style.color = '#dc2626';
+                    msgDiv.innerText = resposta.message || 'Usuário ou senha incorretos.';
+                }
+            })
+            .catch(err => {
+                msgDiv.style.color = '#dc2626';
+                msgDiv.innerText = 'Erro de conexão com o servidor.';
+            });
         }
     </script>
 </body>
