@@ -2,11 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.2.0.000                           -->
-<!-- Data de atualização: 13/10/2026 - 08:30                                        -->
+<!-- Programa: consulta.html. Versão do Módulo: v.2.0.001                           -->
+<!-- Data de atualização: 13/10/2026 - 08:48                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Implementação do fluxo interativo em etapas: Pesquisa -> Lista de Seleção -> -->
-<!--   Autenticação de Operador -> Exibição do Formulário Completo de 30 Colunas.    -->
+<!-- - Restauração completa do formulário de 30 colunas na consulta.                 -->
+<!-- - Correção da exibição da listagem de seleção e renderização dinâmica de foto. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -74,125 +74,43 @@
             box-sizing: border-box;
             overflow-y: auto;
         }
-        .side-menu.active {
-            right: 0;
-        }
+        .side-menu.active { right: 0; }
         .side-menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #e0f2fe;
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #e0f2fe; padding-bottom: 1rem; margin-bottom: 1.5rem;
         }
-        .side-menu-header h3 {
-            color: var(--primary-dark);
-            font-size: 1.2rem;
-            margin: 0;
-        }
-        .close-menu {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-color);
-            cursor: pointer;
-        }
-        .side-menu-links {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
+        .side-menu-header h3 { color: var(--primary-dark); font-size: 1.2rem; margin: 0; }
+        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        .side-menu-links { display: flex; flex-direction: column; gap: 1rem; }
         .menu-link-item {
-            background: var(--bg-color);
-            color: var(--primary-dark);
-            padding: 12px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-left: 4px solid var(--primary-color);
-            transition: all 0.3s;
+            background: var(--bg-color); color: var(--primary-dark); padding: 12px 16px;
+            border-radius: 8px; text-decoration: none; font-weight: 500; display: flex;
+            align-items: center; gap: 10px; border-left: 4px solid var(--primary-color); transition: all 0.3s;
         }
-        .menu-link-item:hover {
-            background: #e0f2fe;
-            transform: translateX(5px);
-        }
-        .side-menu-sublinks {
-            padding-left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+        .menu-link-item:hover { background: #e0f2fe; transform: translateX(5px); }
+        .side-menu-sublinks { padding-left: 20px; display: flex; flex-direction: column; gap: 0.5rem; }
         .menu-sublink-item {
-            font-size: 0.9rem;
-            color: var(--text-color);
-            padding: 8px 12px;
-            background: #f1f5f9;
-            border-radius: 6px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            font-size: 0.9rem; color: var(--text-color); padding: 8px 12px; background: #f1f5f9;
+            border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
         }
-        .menu-sublink-item:hover {
-            background: #e0f2fe;
-            color: var(--primary-dark);
-        }
+        .menu-sublink-item:hover { background: #e0f2fe; color: var(--primary-dark); }
         .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(3px);
-            display: none;
-            z-index: 999;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999;
         }
-        .menu-overlay.active {
-            display: block;
-        }
+        .menu-overlay.active { display: block; }
         .container {
-            max-width: 1000px;
-            margin: 30px auto;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            max-width: 1000px; margin: 30px auto; background: var(--card-bg);
+            padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        h2 {
-            color: var(--primary-dark);
-            text-align: center;
-            margin-bottom: 25px;
-        }
+        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 25px; }
         .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 8px;
+            display: flex; gap: 10px; margin-bottom: 30px; background: #f1f5f9; padding: 15px; border-radius: 8px;
         }
-        .search-box input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 15px;
-        }
+        .search-box input { flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; }
         .btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            transition: background 0.2s;
+            background-color: var(--primary-color); color: white; border: none;
+            padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s;
         }
         .btn:hover { background-color: var(--primary-dark); }
         .btn-success { background-color: var(--success-color); }
@@ -200,46 +118,20 @@
         .btn-danger { background-color: var(--danger-color); }
         .btn-danger:hover { background-color: #b91c1c; }
 
-        /* Estilos para a Listagem de Seleção */
-        #listaResultadosContainer {
-            display: none;
-            margin-bottom: 25px;
-        }
+        #listaResultadosContainer { display: none; margin-bottom: 25px; }
         .resultado-item {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
+            background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;
         }
-        .resultado-item:hover {
-            border-color: var(--primary-color);
-            background: #e0f2fe;
-        }
+        .resultado-item:hover { border-color: var(--primary-color); background: #e0f2fe; }
 
-        /* Modal de Autenticação */
         #authModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            z-index: 1050;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1050; justify-content: center; align-items: center;
         }
         .auth-card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
+            background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;
         }
 
         #resultadoContainer { display: none; }
@@ -255,7 +147,7 @@
         .profile-info h3 { margin: 0 0 5px 0; color: #0f172a; }
         .profile-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .form-group { display: flex; flexDirection: column; }
+        .form-group { display: flex; flex-direction: column; }
         .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
         .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
         .section-title {
@@ -298,7 +190,7 @@
         </div>
     </nav>
 
-    <!-- Modal de Autenticação Obrigatória por Seleção -->
+    <!-- Modal de Autenticação do Operador -->
     <div id="authModal">
         <div class="auth-card">
             <h3 style="color: var(--primary-dark); margin-bottom: 10px;">Identificação do Operador</h3>
@@ -326,13 +218,13 @@
 
         <div id="mensagemStatus"></div>
 
-        <!-- Etapa 2: Lista de Resultados para Seleção -->
+        <!-- Lista de Resultados para Seleção -->
         <div id="listaResultadosContainer">
             <h3 style="font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 15px;">Selecione o Assistido Desejado:</h3>
             <div id="listaResultadosItens"></div>
         </div>
 
-        <!-- Etapa 4: Formulário Completo de 30 Colunas -->
+        <!-- Formulário Completo de 30 Colunas -->
         <div id="resultadoContainer">
             <input type="hidden" id="linhaPlanilha">
             
@@ -380,7 +272,7 @@
                 <div class="form-group"><label>Possui Documentos</label><select id="possuiDocumentos"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
                 <div class="form-group"><label>Documentos Faltam</label><input type="text" id="documentosFaltam"></div>
                 <div class="form-group"><label>Carteira de Trabalho</label><select id="carteiraTrabalho"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
-                <div class="form-group"><label>URL da Foto</label><input type="text" id="foto"></div>
+                <div class="form-group"><label>URL da Foto</label><input type="text" id="foto" oninput="atualizarAvatarPreview()"></div>
 
                 <div class="actions-bar">
                     <button class="btn btn-danger" onclick="sairLimpar()"><i class="fa-solid fa-right-from-bracket"></i> Sair / Limpar Cache</button>
@@ -391,7 +283,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxEX9ymoGvA85f8PMPog6gc_mbmPFzMmhS_iqHa-OjeUsUw_hCvEpHHafGWUoC2DVvO0w/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw61tX1IbdwUSVVJ28zkdxRDGcsZvUGiNuTX18_ow3gSj9pzNVzeqNoWBiLrHYsjunH_Q/exec";
         let registroSelecionadoTemporario = null;
 
         function toggleMenu() {
@@ -511,7 +403,7 @@
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
             document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + (reg.dataHora || "---");
 
-            // Preenchimento dos 30 campos
+            // Preenchimento completo das 30 colunas
             document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
             document.getElementById('nomeSocial').value = reg.nomeSocial || "";
             document.getElementById('dataNascimento').value = reg.dataNascimento || "";
@@ -541,8 +433,18 @@
             document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
             document.getElementById('foto').value = reg.foto || "";
 
+            atualizarAvatarPreview();
+        }
+
+        function atualizarAvatarPreview() {
+            const urlFoto = document.getElementById('foto').value.trim();
             const avatarContainer = document.getElementById('avatarContainer');
-            avatarContainer.innerHTML = reg.foto ? `<img src="${reg.foto}">` : `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
+            
+            if (urlFoto) {
+                avatarContainer.innerHTML = `<img src="${urlFoto}" alt="Foto do Assistido" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/145/145867.png';">`;
+            } else {
+                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
+            }
         }
 
         function atualizarCadastro() {
