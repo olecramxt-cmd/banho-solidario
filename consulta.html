@@ -1,15 +1,13 @@
-<!--
-==============================================================================
-QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
-==============================================================================
-© Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-Programa: consulta.html. Versão do Módulo: v.1.9.008
-Data de atualização: 22/09/2026 - 17:21
-Diretriz de Backup: Requer clasp push após alteração local e versionamento GitHub.
-Descrição das Alterações:
-- Versão unificada completa com tratamento robusto para consulta e atualização de dados.
-==============================================================================
--->
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
+<!-- Programa: consulta.html. Versão do Módulo: v.2.0.000                           -->
+<!-- Data de atualização: 13/10/2026 - 08:30                                        -->
+<!-- Descrição das Alterações:                                                      -->
+<!-- - Implementação do fluxo interativo em etapas: Pesquisa -> Lista de Seleção -> -->
+<!--   Autenticação de Operador -> Exibição do Formulário Completo de 30 Colunas.    -->
+<!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -30,7 +28,6 @@ Descrição das Alterações:
             --text-color: #334155;
             --border-color: #cbd5e1;
         }
-
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-color);
@@ -38,7 +35,6 @@ Descrição das Alterações:
             margin: 0;
             padding: 0;
         }
-
         .navbar {
             background-color: #0f172a;
             color: white;
@@ -46,10 +42,8 @@ Descrição das Alterações:
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
-
         .menu-toggle {
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -60,12 +54,10 @@ Descrição das Alterações:
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
         .menu-toggle:hover {
             background: white;
             color: var(--primary-dark);
         }
-
         .side-menu {
             position: fixed;
             top: 0;
@@ -82,11 +74,9 @@ Descrição das Alterações:
             box-sizing: border-box;
             overflow-y: auto;
         }
-
         .side-menu.active {
             right: 0;
         }
-
         .side-menu-header {
             display: flex;
             justify-content: space-between;
@@ -95,13 +85,11 @@ Descrição das Alterações:
             padding-bottom: 1rem;
             margin-bottom: 1.5rem;
         }
-
         .side-menu-header h3 {
             color: var(--primary-dark);
             font-size: 1.2rem;
             margin: 0;
         }
-
         .close-menu {
             background: none;
             border: none;
@@ -109,13 +97,11 @@ Descrição das Alterações:
             color: var(--text-color);
             cursor: pointer;
         }
-
         .side-menu-links {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
-
         .menu-link-item {
             background: var(--bg-color);
             color: var(--primary-dark);
@@ -129,19 +115,16 @@ Descrição das Alterações:
             border-left: 4px solid var(--primary-color);
             transition: all 0.3s;
         }
-
         .menu-link-item:hover {
             background: #e0f2fe;
             transform: translateX(5px);
         }
-
         .side-menu-sublinks {
             padding-left: 20px;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
-
         .menu-sublink-item {
             font-size: 0.9rem;
             color: var(--text-color);
@@ -154,12 +137,10 @@ Descrição das Alterações:
             gap: 8px;
             transition: all 0.2s;
         }
-
         .menu-sublink-item:hover {
             background: #e0f2fe;
             color: var(--primary-dark);
         }
-
         .menu-overlay {
             position: fixed;
             top: 0;
@@ -171,26 +152,22 @@ Descrição das Alterações:
             display: none;
             z-index: 999;
         }
-
         .menu-overlay.active {
             display: block;
         }
-
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 30px auto;
             background: var(--card-bg);
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-
         h2 {
             color: var(--primary-dark);
             text-align: center;
             margin-bottom: 25px;
         }
-
         .search-box {
             display: flex;
             gap: 10px;
@@ -199,15 +176,13 @@ Descrição das Alterações:
             padding: 15px;
             border-radius: 8px;
         }
-
         .search-box input {
             flex: 1;
             padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
         }
-
         .btn {
             background-color: var(--primary-color);
             color: white;
@@ -219,115 +194,80 @@ Descrição das Alterações:
             font-size: 16px;
             transition: background 0.2s;
         }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover { background-color: #b91c1c; }
 
-        .btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .btn-success {
-            background-color: var(--success-color);
-        }
-        .btn-success:hover {
-            background-color: #15803d;
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-        }
-        .btn-danger:hover {
-            background-color: #b91c1c;
-        }
-
-        #resultadoContainer {
+        /* Estilos para a Listagem de Seleção */
+        #listaResultadosContainer {
             display: none;
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 20px;
             margin-bottom: 25px;
         }
-
-        .avatar-box {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #e2e8f0;
-        }
-
-        .avatar-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-info h3 {
-            margin: 0 0 5px 0;
-            color: #0f172a;
-        }
-
-        .profile-info p {
-            margin: 3px 0;
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .form-group input, .form-group select {
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .aviso-validacao {
-            font-size: 12px;
-            color: var(--warning-color);
-            margin-top: 3px;
-            font-weight: 600;
-        }
-
-        .actions-bar {
-            margin-top: 30px;
+        .resultado-item {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.2s;
+        }
+        .resultado-item:hover {
+            border-color: var(--primary-color);
+            background: #e0f2fe;
         }
 
-        #mensagemStatus {
-            text-align: center;
-            margin-top: 15px;
-            font-weight: bold;
+        /* Modal de Autenticação */
+        #authModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
         }
+        .auth-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        #resultadoContainer { display: none; }
+        .profile-header {
+            display: flex; align-items: center; gap: 20px;
+            border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px;
+        }
+        .avatar-box {
+            width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
+            border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0;
+        }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-info h3 { margin: 0 0 5px 0; color: #0f172a; }
+        .profile-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flexDirection: column; }
+        .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
+        .section-title {
+            grid-column: 1 / -1; font-size: 1.1rem; color: var(--primary-dark);
+            border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; font-weight: 700;
+        }
+        .actions-bar { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; }
+        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- Menu Sanduíche -->
     <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
         <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Banho Solidário</span>
@@ -341,42 +281,58 @@ Descrição das Alterações:
             <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="side-menu-links">
-            <!-- 1. Voluntários -->
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
                 <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
                 <a href="#" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta</a>
             </div>
-
-            <!-- 2. Assistidos -->
+            
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
             <div class="side-menu-sublinks">
                 <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
                 <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
             </div>
-
-            <!-- 3. Painel Administrativo -->
-            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;">
-                <i class="fa-solid fa-users-gear"></i> 3. Painel Administrativo
-            </a>
-
-            <!-- 4. Sobre (Acessar E-book) -->
-            <a href="./ebook/" target="_blank" class="menu-link-item">
-                <i class="fa-solid fa-book-open"></i> 4. Sobre (Acessar E-book)
-            </a>
+            
+            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 3. Painel Administrativo</a>
+            <a href="./ebook/" target="_blank" class="menu-link-item"><i class="fa-solid fa-book-open"></i> 4. Sobre (Acessar E-book)</a>
         </div>
     </nav>
+
+    <!-- Modal de Autenticação Obrigatória por Seleção -->
+    <div id="authModal">
+        <div class="auth-card">
+            <h3 style="color: var(--primary-dark); margin-bottom: 10px;">Identificação do Operador</h3>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Insira as credenciais do voluntário para desbloquear a ficha.</p>
+            <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+                <label>Usuário (Username)</label>
+                <input type="text" id="authUsername" placeholder="Ex: marcelo" style="width: 100%; box-sizing: border-box;">
+            </div>
+            <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+                <label>Senha</label>
+                <input type="password" id="authSenha" placeholder="Senha..." style="width: 100%; box-sizing: border-box;" onkeypress="if(event.key === 'Enter') validarOperador()">
+            </div>
+            <button class="btn" style="width: 100%;" onclick="validarOperador()">Autorizar Acesso</button>
+            <div id="authErro" style="color: var(--danger-color); font-size: 13px; margin-top: 10px; font-weight: bold;"></div>
+        </div>
+    </div>
 
     <div class="container">
         <h2>Consulta e Atualização Cadastral</h2>
         
         <div class="search-box">
-            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF ou o Nome (parcial/completo)..." onkeypress="if(event.key === 'Enter') consultarCadastro();">
-            <button class="btn" onclick="consultarCadastro()">Pesquisar</button>
+            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF, o Nome ou o Nome Social (parcial/completo)..." onkeypress="if(event.key === 'Enter') pesquisarCadastros();">
+            <button class="btn" onclick="pesquisarCadastros()">Pesquisar</button>
         </div>
 
         <div id="mensagemStatus"></div>
 
+        <!-- Etapa 2: Lista de Resultados para Seleção -->
+        <div id="listaResultadosContainer">
+            <h3 style="font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 15px;">Selecione o Assistido Desejado:</h3>
+            <div id="listaResultadosItens"></div>
+        </div>
+
+        <!-- Etapa 4: Formulário Completo de 30 Colunas -->
         <div id="resultadoContainer">
             <input type="hidden" id="linhaPlanilha">
             
@@ -390,263 +346,203 @@ Descrição das Alterações:
             </div>
 
             <div class="form-grid">
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" id="nomeCompleto">
-                </div>
-                <div class="form-group">
-                    <label>Nome Social</label>
-                    <input type="text" id="nomeSocial">
-                </div>
-                <div class="form-group">
-                    <label>Data de Nascimento</label>
-                    <input type="date" id="dataNascimento" onchange="calcularIdadeAutomatica()">
-                </div>
-                <div class="form-group">
-                    <label>Idade (Anos, Meses e Dias)</label>
-                    <input type="text" id="idade" placeholder="Ex: 45 anos 3 meses 15 dias">
-                </div>
-                <div class="form-group">
-                    <label>CPF</label>
-                    <input type="text" id="cpf" placeholder="000.000.000-00" oninput="validarCpfInput(this)">
-                    <div id="avisoCpf" class="aviso-validacao"></div>
-                </div>
-                <div class="form-group">
-                    <label>RG</label>
-                    <input type="text" id="rg">
-                </div>
-                <div class="form-group">
-                    <label>Sexo</label>
-                    <select id="sexo" onchange="atualizarPreviewFoto()">
-                        <option value="Masculino">Masculino</option>
-                        <option value="Feminino">Feminino</option>
-                        <option value="Outro">Outro / Não Informado</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Escolaridade</label>
-                    <select id="escolaridade">
-                        <option value="">Selecione...</option>
-                        <option value="Ensino Fundamental I (Incompleto/Completo)">Ensino Fundamental I (Incompleto/Completo): Do 1º ao 5º ano</option>
-                        <option value="Ensino Fundamental II (Incompleto/Completo)">Ensino Fundamental II (Incompleto/Completo): Do 6º ao 9º ano</option>
-                        <option value="Ensino Médio (Incompleto/Completo)">Ensino Médio (Incompleto/Completo): Antigo 2º grau</option>
-                        <option value="EJA (Educação de Jovens e Adultos)">EJA (Educação de Jovens e Adultos)</option>
-                        <option value="Ensino Superior (Incompleto/Completo)">Ensino Superior (Incompleto/Completo)</option>
-                        <option value="Pós-Graduação (Especialização/MBA)">Pós-Graduação (Especialização/MBA)</option>
-                        <option value="Mestrado (Incompleto/Completo)">Mestrado (Incompleto/Completo)</option>
-                        <option value="Doutorado (Incompleto/Completo)">Doutorado (Incompleto/Completo)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Cor / Raça</label>
-                    <select id="corRaca">
-                        <option value="">Selecione...</option>
-                        <option value="Amarela">Amarela</option>
-                        <option value="Branca">Branca</option>
-                        <option value="Indígena">Indígena</option>
-                        <option value="Parda">Parda</option>
-                        <option value="Preta">Preta</option>
-                        <option value="Não declarado">Não declarado</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Telefone / Contato</label>
-                    <input type="text" id="telefone" placeholder="(38) 9.9999-9999" oninput="mascaraTelefone(this)">
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Endereço</label>
-                    <input type="text" id="endereco">
-                </div>
-                <div class="form-group">
-                    <label>URL da Foto (Opcional)</label>
-                    <input type="text" id="foto" placeholder="https://exemplo.com/foto.jpg" oninput="atualizarPreviewFoto()">
-                </div>
-            </div>
+                <div class="section-title">1. Dados Pessoais e Identificação</div>
+                <div class="form-group"><label>Nome Completo *</label><input type="text" id="nomeCompleto"></div>
+                <div class="form-group"><label>Nome Social</label><input type="text" id="nomeSocial"></div>
+                <div class="form-group"><label>Data de Nascimento</label><input type="date" id="dataNascimento"></div>
+                <div class="form-group"><label>Idade</label><input type="text" id="idade"></div>
+                <div class="form-group"><label>Sexo</label><select id="sexo"><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option><option value="Outro">Outro</option></select></div>
+                <div class="form-group"><label>Escolaridade</label><select id="escolaridade"><option value="">Selecione...</option><option value="Ensino Fundamental I">Ensino Fundamental I</option><option value="Ensino Fundamental II">Ensino Fundamental II</option><option value="Ensino Médio">Ensino Médio</option><option value="Ensino Superior">Ensino Superior</option><option value="Não Alfabetizado">Não Alfabetizado</option></select></div>
+                <div class="form-group"><label>Naturalidade</label><input type="text" id="naturalidade"></div>
+                <div class="form-group"><label>RG</label><input type="text" id="rg"></div>
+                <div class="form-group"><label>CPF</label><input type="text" id="cpf"></div>
+                <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
 
-            <!-- Botão de Sair / Limpar Cache e Retornar + Botão Salvar -->
-            <div class="actions-bar">
-                <button class="btn btn-danger" onclick="sairLimparCache()"><i class="fa-solid fa-right-from-bracket"></i> Sair / Limpar Cache</button>
-                <button class="btn btn-success" onclick="atualizarCadastro()"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
+                <div class="section-title">2. Filiação e Contactos</div>
+                <div class="form-group"><label>Filiação (Mãe)</label><input type="text" id="filiacaoMae"></div>
+                <div class="form-group"><label>Filiação (Pai)</label><input type="text" id="filiacaoPai"></div>
+                <div class="form-group"><label>Endereço</label><input type="text" id="endereco"></div>
+                <div class="form-group"><label>Cidade</label><input type="text" id="cidade"></div>
+                <div class="form-group"><label>Telefone / Contato</label><input type="text" id="telefone"></div>
+                <div class="form-group"><label>Residência ou Familiares em Unaí</label><select id="residenciaUnaí"><option value="">Selecione...</option><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+
+                <div class="section-title">3. Perfil Social e Permanência na Rua</div>
+                <div class="form-group"><label>Tipo de Usuário</label><select id="tipoUsuario"><option value="Assistido">Assistido</option><option value="Idoso">Idoso</option><option value="Outro">Outro</option></select></div>
+                <div class="form-group"><label>Tempo de Rua</label><input type="text" id="tempoRua"></div>
+                <div class="form-group"><label>Tempo de Unaí</label><input type="text" id="tempoUnaí"></div>
+                <div class="form-group"><label>Motivos Permanência</label><input type="text" id="motivosPermanencia"></div>
+                <div class="form-group"><label>Outros Motivos</label><input type="text" id="outrosMotivos"></div>
+
+                <div class="section-title">4. Atendimentos, Benefícios e Documentação</div>
+                <div class="form-group"><label>Passou Atendimento</label><input type="text" id="passouAtendimento"></div>
+                <div class="form-group"><label>Recebe Auxílio</label><select id="recebeAuxilio"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+                <div class="form-group"><label>Qual Benefício</label><input type="text" id="qualBeneficio"></div>
+                <div class="form-group"><label>Possui Documentos</label><select id="possuiDocumentos"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                <div class="form-group"><label>Documentos Faltam</label><input type="text" id="documentosFaltam"></div>
+                <div class="form-group"><label>Carteira de Trabalho</label><select id="carteiraTrabalho"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                <div class="form-group"><label>URL da Foto</label><input type="text" id="foto"></div>
+
+                <div class="actions-bar">
+                    <button class="btn btn-danger" onclick="sairLimpar()"><i class="fa-solid fa-right-from-bracket"></i> Sair / Limpar Cache</button>
+                    <button class="btn btn-success" onclick="atualizarCadastro()"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        /**
-         * ==============================================================================
-         * QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
-         * ==============================================================================
-         * © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-         * Programa: consulta.html (Script). Versão: v.1.9.008
-         * ==============================================================================
-         */
         const API_URL = "https://script.google.com/macros/s/AKfycbw61tX1IbdwUSVVJ28zkdxRDGcsZvUGiNuTX18_ow3gSj9pzNVzeqNoWBiLrHYsjunH_Q/exec";
-
-        const AVATAR_MASCULINO = "https://cdn-icons-png.flaticon.com/512/145/145867.png";
-        const AVATAR_FEMININO = "https://cdn-icons-png.flaticon.com/512/145/145852.png";
-        const AVATAR_NEUTRO = "https://cdn-icons-png.flaticon.com/512/1144/1144760.png";
-
-        let dadosAtuais = {};
+        let registroSelecionadoTemporario = null;
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        function sairLimparCache() {
-            localStorage.clear();
+        function sairLimpar() {
             sessionStorage.clear();
-            window.location.href = "index.html";
+            localStorage.clear();
+            window.location.href = 'login.html';
         }
 
-        function mascaraTelefone(input) {
-            let v = input.value.replace(/\D/g, "");
-            if (v.length > 11) v = v.slice(0, 11);
-            if (v.length > 7) {
-                v = v.replace(/^(\d{2})(\d{1})(\d{4})(\d{4}).*/, "($1) $2.$3-$4");
-            } else if (v.length > 2) {
-                v = v.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
-            } else if (v.length > 0) {
-                v = v.replace(/^(\d{0,2})/, "($1");
-            }
-            input.value = v;
-        }
-
-        function validarCpfInput(input) {
-            let cpf = input.value.replace(/\D/g, '');
-            const aviso = document.getElementById('avisoCpf');
-            if (cpf.length === 11) {
-                if (!validaCpfMatematico(cpf)) {
-                    aviso.innerText = "⚠️ Atenção: CPF com dígitos inválidos (permitido salvar).";
-                } else {
-                    aviso.innerText = "✔ CPF Válido";
-                }
-            } else {
-                aviso.innerText = "";
-            }
-        }
-
-        function validaCpfMatematico(strCPF) {
-            if (strCPF.length !== 11 || /^(\d)\1+$/.test(strCPF)) return false;
-            let Soma = 0, Resto;
-            for (let i=1; i<=9; i++) Soma += parseInt(strCPF.substring(i-1, i)) * (11 - i);
-            Resto = (Soma * 10) % 11;
-            if ((Resto === 10) || (Resto === 11)) Resto = 0;
-            if (Resto !== parseInt(strCPF.substring(9, 10))) return false;
-            Soma = 0;
-            for (let i = 1; i <= 10; i++) Soma += parseInt(strCPF.substring(i-1, i)) * (12 - i);
-            Resto = (Soma * 10) % 11;
-            if ((Resto === 10) || (Resto === 11)) Resto = 0;
-            return Resto === parseInt(strCPF.substring(10, 11));
-        }
-
-        function calcularIdadeAutomatica() {
-            const dataNascStr = document.getElementById('dataNascimento').value;
-            const campoIdade = document.getElementById('idade');
-            if (!dataNascStr) return;
-
-            const hoje = new Date();
-            const nascimento = new Date(dataNascStr);
-
-            let anos = hoje.getFullYear() - nascimento.getFullYear();
-            let meses = hoje.getMonth() - nascimento.getMonth();
-            let dias = hoje.getDate() - nascimento.getDate();
-
-            if (dias < 0) {
-                meses--;
-                const ultimoDiaMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
-                dias += ultimoDiaMesAnterior;
-            }
-            if (meses < 0) {
-                anos--;
-                meses += 12;
-            }
-
-            if (anos >= 0) {
-                campoIdade.value = `${anos} anos, ${meses} meses e ${dias} dias`;
-            }
-        }
-
-        function consultarCadastro() {
+        function pesquisarCadastros() {
             const termo = document.getElementById('termoBusca').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
-            
+            document.getElementById('listaResultadosContainer').style.display = 'none';
+            document.getElementById('resultadoContainer').style.display = 'none';
+
             if (!termo) {
                 statusDiv.style.color = "red";
-                statusDiv.innerText = "Por favor, digite a Matrícula, o CPF ou o Nome para pesquisar.";
+                statusDiv.innerText = "Por favor, digite um termo para pesquisar.";
                 return;
             }
 
             statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "Pesquisando no banco de dados...";
-            document.getElementById('resultadoContainer').style.display = "none";
+            statusDiv.innerText = "Pesquisando assistidos na nuvem...";
 
             fetch(API_URL, {
                 method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "consultarTriagem", termo: termo })
             })
-            .then(res => {
-                if (!res.ok) throw new Error("Erro HTTP: " + res.status);
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
+                statusDiv.innerText = "";
                 if (data.status === "encontrado") {
-                    statusDiv.innerText = "";
-                    preencherFormulario(data.registro, data.linha);
+                    montarListaSelecao(data.lista);
                 } else {
                     statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Nenhum cadastro encontrado.";
+                    statusDiv.innerText = data.message || "Nenhum registo encontrado.";
                 }
             })
             .catch(err => {
-                console.error(err);
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão com o servidor.";
             });
         }
 
-        function preencherFormulario(reg, linha) {
+        function montarListaSelecao(lista) {
+            const container = document.getElementById('listaResultadosItens');
+            container.innerHTML = "";
+            document.getElementById('listaResultadosContainer').style.display = 'block';
+
+            lista.forEach(item => {
+                const reg = item.registro;
+                const div = document.createElement('div');
+                div.className = 'resultado-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>Matrícula:</strong> ${reg.matricula} | 
+                        <strong>Nome:</strong> ${reg.nomeCompleto} 
+                        ${reg.nomeSocial ? `(${reg.nomeSocial})` : ''} | 
+                        <strong>CPF:</strong> ${reg.cpf || 'Não informado'}
+                    </div>
+                    <button class="btn" onclick='solicitarAutenticacao(${JSON.stringify(item)})'>Selecionar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function solicitarAutenticacao(itemCompleto) {
+            registroSelecionadoTemporario = itemCompleto;
+            document.getElementById('authUsername').value = "";
+            document.getElementById('authSenha').value = "";
+            document.getElementById('authErro').innerText = "";
+            document.getElementById('authModal').style.display = 'flex';
+        }
+
+        function validarOperador() {
+            const user = document.getElementById('authUsername').value.trim().toLowerCase();
+            const pass = document.getElementById('authSenha').value.trim();
+            const erroDiv = document.getElementById('authErro');
+
+            if (!user || !pass) {
+                erroDiv.innerText = "Preencha o usuário e a senha!";
+                return;
+            }
+
+            erroDiv.style.color = "#0284c7";
+            erroDiv.innerText = "A validar credenciais...";
+
+            fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'loginUsuario', username: user, senha: pass })
+            })
+            .then(res => res.json())
+            .then(resposta => {
+                if (resposta.status === 'sucesso') {
+                    document.getElementById('authModal').style.display = 'none';
+                    document.getElementById('listaResultadosContainer').style.display = 'none';
+                    preencherFormularioCompleto(registroSelecionadoTemporario.registro, registroSelecionadoTemporario.linha);
+                } else {
+                    erroDiv.style.color = "var(--danger-color)";
+                    erroDiv.innerText = resposta.message || "Credenciais inválidas.";
+                }
+            })
+            .catch(err => {
+                erroDiv.style.color = "var(--danger-color)";
+                erroDiv.innerText = "Erro ao validar operador.";
+            });
+        }
+
+        function preencherFormularioCompleto(reg, linha) {
             document.getElementById('resultadoContainer').style.display = "block";
             document.getElementById('linhaPlanilha').value = linha;
 
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
             document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + (reg.dataHora || "---");
 
+            // Preenchimento dos 30 campos
             document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
             document.getElementById('nomeSocial').value = reg.nomeSocial || "";
             document.getElementById('dataNascimento').value = reg.dataNascimento || "";
             document.getElementById('idade').value = reg.idade || "";
-            document.getElementById('cpf').value = reg.cpf || "";
-            document.getElementById('rg').value = reg.rg || "";
             document.getElementById('sexo').value = reg.sexo || "Masculino";
             document.getElementById('escolaridade').value = reg.escolaridade || "";
+            document.getElementById('naturalidade').value = reg.naturalidade || "";
+            document.getElementById('rg').value = reg.rg || "";
+            document.getElementById('cpf').value = reg.cpf || "";
             document.getElementById('corRaca').value = reg.corRaca || "";
-            document.getElementById('telefone').value = reg.telefone || "";
+            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";
+            document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
             document.getElementById('endereco').value = reg.endereco || "";
+            document.getElementById('cidade').value = reg.cidade || "";
+            document.getElementById('telefone').value = reg.telefone || "";
+            document.getElementById('residenciaUnaí').value = reg.residenciaUnaí || "";
+            document.getElementById('tipoUsuario').value = reg.tipoUsuario || "";
+            document.getElementById('tempoRua').value = reg.tempoRua || "";
+            document.getElementById('tempoUnaí').value = reg.tempoUnaí || "";
+            document.getElementById('motivosPermanencia').value = reg.motivosPermanencia || "";
+            document.getElementById('outrosMotivos').value = reg.outrosMotivos || "";
+            document.getElementById('passouAtendimento').value = reg.passouAtendimento || "";
+            document.getElementById('recebeAuxilio').value = reg.recebeAuxilio || "Não";
+            document.getElementById('qualBeneficio').value = reg.qualBeneficio || "";
+            document.getElementById('possuiDocumentos').value = reg.possuiDocumentos || "Sim";
+            document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
+            document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
             document.getElementById('foto').value = reg.foto || "";
 
-            dadosAtuais = reg;
-            atualizarPreviewFoto();
-        }
-
-        function atualizarPreviewFoto() {
-            const urlFoto = document.getElementById('foto').value.trim();
-            const sexo = document.getElementById('sexo').value;
             const avatarContainer = document.getElementById('avatarContainer');
-
-            let imagemSrc = urlFoto;
-            if (!imagemSrc) {
-                if (sexo === "Masculino") {
-                    imagemSrc = AVATAR_MASCULINO;
-                } else if (sexo === "Feminino") {
-                    imagemSrc = AVATAR_FEMININO;
-                } else {
-                    imagemSrc = AVATAR_NEUTRO;
-                }
-            }
-
-            avatarContainer.innerHTML = `<img src="${imagemSrc}" alt="Foto / Avatar" onerror="this.src='${AVATAR_NEUTRO}'">`;
+            avatarContainer.innerHTML = reg.foto ? `<img src="${reg.foto}">` : `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
         }
 
         function atualizarCadastro() {
@@ -662,42 +558,38 @@ Descrição das Alterações:
                 idade: document.getElementById('idade').value,
                 sexo: document.getElementById('sexo').value,
                 escolaridade: document.getElementById('escolaridade').value,
-                naturalidade: dadosAtuais.naturalidade || "",
+                naturalidade: document.getElementById('naturalidade').value,
                 rg: document.getElementById('rg').value,
                 cpf: document.getElementById('cpf').value,
                 corRaca: document.getElementById('corRaca').value,
-                filiacaoMae: dadosAtuais.filiacaoMae || "",
-                filiacaoPai: dadosAtuais.filiacaoPai || "",
+                filiacaoMae: document.getElementById('filiacaoMae').value,
+                filiacaoPai: document.getElementById('filiacaoPai').value,
                 endereco: document.getElementById('endereco').value,
-                cidade: dadosAtuais.cidade || "",
+                cidade: document.getElementById('cidade').value,
                 telefone: document.getElementById('telefone').value,
-                residenciaUnaí: dadosAtuais.residenciaUnaí || "",
-                tipoUsuario: dadosAtuais.tipoUsuario || "",
-                tempoRua: dadosAtuais.tempoRua || "",
-                tempoUnaí: dadosAtuais.tempoUnaí || "",
-                motivosPermanencia: dadosAtuais.motivosPermanencia || "",
-                outrosMotivos: dadosAtuais.outrosMotivos || "",
-                passouAtendimento: dadosAtuais.passouAtendimento || "",
-                recebeAuxilio: dadosAtuais.recebeAuxilio || "",
-                qualBeneficio: dadosAtuais.qualBeneficio || "",
-                possuiDocumentos: dadosAtuais.possuiDocumentos || "",
-                documentosFaltam: dadosAtuais.documentosFaltam || "",
-                carteiraTrabalho: dadosAtuais.carteiraTrabalho || "",
+                residenciaUnaí: document.getElementById('residenciaUnaí').value,
+                tipoUsuario: document.getElementById('tipoUsuario').value,
+                tempoRua: document.getElementById('tempoRua').value,
+                tempoUnaí: document.getElementById('tempoUnaí').value,
+                motivosPermanencia: document.getElementById('motivosPermanencia').value,
+                outrosMotivos: document.getElementById('outrosMotivos').value,
+                passouAtendimento: document.getElementById('passouAtendimento').value,
+                recebeAuxilio: document.getElementById('recebeAuxilio').value,
+                qualBeneficio: document.getElementById('qualBeneficio').value,
+                possuiDocumentos: document.getElementById('possuiDocumentos').value,
+                documentosFaltam: document.getElementById('documentosFaltam').value,
+                carteiraTrabalho: document.getElementById('carteiraTrabalho').value,
                 foto: document.getElementById('foto').value
             };
 
             statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "Atualizando cadastro...";
+            statusDiv.innerText = "A atualizar cadastro na nuvem...";
 
             fetch(API_URL, {
                 method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
             })
-            .then(res => {
-                if (!res.ok) throw new Error("Erro HTTP: " + res.status);
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
@@ -708,7 +600,6 @@ Descrição das Alterações:
                 }
             })
             .catch(err => {
-                console.error(err);
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão ao salvar.";
             });
@@ -716,3 +607,4 @@ Descrição das Alterações:
     </script>
 </body>
 </html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
