@@ -2,11 +2,13 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.2.1.000                           -->
-<!-- Data de atualização: 13/10/2026 - 09:23                                        -->
+<!-- Programa: consulta.html. Versão do Módulo: v.2.1.001                           -->
+<!-- Data de atualização: 13/10/2026 - 09:35                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Conversão automática de links do Google Drive para exibição direta no avatar. -->
-<!-- - Alteração do texto do botão para "Sair" e redirecionamento para consulta.html. -->
+<!-- - Inclusão do cabeçalho de texto simples (CORS) no fetch para eliminar erros   -->
+<!--   de conexão com o servidor.                                                   -->
+<!-- - Conversão automática de links do Google Drive para visualização do avatar.   -->
+<!-- - Ajuste do botão Sair e respetivo redirecionamento para consulta.html.        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -291,7 +293,6 @@
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        // Função para sair e retornar para a própria tela de consulta
         function sairConsulta() {
             window.location.href = 'consulta.html';
         }
@@ -313,9 +314,13 @@
 
             fetch(API_URL, {
                 method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "consultarTriagem", termo: termo })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("Erro HTTP: " + res.status);
+                return res.json();
+            })
             .then(data => {
                 statusDiv.innerText = "";
                 if (data.status === "encontrado") {
@@ -326,6 +331,7 @@
                 }
             })
             .catch(err => {
+                console.error(err);
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão com o servidor.";
             });
@@ -376,6 +382,7 @@
 
             fetch(API_URL, {
                 method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: 'loginUsuario', username: user, senha: pass })
             })
             .then(res => res.json())
@@ -434,7 +441,6 @@
             atualizarAvatarPreview();
         }
 
-        // Função inteligente para converter links do Google Drive em links diretos de imagem
         function converterLinkDrive(url) {
             if (!url) return "";
             let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
@@ -498,9 +504,13 @@
 
             fetch(API_URL, {
                 method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("Erro HTTP: " + res.status);
+                return res.json();
+            })
             .then(data => {
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
@@ -511,6 +521,7 @@
                 }
             })
             .catch(err => {
+                console.error(err);
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão ao salvar.";
             });
