@@ -91,7 +91,15 @@
             <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Relatórios</span>
         </div>
     </div>
-
+<!-- Verificação de Sessão Protegida -->
+    <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
+            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+            window.location.href = 'login.html';
+        }
+    </script>
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
     <nav class="side-menu" id="sideMenu">
