@@ -2,10 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: index.html. Versão do Código: v.1.9.002                              -->
-<!-- Data de atualização: 13/10/2026 - 18:41                                        -->
+<!-- Programa: index.html. Versão do Código: v.1.9.003                              -->
+<!-- Data de atualização: 14/10/2026 - 05:41                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Atualização do menu lateral com a inclusão oficial do Item 3. Relatórios.    -->
+<!-- - Restaurados os ícones e elementos visuais completos do banner principal.    -->
+<!-- - Padronização do menu lateral com atalho de Início e limpeza de sessão.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -28,7 +29,7 @@
         body { background-color: var(--light-color); color: var(--text-color); line-height: 1.6; }
         header {
             position: relative; width: 100%; background-color: #0f172a;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15); overflow: hidden; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .banner-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; display: block; margin: 0 auto; }
         .menu-toggle {
@@ -89,32 +90,31 @@
                 <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="side-menu-links">
-                <!-- 1. Voluntários -->
+                <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
+                    <i class="fa-solid fa-house"></i> Início (Página Inicial)
+                </a>
+
                 <div style="font-weight: 600; color: var(--secondary-color); margin-top: 5px;">1. Voluntários</div>
                 <div class="side-menu-sublinks">
                     <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
                     <a href="#" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta</a>
                 </div>
 
-                <!-- 2. Assistidos -->
                 <div style="font-weight: 600; color: var(--secondary-color); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
                 <div class="side-menu-sublinks">
                     <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
                     <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
                 </div>
 
-                <!-- 3. Relatórios -->
                 <div style="font-weight: 600; color: var(--secondary-color); margin-top: 10px;">3. Relatórios</div>
                 <div class="side-menu-sublinks">
                     <a href="relatorios.html" class="menu-sublink-item"><i class="fa-solid fa-file-pdf"></i> 3.1- Relatórios e Fichas</a>
                 </div>
 
-                <!-- 4. Painel Administrativo -->
                 <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;">
                     <i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo
                 </a>
 
-                <!-- 5. Sobre (Acessar E-book) -->
                 <a href="./ebook/" target="_blank" class="menu-link-item">
                     <i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)
                 </a>
