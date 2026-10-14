@@ -35,6 +35,15 @@
             margin: 0;
             padding: 0;
         }
+    <!-- Verificação de Sessão Protegida -->
+    <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
+            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+            window.location.href = 'login.html';
+        }
+    </script>      
         .navbar {
             background-color: #0f172a;
             color: white;
