@@ -2,11 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.2.1.002                           -->
-<!-- Data de atualização: 13/10/2026 - 18:47                                        -->
+<!-- Programa: consulta.html. Versão do Código: v.2.2.000                           -->
+<!-- Data de atualização: 14/10/2026 - 05:41                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Inclusão do Item 3. Relatórios no menu lateral da tela de consulta.          -->
-<!-- - Manutenção integral das funções de CORS, conversão de foto e sair.           -->
+<!-- - Consulta completa com proteção de sessão e menu lateral unificado.           -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -28,13 +27,55 @@
             --text-color: #334155;
             --border-color: #cbd5e1;
         }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .menu-toggle:hover { background: white; color: var(--primary-dark); }
+        .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
+        .side-menu.active { right: 0; }
+        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0f2fe; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .side-menu-header h3 { color: var(--primary-dark); font-size: 1.2rem; margin: 0; }
+        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        .side-menu-links { display: flex; flex-direction: column; gap: 1rem; }
+        .menu-link-item { background: var(--bg-color); color: var(--primary-dark); padding: 12px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary-color); transition: all 0.3s; }
+        .menu-link-item:hover { background: #e0f2fe; transform: translateX(5px); }
+        .side-menu-sublinks { padding-left: 20px; display: flex; flex-direction: column; gap: 0.5rem; }
+        .menu-sublink-item { font-size: 0.9rem; color: var(--text-color); padding: 8px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .menu-sublink-item:hover { background: #e0f2fe; color: var(--primary-dark); }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
+        .menu-overlay.active { display: block; }
+        .container { max-width: 1000px; margin: 30px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 25px; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; background: #f1f5f9; padding: 15px; border-radius: 8px; }
+        .search-box input { flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover { background-color: #b91c1c; }
+        #listaResultadosContainer { display: none; margin-bottom: 25px; }
+        .resultado-item { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+        .resultado-item:hover { border-color: var(--primary-color); background: #e0f2fe; }
+        #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1050; justify-content: center; align-items: center; }
+        .auth-card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        #resultadoContainer { display: none; }
+        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; }
+        .avatar-box { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-info h3 { margin: 0 0 5px 0; color: #0f172a; }
+        .profile-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
+        .section-title { grid-column: 1 / -1; font-size: 1.1rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; font-weight: 700; }
+        .actions-bar { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; }
+        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
     <!-- Verificação de Sessão Protegida -->
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
@@ -43,131 +84,7 @@
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
-    </script>      
-        .navbar {
-            background-color: #0f172a;
-            color: white;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
-        .menu-toggle {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            color: white;
-            font-size: 1.1rem;
-            padding: 8px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .menu-toggle:hover {
-            background: white;
-            color: var(--primary-dark);
-        }
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -320px;
-            width: 300px;
-            height: 100%;
-            background: white;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
-            transition: right 0.4s ease;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        .side-menu.active { right: 0; }
-        .side-menu-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid #e0f2fe; padding-bottom: 1rem; margin-bottom: 1.5rem;
-        }
-        .side-menu-header h3 { color: var(--primary-dark); font-size: 1.2rem; margin: 0; }
-        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
-        .side-menu-links { display: flex; flex-direction: column; gap: 1rem; }
-        .menu-link-item {
-            background: var(--bg-color); color: var(--primary-dark); padding: 12px 16px;
-            border-radius: 8px; text-decoration: none; font-weight: 500; display: flex;
-            align-items: center; gap: 10px; border-left: 4px solid var(--primary-color); transition: all 0.3s;
-        }
-        .menu-link-item:hover { background: #e0f2fe; transform: translateX(5px); }
-        .side-menu-sublinks { padding-left: 20px; display: flex; flex-direction: column; gap: 0.5rem; }
-        .menu-sublink-item {
-            font-size: 0.9rem; color: var(--text-color); padding: 8px 12px; background: #f1f5f9;
-            border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
-        }
-        .menu-sublink-item:hover { background: #e0f2fe; color: var(--primary-dark); }
-        .menu-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999;
-        }
-        .menu-overlay.active { display: block; }
-        .container {
-            max-width: 1000px; margin: 30px auto; background: var(--card-bg);
-            padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 25px; }
-        .search-box {
-            display: flex; gap: 10px; margin-bottom: 30px; background: #f1f5f9; padding: 15px; border-radius: 8px;
-        }
-        .search-box input { flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; }
-        .btn {
-            background-color: var(--primary-color); color: white; border: none;
-            padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s;
-        }
-        .btn:hover { background-color: var(--primary-dark); }
-        .btn-success { background-color: var(--success-color); }
-        .btn-success:hover { background-color: #15803d; }
-        .btn-danger { background-color: var(--danger-color); }
-        .btn-danger:hover { background-color: #b91c1c; }
-
-        #listaResultadosContainer { display: none; margin-bottom: 25px; }
-        .resultado-item {
-            background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px;
-            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;
-        }
-        .resultado-item:hover { border-color: var(--primary-color); background: #e0f2fe; }
-
-        #authModal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1050; justify-content: center; align-items: center;
-        }
-        .auth-card {
-            background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;
-        }
-
-        #resultadoContainer { display: none; }
-        .profile-header {
-            display: flex; align-items: center; gap: 20px;
-            border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px;
-        }
-        .avatar-box {
-            width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
-            border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0;
-        }
-        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-info h3 { margin: 0 0 5px 0; color: #0f172a; }
-        .profile-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
-        .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
-        .section-title {
-            grid-column: 1 / -1; font-size: 1.1rem; color: var(--primary-dark);
-            border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; font-weight: 700;
-        }
-        .actions-bar { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; }
-        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
-    </style>
-</head>
-<body>
+    </script>
 
     <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
@@ -182,7 +99,9 @@
             <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="side-menu-links">
-            <a href="index.html" class="menu-link-item" style="border-left-color: var(--success-color);"><i class="fa-solid fa-house"></i> Início (Página Inicial)</a>
+            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
+                <i class="fa-solid fa-house"></i> Início (Página Inicial)
+            </a>
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
                 <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
@@ -212,11 +131,11 @@
             <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Insira as credenciais do voluntário para desbloquear a ficha.</p>
             <div class="form-group" style="text-align: left; margin-bottom: 15px;">
                 <label>Usuário (Username)</label>
-                <input type="text" id="authUsername" placeholder="Ex: marcelo" style="width: 100%; box-sizing: border-box;">
+                <input type="text" id="authUsername" placeholder="Ex: marcelo" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
             </div>
             <div class="form-group" style="text-align: left; margin-bottom: 20px;">
                 <label>Senha</label>
-                <input type="password" id="authSenha" placeholder="Senha..." style="width: 100%; box-sizing: border-box;" onkeypress="if(event.key === 'Enter') validarOperador()">
+                <input type="password" id="authSenha" placeholder="Senha..." style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" onkeypress="if(event.key === 'Enter') validarOperador()">
             </div>
             <button class="btn" style="width: 100%;" onclick="validarOperador()">Autorizar Acesso</button>
             <div id="authErro" style="color: var(--danger-color); font-size: 13px; margin-top: 10px; font-weight: bold;"></div>
@@ -227,19 +146,17 @@
         <h2>Consulta e Atualização Cadastral</h2>
         
         <div class="search-box">
-            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF, o Nome ou o Nome Social (parcial/completo)..." onkeypress="if(event.key === 'Enter') pesquisarCadastros();">
+            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF, o Nome ou o Nome Social..." onkeypress="if(event.key === 'Enter') pesquisarCadastros();">
             <button class="btn" onclick="pesquisarCadastros()">Pesquisar</button>
         </div>
 
         <div id="mensagemStatus"></div>
 
-        <!-- Lista de Resultados para Seleção -->
         <div id="listaResultadosContainer">
             <h3 style="font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 15px;">Selecione o Assistido Desejado:</h3>
             <div id="listaResultadosItens"></div>
         </div>
 
-        <!-- Formulário Completo de 30 Colunas -->
         <div id="resultadoContainer">
             <input type="hidden" id="linhaPlanilha">
             
@@ -307,7 +224,7 @@
         }
 
         function sairConsulta() {
-            window.location.href = 'consulta.html';
+            window.history.back();
         }
 
         function pesquisarCadastros() {
@@ -330,10 +247,7 @@
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "consultarTriagem", termo: termo })
             })
-            .then(res => {
-                if (!res.ok) throw new Error("Erro HTTP: " + res.status);
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 statusDiv.innerText = "";
                 if (data.status === "encontrado") {
@@ -344,7 +258,6 @@
                 }
             })
             .catch(err => {
-                console.error(err);
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão com o servidor.";
             });
@@ -457,9 +370,7 @@
         function converterLinkDrive(url) {
             if (!url) return "";
             let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-                return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            }
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
             return url;
         }
 
@@ -520,10 +431,7 @@
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
             })
-            .then(res => {
-                if (!res.ok) throw new Error("Erro HTTP: " + res.status);
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
@@ -534,7 +442,6 @@
                 }
             })
             .catch(err => {
-                console.error(err);
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão ao salvar.";
             });
