@@ -2,11 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.1.000                              -->
-<!-- Data de atualização: 14/10/2026 - 05:21                                        -->
+<!-- Programa: login.html. Versão do Módulo: v.1.1.001                              -->
+<!-- Data de atualização: 14/10/2026 - 05:41                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Tela de login com pré-visualização fotográfica do operador via nuvem.        -->
-<!-- - Validação robusta de credenciais e salvamento de sessão ativa.               -->
+<!-- - Tela de login completa com pré-visualização de foto do operador e sessões.   -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -68,7 +67,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbz4sHez5EW_GVH0qow_L5OF0YWuNKyyRAxvYGzGW1nptC87Ty_7SB4MXhxPRaZqheGA1A/exec";
 
         function converterLinkDrive(url) {
             if (!url) return "";
@@ -115,8 +114,7 @@
                     localStorage.setItem('usuario_ativo', JSON.stringify(operador));
                     sessionStorage.setItem('pbs_autorizado', 'true');
                     
-                    // Redireciona para a página pretendida ou volta para consulta
-                    const destino = sessionStorage.getItem('pbs_destino') || 'consulta.v.2.1.002.html';
+                    const destino = sessionStorage.getItem('pbs_destino') || 'consulta.html';
                     sessionStorage.removeItem('pbs_destino');
                     window.location.href = destino;
                 } else {
