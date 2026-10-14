@@ -2,10 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.1.001                              -->
-<!-- Data de atualização: 14/10/2026 - 05:41                                        -->
+<!-- Programa: login.html. Versão do Módulo: v.1.2.000                              -->
+<!-- Data de atualização: 14/10/2026 - 06:10                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Tela de login completa com pré-visualização de foto do operador e sessões.   -->
+<!-- - Padronização completa do carregamento de fotos de operadores via Google Drive. -->
+<!-- - Validação robusta de sessão e tratamento de erros de conexão.                -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -67,7 +68,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbz4sHez5EW_GVH0qow_L5OF0YWuNKyyRAxvYGzGW1nptC87Ty_7SB4MXhxPRaZqheGA1A/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
 
         function converterLinkDrive(url) {
             if (!url) return "";
