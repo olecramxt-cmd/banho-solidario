@@ -2,11 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorios.html. Versão do Módulo: v.1.2.000                         -->
-<!-- Data de atualização: 13/10/2026 - 19:53                                        -->
+<!-- Programa: relatorios.html. Versão do Módulo: v.1.3.000                         -->
+<!-- Data de atualização: 14/10/2026 - 05:41                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Nome do documento configurado para salvar com a matrícula do assistido.      -->
-<!-- - Removido o cabeçalho superior e adicionado o nome do operador no rodapé.     -->
+<!-- - Módulo de relatórios completo com salvamento por matrícula e proteção.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -29,9 +28,6 @@
         }
         body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
-        .nav-right { display: flex; align-items: center; gap: 15px; }
-        .btn-inicio { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.5); color: white; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
-        .btn-inicio:hover { background: white; color: var(--primary-dark); }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
         .menu-toggle:hover { background: white; color: var(--primary-dark); }
         .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
@@ -84,14 +80,7 @@
 </head>
 <body>
 
-    <div class="navbar">
-        <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
-        <div class="nav-right">
-            <a href="index.html" class="btn-inicio"><i class="fa-solid fa-house"></i> Início</a>
-            <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Relatórios</span>
-        </div>
-    </div>
-<!-- Verificação de Sessão Protegida -->
+    <!-- Verificação de Sessão Protegida -->
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
@@ -100,6 +89,12 @@
             window.location.href = 'login.html';
         }
     </script>
+
+    <div class="navbar">
+        <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+        <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Relatórios</span>
+    </div>
+
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
     <nav class="side-menu" id="sideMenu">
@@ -108,7 +103,9 @@
             <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="side-menu-links">
-            <a href="index.html" class="menu-link-item" style="border-left-color: var(--success-color);"><i class="fa-solid fa-house"></i> Início (Página Inicial)</a>
+            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
+                <i class="fa-solid fa-house"></i> Início (Página Inicial)
+            </a>
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
                 <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
@@ -168,7 +165,6 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
 
-        // Exibir nome do operador logado no rodapé
         window.addEventListener('DOMContentLoaded', () => {
             const ativo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
             if (ativo && ativo.nome) {
@@ -233,8 +229,6 @@
 
         function gerarRelatorioPreenchido(reg) {
             document.getElementById('previewRelatorio').style.display = 'block';
-            
-            // Altera o título da página para que ao imprimir/salvar PDF o nome seja a matrícula
             const matriculaLimpa = reg.matricula || 'assistido';
             document.title = matriculaLimpa;
 
