@@ -70,7 +70,15 @@
             window.location.href = 'login.html';
         }
     </script>
-
+<!-- Verificação de Sessão Protegida -->
+    <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
+            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+            window.location.href = 'login.html';
+        }
+    </script>
     <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
         <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Banho Solidário</span>
