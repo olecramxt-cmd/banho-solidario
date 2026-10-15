@@ -2,11 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.2.000                              -->
-<!-- Data de atualização: 14/10/2026 - 06:10                                        -->
+<!-- Programa: login.html. Versão do Módulo: v.1.3.000                              -->
+<!-- Data de atualização: 15/10/2026 - 03:26                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Padronização completa do carregamento de fotos de operadores via Google Drive. -->
-<!-- - Validação robusta de sessão e tratamento de erros de conexão.                -->
+<!-- - Migração do login para método POST via API, eliminando erros de CORS e rede. -->
+<!-- - Pré-visualização e salvamento da foto do operador armazenada no Google Drive. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -83,12 +83,15 @@
             if (!user) return;
 
             try {
-                const res = await fetch(API_URL);
-                const lista = await res.json();
-                const operador = lista.find(u => u.username.toLowerCase() === user);
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "buscarFoto", username: user })
+                });
+                const data = await res.json();
                 
-                if (operador && operador.foto) {
-                    const fotoFinal = converterLinkDrive(operador.foto);
+                if (data.status === "sucesso" && data.foto) {
+                    const fotoFinal = converterLinkDrive(data.foto);
                     avatarBox.innerHTML = `<img src="${fotoFinal}" alt="Foto do Operador" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--secondary-color);\'></i>';">`;
                 } else {
                     avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
@@ -107,19 +110,22 @@
             erroDiv.innerText = "A validar acesso...";
 
             try {
-                const res = await fetch(API_URL);
-                const lista = await res.json();
-                const operador = lista.find(u => u.username.toLowerCase() === user && u.senha === pass);
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "loginUsuario", username: user, senha: pass })
+                });
+                const resposta = await res.json();
 
-                if (operador) {
-                    localStorage.setItem('usuario_ativo', JSON.stringify(operador));
+                if (resposta.status === 'sucesso') {
+                    localStorage.setItem('usuario_ativo', JSON.stringify(resposta.operador));
                     sessionStorage.setItem('pbs_autorizado', 'true');
                     
                     const destino = sessionStorage.getItem('pbs_destino') || 'consulta.html';
                     sessionStorage.removeItem('pbs_destino');
                     window.location.href = destino;
                 } else {
-                    erroDiv.innerText = "Utilizador ou senha inválidos!";
+                    erroDiv.innerText = resposta.message || "Utilizador ou senha inválidos!";
                 }
             } catch (e) {
                 erroDiv.innerText = "Erro de conexão com a nuvem.";
