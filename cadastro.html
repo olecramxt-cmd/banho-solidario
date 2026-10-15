@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Módulo: v.2.1.000                           -->
-<!-- Data de atualização: 15/10/2026 - 09:03                                        -->
-<!-- Descrição: Envio automático do nome do operador ativo no payload de cadastro.  -->
+<!-- Programa: cadastro.html. Versão do Módulo: v.2.2.000                           -->
+<!-- Data de atualização: 15/10/2026 - 09:25                                        -->
+<!-- Descrição: Limpeza do formulário após salvamento para permitir cadastro contínuo. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -112,7 +112,7 @@
     <div class="container">
         <h2>Novo Cadastro de Assistido (Triagem)</h2>
         
-        <form onsubmit="salvarNovoCadastro(event)">
+        <form id="formCadastro" onsubmit="salvarNovoCadastro(event)">
             <div class="form-grid">
                 <div class="section-title">1. Dados Pessoais e Identificação</div>
                 <div class="form-group"><label>Nome Completo *</label><input type="text" id="nomeCompleto" required></div>
@@ -160,7 +160,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxLjK1e4GEPC-hALBtMXlAcE_XTtOu37d7oEVF4OmR0WKhwGaH5CbKu0vBHMk1aHw93Ew/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
@@ -184,7 +184,6 @@
             event.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
 
-            // Recupera o operador logado no localStorage
             let operadorNome = "Sistema";
             try {
                 const ativo = JSON.parse(localStorage.getItem('usuario_ativo'));
@@ -238,10 +237,11 @@
             .then(data => {
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
-                    statusDiv.innerText = data.message + " Matrícula Gerada: " + data.matricula;
-                    setTimeout(() => {
-                        window.location.href = "consulta.html";
-                    }, 2000);
+                    statusDiv.innerText = "Cadastro efetuado com sucesso! Matrícula Gerada: " + data.matricula + " (Pronto para o próximo).";
+                    
+                    // Limpa o formulário e mantém o operador na tela para o próximo cadastro
+                    document.getElementById('formCadastro').reset();
+                    document.getElementById('cidade').value = "Unaí-MG"; // Restaura valor padrão
                 } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao salvar.";
