@@ -2,10 +2,11 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Código: v.2.3.000                           -->
-<!-- Data de atualização: 14/10/2026 - 06:10                                        -->
+<!-- Programa: consulta.html. Versão do Código: v.2.4.000                           -->
+<!-- Data de atualização: 15/10/2026 - 04:00                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Consulta completa com sessões protegidas e tratamento unificado de imagens.  -->
+<!-- - Removido o modal redundante de autenticação de operador ao selecionar registo. -->
+<!-- - Abertura direta do formulário de triagem para operadores já autenticados.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -57,8 +58,6 @@
         #listaResultadosContainer { display: none; margin-bottom: 25px; }
         .resultado-item { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
         .resultado-item:hover { border-color: var(--primary-color); background: #e0f2fe; }
-        #authModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1050; justify-content: center; align-items: center; }
-        .auth-card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
         #resultadoContainer { display: none; }
         .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; }
         .avatar-box { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; }
@@ -123,24 +122,6 @@
             <a href="./ebook/" target="_blank" class="menu-link-item"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
         </div>
     </nav>
-
-    <!-- Modal de Autenticação do Operador -->
-    <div id="authModal">
-        <div class="auth-card">
-            <h3 style="color: var(--primary-dark); margin-bottom: 10px;">Identificação do Operador</h3>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">Insira as credenciais do voluntário para desbloquear a ficha.</p>
-            <div class="form-group" style="text-align: left; margin-bottom: 15px;">
-                <label>Usuário (Username)</label>
-                <input type="text" id="authUsername" placeholder="Ex: marcelo" style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            </div>
-            <div class="form-group" style="text-align: left; margin-bottom: 20px;">
-                <label>Senha</label>
-                <input type="password" id="authSenha" placeholder="Senha..." style="width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;" onkeypress="if(event.key === 'Enter') validarOperador()">
-            </div>
-            <button class="btn" style="width: 100%;" onclick="validarOperador()">Autorizar Acesso</button>
-            <div id="authErro" style="color: var(--danger-color); font-size: 13px; margin-top: 10px; font-weight: bold;"></div>
-        </div>
-    </div>
 
     <div class="container">
         <h2>Consulta e Atualização Cadastral</h2>
@@ -215,8 +196,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx_YiELlbmDpW5nOhvOXMEJ4O6e3VXMjuFrk-u1xeAUfNDtdZie0Wl_cKUop0OlpY2NAg/exec";
-        let registroSelecionadoTemporario = null;
+        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
@@ -279,56 +259,14 @@
                         ${reg.nomeSocial ? `(${reg.nomeSocial})` : ''} | 
                         <strong>CPF:</strong> ${reg.cpf || 'Não informado'}
                     </div>
-                    <button class="btn" onclick='solicitarAutenticacao(${JSON.stringify(item)})'>Selecionar</button>
+                    <button class="btn" onclick='preencherFormularioCompleto(${JSON.stringify(reg)}, ${item.linha})'>Selecionar</button>
                 `;
                 container.appendChild(div);
             });
         }
 
-        function solicitarAutenticacao(itemCompleto) {
-            registroSelecionadoTemporario = itemCompleto;
-            document.getElementById('authUsername').value = "";
-            document.getElementById('authSenha').value = "";
-            document.getElementById('authErro').innerText = "";
-            document.getElementById('authModal').style.display = 'flex';
-        }
-
-        function validarOperador() {
-            const user = document.getElementById('authUsername').value.trim().toLowerCase();
-            const pass = document.getElementById('authSenha').value.trim();
-            const erroDiv = document.getElementById('authErro');
-
-            if (!user || !pass) {
-                erroDiv.innerText = "Preencha o usuário e a senha!";
-                return;
-            }
-
-            erroDiv.style.color = "#0284c7";
-            erroDiv.innerText = "A validar credenciais...";
-
-            fetch(API_URL, {
-                method: 'POST',
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: 'loginUsuario', username: user, senha: pass })
-            })
-            .then(res => res.json())
-            .then(resposta => {
-                if (resposta.status === 'sucesso') {
-                    document.getElementById('authModal').style.display = 'none';
-                    document.getElementById('listaResultadosContainer').style.display = 'none';
-                    preencherFormularioCompleto(registroSelecionadoTemporario.registro, registroSelecionadoTemporario.linha);
-                } else {
-                    erroDiv.style.color = "var(--danger-color)";
-                    erroDiv.innerText = resposta.message || "Credenciais inválidas.";
-                }
-            })
-            .catch(err => {
-                erroDiv.style.color = "var(--danger-color)";
-                erroDiv.innerText = "Erro ao validar operador.";
-            });
-        }
-
         function preencherFormularioCompleto(reg, linha) {
+            document.getElementById('listaResultadosContainer').style.display = "none";
             document.getElementById('resultadoContainer').style.display = "block";
             document.getElementById('linhaPlanilha').value = linha;
 
