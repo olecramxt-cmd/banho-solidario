@@ -2,11 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.3.000                              -->
-<!-- Data de atualização: 15/10/2026 - 03:26                                        -->
-<!-- Descrição das Alterações:                                                      -->
-<!-- - Migração do login para método POST via API, eliminando erros de CORS e rede. -->
-<!-- - Pré-visualização e salvamento da foto do operador armazenada no Google Drive. -->
+<!-- Programa: login.html. Versão do Módulo: v.1.4.000                              -->
+<!-- Data de atualização: 15/10/2026 - 09:03                                        -->
+<!-- Descrição: Exibição imediata do nome do operador abaixo da foto e alta velocidade. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -31,8 +29,9 @@
         .login-title { color: var(--secondary-color); font-size: 1.8rem; font-weight: 700; margin-bottom: 5px; }
         .login-subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 20px; }
         
-        .operator-avatar-box { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 3px solid var(--secondary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; margin: 0 auto 20px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .operator-avatar-box { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 3px solid var(--secondary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; margin: 0 auto 10px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .operator-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        #operatorNameDisplay { font-size: 0.95rem; font-weight: 600; color: var(--secondary-color); margin-bottom: 20px; min-height: 22px; }
 
         .form-group { text-align: left; margin-bottom: 20px; }
         .form-group label { display: block; font-weight: 500; margin-bottom: 8px; font-size: 0.9rem; color: var(--dark-color); }
@@ -52,11 +51,12 @@
         <div class="operator-avatar-box" id="avatarBox">
             <i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>
         </div>
+        <div id="operatorNameDisplay"></div>
 
         <form onsubmit="realizarLogin(event)">
             <div class="form-group">
                 <label>Usuário (Username)</label>
-                <input type="text" id="username" class="form-control" placeholder="Ex: marcelo" required onblur="buscarFotoOperador()">
+                <input type="text" id="username" class="form-control" placeholder="Ex: marcelo" required oninput="buscarFotoOperadorRapido()">
             </div>
             <div class="form-group">
                 <label>Senha de Acesso</label>
@@ -68,7 +68,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyvoqW9gEqg0QW-M0geKHSgthDzn3197AT4KX3rxCtv0sbNX994XM4weHNzPWxg4MxnFQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxLjK1e4GEPC-hALBtMXlAcE_XTtOu37d7oEVF4OmR0WKhwGaH5CbKu0vBHMk1aHw93Ew/exec";
 
         function converterLinkDrive(url) {
             if (!url) return "";
@@ -77,28 +77,45 @@
             return url;
         }
 
-        async function buscarFotoOperador() {
+        let timeoutBusca = null;
+        function buscarFotoOperadorRapido() {
+            clearTimeout(timeoutBusca);
             const user = document.getElementById('username').value.trim().toLowerCase();
             const avatarBox = document.getElementById('avatarBox');
-            if (!user) return;
+            const nameDisplay = document.getElementById('operatorNameDisplay');
 
-            try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action: "buscarFoto", username: user })
-                });
-                const data = await res.json();
-                
-                if (data.status === "sucesso" && data.foto) {
-                    const fotoFinal = converterLinkDrive(data.foto);
-                    avatarBox.innerHTML = `<img src="${fotoFinal}" alt="Foto do Operador" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--secondary-color);\'></i>';">`;
-                } else {
-                    avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
-                }
-            } catch (e) {
-                console.error("Erro ao buscar foto do operador", e);
+            if (!user) {
+                avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
+                nameDisplay.innerText = "";
+                return;
             }
+
+            // Debounce ultra-rápido para evitar travamentos de rede
+            timeoutBusca = setTimeout(async () => {
+                try {
+                    const res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ action: "buscarFoto", username: user })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.status === "sucesso") {
+                        if (data.foto) {
+                            const fotoFinal = converterLinkDrive(data.foto);
+                            avatarBox.innerHTML = `<img src="${fotoFinal}" alt="Operador" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--secondary-color);\'></i>';">`;
+                        } else {
+                            avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
+                        }
+                        nameDisplay.innerText = data.nome ? `Operador: ${data.nome}` : "";
+                    } else {
+                        avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
+                        nameDisplay.innerText = "";
+                    }
+                } catch (e) {
+                    console.error("Erro na busca rápida", e);
+                }
+            }, 300); // Resposta em 300ms
         }
 
         async function realizarLogin(event) {
