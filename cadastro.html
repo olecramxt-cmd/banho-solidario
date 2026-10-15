@@ -2,17 +2,16 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Código: v.1.6.000                           -->
-<!-- Data de atualização: 14/10/2026 - 05:41                                        -->
-<!-- Descrição das Alterações:                                                      -->
-<!-- - Cadastro completo com cálculo de idade, máscara de CPF e proteção de sessão. -->
+<!-- Programa: cadastro.html. Versão do Módulo: v.2.1.000                           -->
+<!-- Data de atualização: 15/10/2026 - 09:03                                        -->
+<!-- Descrição: Envio automático do nome do operador ativo no payload de cadastro.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMAS iPeC - Novo Cadastro / Banho Solidário</title>
+    <title>SISTEMAS iPeC - Cadastro de Assistido / Banho Solidário</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -48,19 +47,21 @@
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
-        .form-group input, .form-group select, .form-group textarea { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
         .section-title { grid-column: 1 / -1; font-size: 1.1rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; font-weight: 700; }
         .actions-bar { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; }
-        .btn { background-color: var(--success-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
-        .btn:hover { background-color: #15803d; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #15803d; }
         .btn-danger { background-color: var(--danger-color); }
         .btn-danger:hover { background-color: #b91c1c; }
-        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; grid-column: 1 / -1; }
+        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- Verificação de Sessão Protegida -->
+    <!-- Verificação de Sessão -->
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
@@ -86,8 +87,7 @@
             <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
                 <i class="fa-solid fa-house"></i> Início (Página Inicial)
             </a>
-
-            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">1. Voluntários</div>
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
                 <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
                 <a href="#" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta</a>
@@ -110,109 +110,92 @@
     </nav>
 
     <div class="container">
-        <h2>Novo Cadastro de Assistido (Triagem Completa)</h2>
+        <h2>Novo Cadastro de Assistido (Triagem)</h2>
         
-        <form id="formCadastro" class="form-grid" onsubmit="enviarCadastro(event)">
-            <div class="section-title">1. Dados Pessoais e Identificação</div>
-            <div class="form-group"><label>Nome Completo *</label><input type="text" id="nomeCompleto" required></div>
-            <div class="form-group"><label>Nome Social</label><input type="text" id="nomeSocial"></div>
-            <div class="form-group"><label>Data de Nascimento</label><input type="date" id="dataNascimento" onchange="calcularIdadeDetalhada()"></div>
-            <div class="form-group"><label>Idade (Anos, Meses e Dias)</label><input type="text" id="idade" placeholder="Calculado automaticamente..."></div>
-            <div class="form-group"><label>Sexo</label><select id="sexo"><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option><option value="Outro">Outro / Não Informado</option></select></div>
-            <div class="form-group"><label>Escolaridade</label><select id="escolaridade"><option value="">Selecione...</option><option value="Ensino Fundamental I">Ensino Fundamental I</option><option value="Ensino Fundamental II">Ensino Fundamental II</option><option value="Ensino Médio">Ensino Médio</option><option value="Ensino Superior">Ensino Superior</option><option value="Não Alfabetizado">Não Alfabetizado</option></select></div>
-            <div class="form-group"><label>Naturalidade</label><input type="text" id="naturalidade" placeholder="Ex: Unaí - MG"></div>
-            <div class="form-group"><label>RG</label><input type="text" id="rg"></div>
-            <div class="form-group"><label>CPF</label><input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCpf(this)"></div>
-            <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
+        <form onsubmit="salvarNovoCadastro(event)">
+            <div class="form-grid">
+                <div class="section-title">1. Dados Pessoais e Identificação</div>
+                <div class="form-group"><label>Nome Completo *</label><input type="text" id="nomeCompleto" required></div>
+                <div class="form-group"><label>Nome Social</label><input type="text" id="nomeSocial"></div>
+                <div class="form-group"><label>Data de Nascimento</label><input type="date" id="dataNascimento" onchange="calcularIdade()"></div>
+                <div class="form-group"><label>Idade</label><input type="text" id="idade" readonly style="background:#f1f5f9;"></div>
+                <div class="form-group"><label>Sexo</label><select id="sexo"><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option><option value="Outro">Outro</option></select></div>
+                <div class="form-group"><label>Escolaridade</label><select id="escolaridade"><option value="">Selecione...</option><option value="Ensino Fundamental I">Ensino Fundamental I</option><option value="Ensino Fundamental II">Ensino Fundamental II</option><option value="Ensino Médio">Ensino Médio</option><option value="Ensino Superior">Ensino Superior</option><option value="Não Alfabetizado">Não Alfabetizado</option></select></div>
+                <div class="form-group"><label>Naturalidade</label><input type="text" id="naturalidade"></div>
+                <div class="form-group"><label>RG</label><input type="text" id="rg"></div>
+                <div class="form-group"><label>CPF</label><input type="text" id="cpf" placeholder="000.000.000-00"></div>
+                <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
 
-            <div class="section-title">2. Filiação e Contatos</div>
-            <div class="form-group"><label>Filiação (Mãe)</label><input type="text" id="filiacaoMae"></div>
-            <div class="form-group"><label>Filiação (Pai)</label><input type="text" id="filiacaoPai"></div>
-            <div class="form-group"><label>Endereço</label><input type="text" id="endereco"></div>
-            <div class="form-group"><label>Cidade</label><input type="text" id="cidade" value="Unaí-MG"></div>
-            <div class="form-group"><label>Telefone / Contato</label><input type="text" id="telefone" placeholder="(38) 9.9999-9999"></div>
-            <div class="form-group"><label>Residência ou Familiares em Unaí</label><select id="residenciaUnaí"><option value="">Selecione...</option><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                <div class="section-title">2. Filiação e Contactos</div>
+                <div class="form-group"><label>Filiação (Mãe)</label><input type="text" id="filiacaoMae"></div>
+                <div class="form-group"><label>Filiação (Pai)</label><input type="text" id="filiacaoPai"></div>
+                <div class="form-group"><label>Endereço</label><input type="text" id="endereco"></div>
+                <div class="form-group"><label>Cidade</label><input type="text" id="cidade" value="Unaí-MG"></div>
+                <div class="form-group"><label>Telefone / Contato</label><input type="text" id="telefone" placeholder="(38) 9.9999-9999"></div>
+                <div class="form-group"><label>Residência ou Familiares em Unaí</label><select id="residenciaUnaí"><option value="">Selecione...</option><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
 
-            <div class="section-title">3. Perfil Social e Permanência na Rua</div>
-            <div class="form-group"><label>Tipo de Usuário</label><select id="tipoUsuario"><option value="Assistido">Assistido</option><option value="Idoso">Idoso</option><option value="Outro">Outro</option></select></div>
-            <div class="form-group"><label>Tempo de Permanência na Rua</label><input type="text" id="tempoRua" placeholder="Ex: 01 ano ou mais"></div>
-            <div class="form-group"><label>Tempo de Permanência em Unaí</label><input type="text" id="tempoUnaí" placeholder="Ex: 02 anos"></div>
-            <div class="form-group"><label>Principais Motivos da Permanência</label><input type="text" id="motivosPermanencia" placeholder="Ex: Desemprego, Conflitos Familiares"></div>
-            <div class="form-group"><label>Outros Motivos</label><input type="text" id="outrosMotivos"></div>
+                <div class="section-title">3. Perfil Social e Permanência na Rua</div>
+                <div class="form-group"><label>Tipo de Usuário</label><select id="tipoUsuario"><option value="Assistido">Assistido</option><option value="Idoso">Idoso</option><option value="Outro">Outro</option></select></div>
+                <div class="form-group"><label>Tempo de Rua</label><input type="text" id="tempoRua" placeholder="Ex: 01 ano ou mais"></div>
+                <div class="form-group"><label>Tempo de Unaí</label><input type="text" id="tempoUnaí" placeholder="Ex: 02 anos"></div>
+                <div class="form-group"><label>Motivos Permanência</label><input type="text" id="motivosPermanencia" placeholder="Ex: Desemprego, Conflitos Familiares"></div>
+                <div class="form-group"><label>Outros Motivos</label><input type="text" id="outrosMotivos"></div>
 
-            <div class="section-title">4. Atendimentos, Benefícios e Documentação</div>
-            <div class="form-group"><label>Já Passou por Atendimento</label><input type="text" id="passouAtendimento" placeholder="Ex: CAPS, CRAS"></div>
-            <div class="form-group"><label>Recebe Auxílio Benefício</label><select id="recebeAuxilio"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
-            <div class="form-group"><label>Qual Benefício</label><input type="text" id="qualBeneficio" placeholder="Ex: Bolsa Família, BPC"></div>
-            <div class="form-group"><label>Possui Todos os Documentos</label><select id="possuiDocumentos"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
-            <div class="form-group"><label>Quais Documentos Faltam</label><input type="text" id="documentosFaltam" placeholder="Ex: RG, CPF"></div>
-            <div class="form-group"><label>Possui Carteira de Trabalho</label><select id="carteiraTrabalho"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
-            <div class="form-group"><label>URL da Foto (Opcional)</label><input type="text" id="foto" placeholder="https://exemplo.com/foto.jpg"></div>
+                <div class="section-title">4. Atendimentos, Benefícios e Documentação</div>
+                <div class="form-group"><label>Passou Atendimento</label><input type="text" id="passouAtendimento" placeholder="Ex: CAPS, CRAS"></div>
+                <div class="form-group"><label>Recebe Auxílio</label><select id="recebeAuxilio"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
+                <div class="form-group"><label>Qual Benefício</label><input type="text" id="qualBeneficio" placeholder="Ex: Bolsa Família, BPC"></div>
+                <div class="form-group"><label>Possui Documentos</label><select id="possuiDocumentos"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                <div class="form-group"><label>Documentos Faltam</label><input type="text" id="documentosFaltam" placeholder="Ex: RG, CPF"></div>
+                <div class="form-group"><label>Carteira de Trabalho</label><select id="carteiraTrabalho"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
+                <div class="form-group"><label>URL da Foto (Opcional)</label><input type="text" id="foto" placeholder="https://drive.google.com/..."></div>
 
-            <div class="actions-bar">
-                <button type="button" class="btn btn-danger" onclick="sairLimpar()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
-                <button type="submit" class="btn"><i class="fa-solid fa-user-plus"></i> Salvar Novo Cadastro</button>
+                <div class="actions-bar">
+                    <button type="button" class="btn btn-danger" onclick="window.history.back()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-user-plus"></i> Salvar Novo Cadastro</button>
+                </div>
             </div>
-            
-            <div id="mensagemStatus"></div>
         </form>
+        <div id="mensagemStatus"></div>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyvoqW9gEqg0QW-M0geKHSgthDzn3197AT4KX3rxCtv0sbNX994XM4weHNzPWxg4MxnFQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxLjK1e4GEPC-hALBtMXlAcE_XTtOu37d7oEVF4OmR0WKhwGaH5CbKu0vBHMk1aHw93Ew/exec";
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        function sairLimpar() {
-            window.history.back();
-        }
-
-        function calcularIdadeDetalhada() {
-            const valNasc = document.getElementById('dataNascimento').value;
-            if (!valNasc) return;
-            const nasc = new Date(valNasc);
+        function calcularIdade() {
+            const dataNasc = document.getElementById('dataNascimento').value;
+            if (!dataNasc) return;
             const hoje = new Date();
-            
-            let anos = hoje.getFullYear() - nasc.getFullYear();
-            let meses = hoje.getMonth() - nasc.getMonth();
-            let dias = hoje.getDate() - nasc.getDate();
-
-            if (dias < 0) {
-                meses--;
-                const ultimoDiaMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
-                dias += ultimoDiaMesAnterior;
+            const nascimento = new Date(dataNasc);
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const m = hoje.getMonth() - nascimento.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+                idade--;
             }
-            if (meses < 0) {
-                anos--;
-                meses += 12;
-            }
-
-            document.getElementById('idade').value = `${anos} anos, ${meses} meses e ${dias} dias`;
+            document.getElementById('idade').value = idade >= 0 ? idade + " anos" : "";
         }
 
-        function mascaraCpf(input) {
-            let v = input.value.replace(/\D/g, '');
-            if (v.length > 11) v = v.slice(0, 11);
-            if (v.length > 9) {
-                v = v.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
-            } else if (v.length > 6) {
-                v = v.replace(/^(\d{3})(\d{3})(\d{1,3})$/, "$1.$2.$3");
-            } else if (v.length > 3) {
-                v = v.replace(/^(\d{3})(\d{1,3})$/, "$1.$2");
-            }
-            input.value = v;
-        }
-
-        function enviarCadastro(e) {
-            e.preventDefault();
+        function salvarNovoCadastro(event) {
+            event.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
-            statusDiv.innerHTML = "<span style='color: var(--primary-dark);'>A processar cadastro... Por favor, aguarde.</span>";
 
-            const dados = {
-                action: 'inserirTriagem',
+            // Recupera o operador logado no localStorage
+            let operadorNome = "Sistema";
+            try {
+                const ativo = JSON.parse(localStorage.getItem('usuario_ativo'));
+                if (ativo && ativo.nome) {
+                    operadorNome = ativo.nome;
+                }
+            } catch(e) {}
+
+            const payload = {
+                action: "inserirTriagem",
+                operador: operadorNome,
                 nomeCompleto: document.getElementById('nomeCompleto').value,
                 nomeSocial: document.getElementById('nomeSocial').value,
                 dataNascimento: document.getElementById('dataNascimento').value,
@@ -243,22 +226,30 @@
                 foto: document.getElementById('foto').value
             };
 
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "A gravar novo cadastro na nuvem...";
+
             fetch(API_URL, {
-                method: 'POST',
+                method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(dados)
+                body: JSON.stringify(payload)
             })
             .then(res => res.json())
-            .then(resposta => {
-                if (resposta.status === 'sucesso') {
-                    statusDiv.innerHTML = `<span style='color: var(--success-color);'>${resposta.message} Matrícula gerada: ${resposta.matricula}</span>`;
-                    document.getElementById('formCadastro').reset();
+            .then(data => {
+                if (data.status === "sucesso") {
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = data.message + " Matrícula Gerada: " + data.matricula;
+                    setTimeout(() => {
+                        window.location.href = "consulta.html";
+                    }, 2000);
                 } else {
-                    statusDiv.innerHTML = `<span style='color: var(--danger-color);'>Erro: ${resposta.message}</span>`;
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Erro ao salvar.";
                 }
             })
             .catch(err => {
-                statusDiv.innerHTML = `<span style='color: var(--danger-color);'>Erro de comunicação com a API: ${err}</span>`;
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão com a API: " + err.message;
             });
         }
     </script>
