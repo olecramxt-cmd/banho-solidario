@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.4.000                              -->
-<!-- Data de atualização: 15/10/2026 - 09:03                                        -->
-<!-- Descrição: Exibição imediata do nome do operador abaixo da foto e alta velocidade. -->
+<!-- Programa: login.html. Versão do Módulo: v.1.5.000                              -->
+<!-- Data de atualização: 15/10/2026 - 09:25                                        -->
+<!-- Descrição: Correção de intermitência no login com tratamento robusto de exceções.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -68,7 +68,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxLjK1e4GEPC-hALBtMXlAcE_XTtOu37d7oEVF4OmR0WKhwGaH5CbKu0vBHMk1aHw93Ew/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
 
         function converterLinkDrive(url) {
             if (!url) return "";
@@ -90,7 +90,6 @@
                 return;
             }
 
-            // Debounce ultra-rápido para evitar travamentos de rede
             timeoutBusca = setTimeout(async () => {
                 try {
                     const res = await fetch(API_URL, {
@@ -98,6 +97,8 @@
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify({ action: "buscarFoto", username: user })
                     });
+                    
+                    if (!res.ok) return;
                     const data = await res.json();
                     
                     if (data.status === "sucesso") {
@@ -113,9 +114,9 @@
                         nameDisplay.innerText = "";
                     }
                 } catch (e) {
-                    console.error("Erro na busca rápida", e);
+                    console.error("Busca rápida ignorada por latência", e);
                 }
-            }, 300); // Resposta em 300ms
+            }, 350);
         }
 
         async function realizarLogin(event) {
@@ -124,7 +125,8 @@
             const pass = document.getElementById('senha').value.trim();
             const erroDiv = document.getElementById('mensagemErro');
 
-            erroDiv.innerText = "A validar acesso...";
+            erroDiv.style.color = "#0284c7";
+            erroDiv.innerText = "A validar acesso na nuvem...";
 
             try {
                 const res = await fetch(API_URL, {
@@ -132,6 +134,11 @@
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ action: "loginUsuario", username: user, senha: pass })
                 });
+
+                if (!res.ok) {
+                    throw new Error("Erro HTTP: " + res.status);
+                }
+
                 const resposta = await res.json();
 
                 if (resposta.status === 'sucesso') {
@@ -142,10 +149,12 @@
                     sessionStorage.removeItem('pbs_destino');
                     window.location.href = destino;
                 } else {
+                    erroDiv.style.color = "#dc2626";
                     erroDiv.innerText = resposta.message || "Utilizador ou senha inválidos!";
                 }
             } catch (e) {
-                erroDiv.innerText = "Erro de conexão com a nuvem.";
+                erroDiv.style.color = "#dc2626";
+                erroDiv.innerText = "Erro de conexão com a nuvem. Tente novamente.";
             }
         }
     </script>
