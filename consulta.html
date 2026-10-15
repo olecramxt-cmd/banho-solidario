@@ -2,11 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Código: v.2.4.000                           -->
-<!-- Data de atualização: 15/10/2026 - 04:00                                        -->
+<!-- Programa: consulta.html. Versão do Código: v.2.5.000                           -->
+<!-- Data de atualização: 15/10/2026 - 06:10                                        -->
 <!-- Descrição das Alterações:                                                      -->
-<!-- - Removido o modal redundante de autenticação de operador ao selecionar registo. -->
-<!-- - Abertura direta do formulário de triagem para operadores já autenticados.    -->
+<!-- - Formatação amigável de data e operador e suporte à palavra "TODOS" na busca. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -58,7 +57,7 @@
         #listaResultadosContainer { display: none; margin-bottom: 25px; }
         .resultado-item { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
         .resultado-item:hover { border-color: var(--primary-color); background: #e0f2fe; }
-        #resultadoContainer { display: none; }
+        #resultadoContainer { display: none; transition: all 0.3s ease; }
         .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; }
         .avatar-box { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -71,6 +70,12 @@
         .section-title { grid-column: 1 / -1; font-size: 1.1rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; font-weight: 700; }
         .actions-bar { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; }
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
+        @keyframes pulseSalvar {
+            0% { transform: scale(1); background-color: #ffffff; }
+            50% { transform: scale(1.01); background-color: #dcfce7; }
+            100% { transform: scale(1); background-color: #ffffff; }
+        }
+        .animar-salvamento { animation: pulseSalvar 0.6s ease; }
     </style>
 </head>
 <body>
@@ -127,7 +132,7 @@
         <h2>Consulta e Atualização Cadastral</h2>
         
         <div class="search-box">
-            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF, o Nome ou o Nome Social..." onkeypress="if(event.key === 'Enter') pesquisarCadastros();">
+            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF, o Nome, o Nome Social ou 'TODOS'..." onkeypress="if(event.key === 'Enter') pesquisarCadastros();">
             <button class="btn" onclick="pesquisarCadastros()">Pesquisar</button>
         </div>
 
@@ -196,7 +201,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx_YiELlbmDpW5nOhvOXMEJ4O6e3VXMjuFrk-u1xeAUfNDtdZie0Wl_cKUop0OlpY2NAg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
@@ -207,6 +212,29 @@
             window.history.back();
         }
 
+        function formatarDataAmigavel(dataStr, operadorNome) {
+            if (!dataStr) return "Data não informada";
+            try {
+                let d = new Date(dataStr);
+                if (isNaN(d.getTime())) return dataStr + (operadorNome ? " - Operador: " + operadorNome : "");
+                
+                const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+                let dia = String(d.getDate()).padStart(2, '0');
+                let mes = meses[d.getMonth()];
+                let ano = d.getFullYear();
+                let hora = String(d.getHours()).padStart(2, '0');
+                let min = String(d.getMinutes()).padStart(2, '0');
+
+                let resultado = `${dia}/${mes}/${ano} - ${hora}:${min}`;
+                if (operadorNome) {
+                    resultado += ` - Operador: ${operadorNome}`;
+                }
+                return resultado;
+            } catch(e) {
+                return dataStr;
+            }
+        }
+
         function pesquisarCadastros() {
             const termo = document.getElementById('termoBusca').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
@@ -215,7 +243,7 @@
 
             if (!termo) {
                 statusDiv.style.color = "red";
-                statusDiv.innerText = "Por favor, digite um termo para pesquisar.";
+                statusDiv.innerText = "Por favor, digite um termo ou 'TODOS' para pesquisar.";
                 return;
             }
 
@@ -267,11 +295,15 @@
 
         function preencherFormularioCompleto(reg, linha) {
             document.getElementById('listaResultadosContainer').style.display = "none";
-            document.getElementById('resultadoContainer').style.display = "block";
+            const containerRes = document.getElementById('resultadoContainer');
+            containerRes.style.display = "block";
             document.getElementById('linhaPlanilha').value = linha;
 
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
-            document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + (reg.dataHora || "---");
+            
+            // Formatando Data e Operador
+            let operadorCad = reg.operador || reg.usuario || "Sistema";
+            document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
 
             document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
             document.getElementById('nomeSocial').value = reg.nomeSocial || "";
@@ -327,6 +359,7 @@
         function atualizarCadastro() {
             const linha = document.getElementById('linhaPlanilha').value;
             const statusDiv = document.getElementById('mensagemStatus');
+            const containerRes = document.getElementById('resultadoContainer');
 
             const payload = {
                 action: "atualizarTriagem",
@@ -374,6 +407,12 @@
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
                     statusDiv.innerText = data.message;
+                    
+                    // Feedback visual nítido na tela ao salvar
+                    containerRes.classList.add('animar-salvamento');
+                    setTimeout(() => {
+                        containerRes.classList.remove('animar-salvamento');
+                    }, 600);
                 } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao atualizar.";
