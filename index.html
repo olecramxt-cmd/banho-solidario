@@ -2,10 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: index.html. Versão do Código: v.2.1.000                              -->
-<!-- Data de atualização: 15/10/2026 - 05:33                                        -->
-<!-- Descrição das Alterações:                                                      -->
-<!-- - Integrados o banner oficial do topo, o menu lateral completo e todos os blocos institucionais. -->
+<!-- Programa: index.html. Versão do Módulo: v.2.2.000                              -->
+<!-- Data de atualização: 16/10/2026 - 05:19                                        -->
+<!-- Descrição: Adicionado o link para o módulo 2.3- Galeria da Dignidade no menu.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -25,337 +24,64 @@
             --light-color: #f8fafc;
             --text-color: #4b5563;
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        body {
-            background-color: var(--light-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-        header {
-            position: relative;
-            width: 100%;
-            background-color: #0f172a;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .banner-img {
-            width: 100%;
-            height: auto;
-            max-height: 550px;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
-        }
-        /* Botão do Menu no Topo Direito */
-        .menu-toggle {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            color: white;
-            font-size: 1.2rem;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-        .menu-toggle:hover {
-            background: white;
-            color: var(--secondary-color);
-        }
-        /* Menu Lateral Estilo Gaveta */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -320px;
-            width: 300px;
-            height: 100%;
-            background: white;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
-            transition: right 0.4s ease;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem;
-            overflow-y: auto;
-        }
-        .side-menu.active {
-            right: 0;
-        }
-        .side-menu-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .side-menu-header h3 {
-            color: var(--secondary-color);
-            font-size: 1.2rem;
-        }
-        .close-menu {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-color);
-            cursor: pointer;
-        }
-        .side-menu-links {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .menu-link-item {
-            background: var(--light-color);
-            color: var(--secondary-color);
-            padding: 12px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-left: 4px solid var(--secondary-color);
-            transition: all 0.3s;
-        }
-        .menu-link-item:hover {
-            background: var(--accent-color);
-            transform: translateX(5px);
-        }
-        .side-menu-sublinks {
-            padding-left: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            margin-top: 5px;
-        }
-        .menu-sublink-item {
-            font-size: 0.9rem;
-            color: var(--text-color);
-            padding: 8px 12px;
-            background: #f1f5f9;
-            border-radius: 6px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-        .menu-sublink-item:hover {
-            background: var(--accent-color);
-            color: var(--secondary-color);
-        }
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(3px);
-            display: none;
-            z-index: 999;
-        }
-        .menu-overlay.active {
-            display: block;
-        }
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 2rem 1rem;
-        }
-        section {
-            background: white;
-            margin-bottom: 2rem;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        h2 {
-            color: var(--secondary-color);
-            margin-bottom: 1.2rem;
-            font-size: 1.8rem;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        p {
-            margin-bottom: 1rem;
-            font-size: 1rem;
-            text-align: justify;
-        }
-        /* Grade de Resultados - Layout 3x3 com Destaque no Topo */
-        .results-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        .card-main {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
-        }
-        .card-main h3 {
-            font-size: 2.8rem;
-            color: #ffffff;
-            margin-bottom: 0.3rem;
-            font-weight: 700;
-        }
-        .card-main p {
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: #f3e8ff;
-            margin-bottom: 0;
-            text-align: center;
-        }
-        .grid-results-3x3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-        .card-result {
-            background: var(--accent-color);
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid var(--secondary-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .card-result h3 {
-            font-size: 2rem;
-            color: var(--secondary-color);
-            margin-bottom: 0.3rem;
-        }
-        .card-result p {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--dark-color);
-            margin-bottom: 0;
-            text-align: center;
-        }
-        /* Linha do Tempo - Como Tudo Começou */
-        .timeline-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        .timeline-step {
-            background: #faf5ff;
-            border: 1px solid #e9d5ff;
-            padding: 1.2rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .timeline-step i {
-            font-size: 1.8rem;
-            color: var(--secondary-color);
-            margin-bottom: 0.8rem;
-        }
-        .timeline-step h4 {
-            font-size: 0.95rem;
-            color: var(--secondary-color);
-            margin-bottom: 0.5rem;
-        }
-        .timeline-step p {
-            font-size: 0.85rem;
-            color: var(--text-color);
-            margin-bottom: 0;
-            text-align: center;
-        }
-        ul {
-            margin: 0;
-            padding-left: 20px;
-            color: var(--text-color);
-        }
-        ul li {
-            margin-bottom: 0.8rem;
-            font-size: 1rem;
-            text-align: justify;
-        }
-        .donation-box {
-            background: #faf5ff;
-            border: 2px dashed var(--secondary-color);
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 1.5rem;
-        }
-        .donation-box ul {
-            list-style: none;
-            margin-top: 1rem;
-            padding-left: 0;
-        }
-        .donation-box li {
-            margin-bottom: 0.8rem;
-            font-size: 1.05rem;
-            text-align: left;
-        }
-        .donation-box li strong {
-            color: var(--secondary-color);
-        }
-        footer {
-            text-align: center;
-            padding: 2rem;
-            background: var(--dark-color);
-            color: white;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-        footer a {
-            color: #c084fc;
-            text-decoration: none;
-        }
-        footer a:hover {
-            text-decoration: underline;
-        }
-        @media(max-width: 900px) {
-            .grid-results-3x3 {
-                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            }
-        }
-        @media(max-width: 768px) {
-            section { padding: 1.5rem; }
-            .banner-img { max-height: 250px; }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--light-color); color: var(--text-color); line-height: 1.6; }
+        header { position: relative; width: 100%; background-color: #0f172a; box-shadow: 0 4px 15px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .banner-img { width: 100%; height: auto; max-height: 550px; object-fit: contain; display: block; margin: 0 auto; }
+        .menu-toggle { position: absolute; top: 20px; right: 25px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.2rem; padding: 10px 16px; border-radius: 8px; cursor: pointer; backdrop-filter: blur(5px); transition: all 0.3s ease; z-index: 10; }
+        .menu-toggle:hover { background: white; color: var(--secondary-color); }
+        .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; overflow-y: auto; }
+        .side-menu.active { right: 0; }
+        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .side-menu-header h3 { color: var(--secondary-color); font-size: 1.2rem; }
+        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        .side-menu-links { display: flex; flex-direction: column; gap: 1rem; }
+        .menu-link-item { background: var(--light-color); color: var(--secondary-color); padding: 12px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--secondary-color); transition: all 0.3s; }
+        .menu-link-item:hover { background: var(--accent-color); transform: translateX(5px); }
+        .side-menu-sublinks { padding-left: 15px; display: flex; flex-direction: column; gap: 5px; margin-top: 5px; }
+        .menu-sublink-item { font-size: 0.9rem; color: var(--text-color); padding: 8px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .menu-sublink-item:hover { background: var(--accent-color); color: var(--secondary-color); }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
+        .menu-overlay.active { display: block; }
+        .container { max-width: 1100px; margin: auto; padding: 2rem 1rem; }
+        section { background: white; margin-bottom: 2rem; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { color: var(--secondary-color); margin-bottom: 1.2rem; font-size: 1.8rem; border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 10px; }
+        p { margin-bottom: 1rem; font-size: 1rem; text-align: justify; }
+        .results-wrapper { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
+        .card-main { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: white; padding: 2rem; border-radius: 10px; text-align: center; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2); }
+        .card-main h3 { font-size: 2.8rem; color: #ffffff; margin-bottom: 0.3rem; font-weight: 700; }
+        .card-main p { font-size: 1.1rem; font-weight: 400; color: #f3e8ff; margin-bottom: 0; text-align: center; }
+        .grid-results-3x3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .card-result { background: var(--accent-color); padding: 1.5rem; border-radius: 8px; text-align: center; border-left: 4px solid var(--secondary-color); display: flex; flex-direction: column; justify-content: center; }
+        .card-result h3 { font-size: 2rem; color: var(--secondary-color); margin-bottom: 0.3rem; }
+        .card-result p { font-size: 0.95rem; font-weight: 500; color: var(--dark-color); margin-bottom: 0; text-align: center; }
+        .timeline-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        .timeline-step { background: #faf5ff; border: 1px solid #e9d5ff; padding: 1.2rem; border-radius: 8px; text-align: center; }
+        .timeline-step i { font-size: 1.8rem; color: var(--secondary-color); margin-bottom: 0.8rem; }
+        .timeline-step h4 { font-size: 0.95rem; color: var(--secondary-color); margin-bottom: 0.5rem; }
+        .timeline-step p { font-size: 0.85rem; color: var(--text-color); margin-bottom: 0; text-align: center; }
+        ul { margin: 0; padding-left: 20px; color: var(--text-color); }
+        ul li { margin-bottom: 0.8rem; font-size: 1rem; text-align: justify; }
+        .donation-box { background: #faf5ff; border: 2px dashed var(--secondary-color); padding: 2rem; border-radius: 10px; margin-top: 1.5rem; }
+        .donation-box ul { list-style: none; margin-top: 1rem; padding-left: 0; }
+        .donation-box li { margin-bottom: 0.8rem; font-size: 1.05rem; text-align: left; }
+        .donation-box li strong { color: var(--secondary-color); }
+        footer { text-align: center; padding: 2rem; background: var(--dark-color); color: white; font-size: 0.9rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+        footer a { color: #c084fc; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        @media(max-width: 900px) { .grid-results-3x3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); } }
+        @media(max-width: 768px) { section { padding: 1.5rem; } .banner-img { max-height: 250px; } }
     </style>
 </head>
 <body>
 
     <header>
-        <!-- Botão do Menu Deslizante -->
         <button class="menu-toggle" onclick="toggleMenu()" aria-label="Abrir Menu">
             <i class="fa-solid fa-bars"></i> Menu
         </button>
 
-        <!-- Overlay do Menu -->
         <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
-        <!-- Menu Lateral Deslizante -->
         <nav class="side-menu" id="sideMenu">
             <div class="side-menu-header">
                 <h3>Menu do Sistema</h3>
@@ -376,6 +102,7 @@
                 <div class="side-menu-sublinks">
                     <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
                     <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
+                    <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
                 </div>
 
                 <div style="font-weight: 600; color: var(--secondary-color); margin-top: 10px;">3. Relatórios</div>
@@ -393,19 +120,16 @@
             </div>
         </nav>
 
-        <!-- Banner Oficial no Topo -->
         <img src="./imagens/PagCentral.png" alt="Banner Projeto Banho Solidário" class="banner-img">
     </header>
 
     <div class="container">
-        <!-- Apresentação / Nossa Missão -->
         <section>
             <h2><i class="fa-solid fa-heart-pulse"></i> Nossa Missão</h2>
             <p>O <strong>Projeto Banho Solidário</strong> nasceu em 2024 da sensibilidade do senhor Valdemar Zancanaro (Padrinho) diante da vulnerabilidade da população em situação de rua em Unaí-MG. Mais do que um banho quente, oferecemos acolhimento, escuta ativa, alimentação digna e oportunidades reais de reinserção social.</p>
             <p>Acreditamos que a verdadeira transformação social começa com respeito, empatia e corresponsabilidade entre sociedade civil, poder público e voluntariado.</p>
         </section>
 
-        <!-- Como Tudo Começou -->
         <section>
             <h2><i class="fa-solid fa-clock-rotate-left"></i> Como Tudo Começou (Início: 2024)</h2>
             <p>O projeto foi estruturado com dedicação através de etapas fundamentais de planejamento e mobilização comunitária:</p>
@@ -438,61 +162,30 @@
             </div>
         </section>
 
-        <!-- Resultados -->
         <section>
             <h2><i class="fa-solid fa-chart-line"></i> Resultados Concretos (2024 - 2025)</h2>
             <p>O impacto do nosso trabalho coletivo reflete em números que transformam vidas:</p>
             
             <div class="results-wrapper">
-                <!-- Destaque Principal no Topo -->
                 <div class="card-main">
                     <h3>+780</h3>
                     <p>Atendimentos Realizados (Banho, Rodas de Conversa e Refeições)</p>
                 </div>
 
-                <!-- Grade 3x3 para os demais resultados -->
                 <div class="grid-results-3x3">
-                    <div class="card-result">
-                        <h3>55</h3>
-                        <p>Passagens para Retorno ao Município de Origem</p>
-                    </div>
-                    <div class="card-result">
-                        <h3>42</h3>
-                        <p>Encaminhadas para Comunidades Terapêuticas e Clínicas de Reabilitação</p>
-                    </div>
-                    <div class="card-result">
-                        <h3>32</h3>
-                        <p>Documentações Emitidas ou Regularizadas</p>
-                    </div>
-                    <div class="card-result">
-                        <h3>30</h3>
-                        <p>Pessoas encaminhadas para atendimento de saúde especializado na rede municipal</p>
-                    </div>
-                    <div class="card-result">
-                        <h3>18</h3>
-                        <p>Pessoas encaminhadas para atendimento psicossocial no CAPS AD (CREAS)</p>
-                    </div>
-                    <div class="card-result">
-                        <h3>12</h3>
-                        <p>Pessoas imunizadas contra influenza</p>
-                    </div>
-                    <div class="card-result">
-                        <h3>06</h3>
-                        <p>Pessoas encaminhadas ao mercado de trabalho</p>
-                    </div>
-                    <div class="card-result">
-                        <h3>03</h3>
-                        <p>Pessoas encaminhadas para clínicas fora do município</p>
-                    </div>
-                    <div class="card-result">
-                        <h3>02</h3>
-                        <p>Pessoas deixaram a situação de rua e passaram a residir em imóvel alugado</p>
-                    </div>
+                    <div class="card-result"><h3>55</h3><p>Passagens para Retorno ao Município de Origem</p></div>
+                    <div class="card-result"><h3>42</h3><p>Encaminhadas para Comunidades Terapêuticas e Clínicas de Reabilitação</p></div>
+                    <div class="card-result"><h3>32</h3><p>Documentações Emitidas ou Regularizadas</p></div>
+                    <div class="card-result"><h3>30</h3><p>Pessoas encaminhadas para atendimento de saúde especializado na rede municipal</p></div>
+                    <div class="card-result"><h3>18</h3><p>Pessoas encaminhadas para atendimento psicossocial no CAPS AD (CREAS)</p></div>
+                    <div class="card-result"><h3>12</h3><p>Pessoas imunizadas contra influenza</p></div>
+                    <div class="card-result"><h3>06</h3><p>Pessoas encaminhadas ao mercado de trabalho</p></div>
+                    <div class="card-result"><h3>03</h3><p>Pessoas encaminhadas para clínicas fora do município</p></div>
+                    <div class="card-result"><h3>02</h3><p>Pessoas deixaram a situação de rua e passaram a residir em imóvel alugado</p></div>
                 </div>
             </div>
         </section>
 
-        <!-- O que Oferecemos -->
         <section>
             <h2><i class="fa-solid fa-hands-holding-child"></i> O Que Oferecemos</h2>
             <ul>
@@ -503,7 +196,6 @@
             </ul>
         </section>
 
-        <!-- Doações e Apoio -->
         <section>
             <h2><i class="fa-solid fa-hand-holding-dollar"></i> Contribua com o Projeto</h2>
             <p>O projeto conta com o apoio institucional da <strong>Província Carmelitana Santo Elias</strong>. Você também pode fazer a diferença doando valores ou suprimentos de higiene (shampoo, sabonete, pastas de dente e toalhas).</p>
