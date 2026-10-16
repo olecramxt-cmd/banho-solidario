@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.4.000                       -->
-<!-- Data de atualização: 16/10/2026 - 17:42                                        -->
-<!-- Descrição: Módulo de Controle de Atendimentos com design 3D nos cartões do     -->
-<!--            dashboard, percentuais completos nas barras e correção de status.   -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.5.000                       -->
+<!-- Data de atualização: 16/10/2026 - 18:04                                        -->
+<!-- Descrição: Adicionado botão "Novo Cadastro" com confirmação de redirecionamento-->
+<!--            para o item 2.1- Cadastro, mantendo gráficos 3D e config.js.        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -23,6 +23,7 @@
             --primary-color: #0284c7;
             --primary-dark: #0369a1;
             --success-color: #16a34a;
+            --secondary-action: #7c3aed;
             --danger-color: #dc2626;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
@@ -70,6 +71,10 @@
         .btn:hover { background-color: var(--primary-dark); }
         .btn-success { background-color: var(--success-color); }
         .btn-success:hover { background-color: #15803d; }
+        .btn-secondary { background-color: var(--secondary-action); }
+        .btn-secondary:hover { background-color: #6d28d9; }
+
+        .action-buttons-group { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
 
         /* Estilo 3D Moderno para os Cartões do Dashboard */
         .dashboard-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-top: 30px; }
@@ -171,7 +176,10 @@
                     <div>
                         <span style="font-size: 13px; color: #64748b;">Operador Logado: <strong id="lblOperador">---</strong></span>
                     </div>
-                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Registrar Atendimento</button>
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Registrar Atendimento</button>
+                        <button type="button" class="btn btn-secondary" onclick="confirmarNovoCadastro()"><i class="fa-solid fa-user-plus"></i> Novo Cadastro</button>
+                    </div>
                 </div>
             </form>
             <div id="mensagemStatus"></div>
@@ -239,6 +247,13 @@
 
             carregarAssistidosCache();
             carregarDadosDashboard();
+        }
+
+        function confirmarNovoCadastro() {
+            const confirmar = confirm("Você será redirecionado para o item 2.1- Cadastro. Deseja continuar?");
+            if (confirmar) {
+                window.location.href = "cadastro.html";
+            }
         }
 
         function carregarAssistidosCache() {
