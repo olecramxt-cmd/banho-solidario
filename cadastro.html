@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Módulo: v.2.2.000                           -->
-<!-- Data de atualização: 15/10/2026 - 09:25                                        -->
-<!-- Descrição: Limpeza do formulário após salvamento para permitir cadastro contínuo. -->
+<!-- Programa: cadastro.html. Versão do Módulo: v.2.3.000                           -->
+<!-- Data de atualização: 16/10/2026 - 05:19                                        -->
+<!-- Descrição: Adicionado o link para o módulo 2.3- Galeria da Dignidade no menu.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -61,7 +61,6 @@
 </head>
 <body>
 
-    <!-- Verificação de Sessão -->
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
@@ -95,8 +94,9 @@
             
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
             <div class="side-menu-sublinks">
-                <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
+                <a href="cadastro.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
                 <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
+                <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
             </div>
 
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Relatórios</div>
@@ -160,7 +160,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxLjK1e4GEPC-hALBtMXlAcE_XTtOu37d7oEVF4OmR0WKhwGaH5CbKu0vBHMk1aHw93Ew/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
@@ -238,10 +238,8 @@
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
                     statusDiv.innerText = "Cadastro efetuado com sucesso! Matrícula Gerada: " + data.matricula + " (Pronto para o próximo).";
-                    
-                    // Limpa o formulário e mantém o operador na tela para o próximo cadastro
                     document.getElementById('formCadastro').reset();
-                    document.getElementById('cidade').value = "Unaí-MG"; // Restaura valor padrão
+                    document.getElementById('cidade').value = "Unaí-MG";
                 } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao salvar.";
