@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.2.000                       -->
-<!-- Data de atualização: 16/10/2026 - 14:38                                        -->
-<!-- Descrição: Módulo de Controle de Atendimentos com texto de status ajustado,    -->
-<!--            menu corrigido para "Registro" e renderização robusta de gráficos.    -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.3.000                       -->
+<!-- Data de atualização: 16/10/2026 - 17:13                                        -->
+<!-- Descrição: Correção no parsing de datas e filtros do Dashboard para exibição   -->
+<!--            garantida dos gráficos de pizza e barras.                           -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -169,19 +169,19 @@
             <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
                 <div class="form-group" style="flex: 1; margin:0;">
                     <label>Filtrar por Ano</label>
-                    <select id="filtroAno" onchange="carregarDadosDashboard()">
+                    <select id="filtroAno" onchange="processarEAtualizarGraficos()">
                         <option value="2026">2026</option>
                         <option value="2025">2025</option>
                     </select>
                 </div>
                 <div class="form-group" style="flex: 1; margin:0;">
                     <label>Filtrar por Mês</label>
-                    <select id="filtroMes" onchange="carregarDadosDashboard()">
-                        <option value="TODOS">Todos os Meses</option>
+                    <select id="filtroMes" onchange="processarEAtualizarGraficos()">
+                        <option value="TODOS" selected>Todos os Meses</option>
                         <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
                         <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
                         <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
-                        <option value="10" selected>Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                        <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
                     </select>
                 </div>
             </div>
@@ -402,18 +402,34 @@
             let totalCurativos = 0;
 
             listaAtendimentosGeral.forEach(item => {
-                if (item.dataAcao) {
-                    const partes = item.dataAcao.split('/');
-                    if (partes.length === 3) {
-                        const dAno = partes[2];
-                        const dMes = partes[1];
+                // Utiliza preferencialmente dataAcao ou o carimbo de data/hora
+                let dataRef = item.dataAcao || item.carimbo;
+                if (dataRef) {
+                    let dAno = "";
+                    let dMes = "";
 
-                        if (dAno === anoSelecionado) {
-                            if (mesSelecionado === "TODOS" || dMes === mesSelecionado) {
-                                if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
-                                if (String(item.janta).toUpperCase() === "SIM") totalJanta++;
-                                if (String(item.curativos).toUpperCase() === "SIM") totalCurativos++;
-                            }
+                    // Se vier como formato ISO ou objeto string de data completo
+                    if (String(dataRef).includes('-')) {
+                        let partesIso = String(dataRef).split('T')[0].split('-');
+                        if (partesIso.length === 3) {
+                            dAno = partesIso[0];
+                            dMes = partesIso[1];
+                        }
+                    } 
+                    // Se vier no formato brasileiro DD/MM/AAAA
+                    else if (String(dataRef).includes('/')) {
+                        let partesBr = String(dataRef).split(' ')[0].split('/');
+                        if (partesBr.length === 3) {
+                            dAno = partesBr[2];
+                            dMes = partesBr[1];
+                        }
+                    }
+
+                    if (dAno === anoSelecionado) {
+                        if (mesSelecionado === "TODOS" || dMes === mesSelecionado) {
+                            if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
+                            if (String(item.janta).toUpperCase() === "SIM") totalJanta++;
+                            if (String(item.curativos).toUpperCase() === "SIM") totalCurativos++;
                         }
                     }
                 }
@@ -477,7 +493,7 @@
                         y: { 
                             beginAtZero: true, 
                             ticks: { precision: 0 },
-                            suggestedMax: 5 // Garante escala limpa mesmo com valores baixos ou zero
+                            suggestedMax: Math.max(...dataValores, 5) 
                         } 
                     },
                     plugins: {
