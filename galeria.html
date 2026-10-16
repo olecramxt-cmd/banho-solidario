@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.1.1.000                            -->
-<!-- Data de atualização: 16/10/2026 - 05:32                                        -->
-<!-- Descrição: Correção ortográfica (registro) e robustez no carregamento da galeria.-->
+<!-- Programa: galeria.html. Versão do Módulo: v.1.2.000                            -->
+<!-- Data de atualização: 16/10/2026 - 05:50                                        -->
+<!-- Descrição: Galeria da Dignidade com ordenação alfabética automática dos nomes. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -185,7 +185,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzZ8ybSadPFcS6oQaG5YY1ii0bcHWep_uV1dAW7RQXvuEz6z8S0Y9jhDRG5X-K0me9vGA/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
@@ -216,6 +216,14 @@
                 statusDiv.innerText = "";
                 if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
                     grid.innerHTML = "";
+                    
+                    // Ordenação alfabética pelo nome completo do assistido
+                    data.lista.sort((a, b) => {
+                        const nomeA = (a.registro.nomeCompleto || "").toLowerCase();
+                        const nomeB = (b.registro.nomeCompleto || "").toLowerCase();
+                        return nomeA.localeCompare(nomeB, 'pt-BR');
+                    });
+
                     data.lista.forEach(item => {
                         const reg = item.registro;
                         const nomeCompleto = reg.nomeCompleto || "Sem Nome";
