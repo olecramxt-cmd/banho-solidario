@@ -2,10 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Código: v.2.5.000                           -->
-<!-- Data de atualização: 15/10/2026 - 06:10                                        -->
-<!-- Descrição das Alterações:                                                      -->
-<!-- - Formatação amigável de data e operador e suporte à palavra "TODOS" na busca. -->
+<!-- Programa: consulta.html. Versão do Módulo: v.2.6.000                           -->
+<!-- Data de atualização: 16/10/2026 - 05:19                                        -->
+<!-- Descrição: Adicionado o link para o módulo 2.3- Galeria da Dignidade no menu.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -80,7 +79,6 @@
 </head>
 <body>
 
-    <!-- Verificação de Sessão Protegida -->
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
@@ -115,7 +113,8 @@
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
             <div class="side-menu-sublinks">
                 <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
-                <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
+                <a href="consulta.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
+                <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
             </div>
 
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Relatórios</div>
@@ -301,7 +300,6 @@
 
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
             
-            // Formatando Data e Operador
             let operadorCad = reg.operador || reg.usuario || "Sistema";
             document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
 
@@ -408,7 +406,6 @@
                     statusDiv.style.color = "green";
                     statusDiv.innerText = data.message;
                     
-                    // Feedback visual nítido na tela ao salvar
                     containerRes.classList.add('animar-salvamento');
                     setTimeout(() => {
                         containerRes.classList.remove('animar-salvamento');
