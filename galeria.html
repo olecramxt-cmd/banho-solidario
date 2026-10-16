@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.1.3.000                            -->
-<!-- Data de atualização: 16/10/2026 - 06:06                                        -->
-<!-- Descrição: Galeria da Dignidade integrada ao config.js e ordenação alfabética. -->
+<!-- Programa: galeria.html. Versão do Módulo: v.1.4.000                            -->
+<!-- Data de atualização: 16/10/2026 - 06:22                                        -->
+<!-- Descrição: Adicionado contador estatístico de total, homens e mulheres na galeria. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -43,8 +43,9 @@
         .menu-overlay.active { display: block; }
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 10px; }
-        .subtitle { text-align: center; color: #64748b; margin-bottom: 30px; font-size: 0.95rem; }
+        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 8px; font-size: 0.95rem; }
+        .stats-banner { text-align: center; color: var(--primary-dark); font-weight: 600; font-size: 1rem; margin-bottom: 25px; background: #e0f2fe; padding: 10px; border-radius: 8px; border: 1px solid #bae6fd; }
         
         #mensagemStatus { text-align: center; font-weight: bold; margin: 20px 0; }
 
@@ -85,7 +86,6 @@
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
-        // Atribuição automática da API a partir do config.js
         const API_URL = CONFIG.API_URL;
     </script>
 
@@ -131,8 +131,9 @@
     <div class="container">
         <h2>Galeria da Dignidade</h2>
         <p class="subtitle">Registro visual humanizado e prontuário de leitura rápida dos assistidos cadastrados.</p>
+        <div class="stats-banner" id="statsBanner">A calcular estatísticas...</div>
 
-        <div id="mensagemStatus">A carregar galeria de assistidos...</div>
+        <div id="mensagemStatus"></div>
         <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 
@@ -203,6 +204,7 @@
 
         function carregarGaleria() {
             const statusDiv = document.getElementById('mensagemStatus');
+            const statsBanner = document.getElementById('statsBanner');
             const grid = document.getElementById('galleryGrid');
 
             statusDiv.style.color = "#0284c7";
@@ -219,7 +221,25 @@
                 if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
                     grid.innerHTML = "";
                     
-                    // Ordenação alfabética pelo nome completo do assistido
+                    const totalRegistros = data.lista.length;
+                    let qtdHomens = 0;
+                    let qtdMulheres = 0;
+
+                    data.lista.forEach(item => {
+                        const sexo = (item.registro.sexo || "").trim().toLowerCase();
+                        if (sexo === "masculino") {
+                            qtdHomens++;
+                        } else if (sexo === "feminino") {
+                            qtdMulheres++;
+                        }
+                    });
+
+                    const percHomens = totalRegistros > 0 ? ((qtdHomens / totalRegistros) * 100).toFixed(1) : 0;
+                    const percMulheres = totalRegistros > 0 ? ((qtdMulheres / totalRegistros) * 100).toFixed(1) : 0;
+
+                    statsBanner.innerHTML = `Total: ${totalRegistros} registos | ${qtdHomens} (${percHomens}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheres} (${percMulheres}%) Mulheres`;
+
+                    // Ordenação alfabética pelo nome completo
                     data.lista.sort((a, b) => {
                         const nomeA = (a.registro.nomeCompleto || "").toLowerCase();
                         const nomeB = (b.registro.nomeCompleto || "").toLowerCase();
@@ -250,6 +270,7 @@
                         grid.appendChild(card);
                     });
                 } else {
+                    statsBanner.innerText = "Total: 0 registros | 0 (0%) Homens 0 (0%) Mulheres";
                     statusDiv.style.color = "red";
                     statusDiv.innerText = "Nenhum registro encontrado na base de dados.";
                 }
