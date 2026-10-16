@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.1.000                       -->
-<!-- Data de atualização: 16/10/2026 - 14:30                                        -->
-<!-- Descrição: Módulo de Controle de Atendimentos com carregamento garantido da    -->
-<!--            base de assistidos e busca fluida em tempo real sem falhas.         -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.2.000                       -->
+<!-- Data de atualização: 16/10/2026 - 14:38                                        -->
+<!-- Descrição: Módulo de Controle de Atendimentos com texto de status ajustado,    -->
+<!--            menu corrigido para "Registro" e renderização robusta de gráficos.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -124,7 +124,7 @@
         <h2>Registro de Atendimentos & Movimentação</h2>
         <p class="subtitle">Controle operacional semanal, mensal e anual dos serviços prestados aos assistidos.</p>
 
-        <!-- Secção de Registro Operacional -->
+        <!-- Seção de Registro Operacional -->
         <div class="section-box">
             <div class="section-title">Registro de Atendimento em Sessão</div>
             
@@ -251,7 +251,6 @@
                 return;
             }
 
-            // Se os dados ainda estiverem a carregar, avisa subtilmente
             if (!listaGeralAssistidos || listaGeralAssistidos.length === 0) {
                 container.innerHTML = `<div class="autocomplete-item" style="color:#64748b;">A carregar base de assistidos, aguarde um instante...</div>`;
                 container.style.display = 'block';
@@ -271,7 +270,6 @@
                     div.className = 'autocomplete-item';
                     div.innerHTML = `<strong>${reg.matricula}</strong> - ${reg.nomeCompleto}`;
                     
-                    // Utiliza mousedown para disparar antes do blur do input
                     div.onmousedown = function(e) {
                         e.preventDefault();
                         selecionarAssistido(reg);
@@ -297,7 +295,6 @@
             document.getElementById('listaSugestoes').style.display = 'none';
         }
 
-        // Fechar sugestões ao clicar fora
         document.addEventListener('click', function(e) {
             if (!e.target.closest('#buscaAssistido') && !e.target.closest('#listaSugestoes')) {
                 document.getElementById('listaSugestoes').style.display = 'none';
@@ -346,7 +343,7 @@
             };
 
             statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "A registrar atendimento na nuvem...";
+            statusDiv.innerText = "Registrando o atendimento na nuvem.";
 
             fetch(API_URL, {
                 method: "POST",
@@ -382,12 +379,18 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data.status === "encontrado") {
-                    listaAtendimentosGeral = data.lista || [];
-                    processarEAtualizarGraficos();
+                let lista = [];
+                if (data.status === "encontrado" && data.lista) {
+                    lista = data.lista;
                 }
+                listaAtendimentosGeral = lista;
+                processarEAtualizarGraficos();
             })
-            .catch(err => console.error("Erro ao carregar dados do dashboard", err));
+            .catch(err => {
+                console.error("Erro ao carregar dados do dashboard", err);
+                listaAtendimentosGeral = [];
+                processarEAtualizarGraficos();
+            });
         }
 
         function processarEAtualizarGraficos() {
@@ -407,9 +410,9 @@
 
                         if (dAno === anoSelecionado) {
                             if (mesSelecionado === "TODOS" || dMes === mesSelecionado) {
-                                if (item.banho === "SIM") totalBanho++;
-                                if (item.janta === "SIM") totalJanta++;
-                                if (item.curativos === "SIM") totalCurativos++;
+                                if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
+                                if (String(item.janta).toUpperCase() === "SIM") totalJanta++;
+                                if (String(item.curativos).toUpperCase() === "SIM") totalCurativos++;
                             }
                         }
                     }
@@ -436,7 +439,9 @@
                     }]
                 },
                 options: {
+                    responsive: true,
                     plugins: {
+                        legend: { position: 'bottom' },
                         datalabels: {
                             color: '#ffffff',
                             font: { weight: 'bold', size: 13 },
@@ -467,7 +472,14 @@
                     }]
                 },
                 options: {
-                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+                    responsive: true,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { precision: 0 },
+                            suggestedMax: 5 // Garante escala limpa mesmo com valores baixos ou zero
+                        } 
+                    },
                     plugins: {
                         legend: { display: false },
                         datalabels: {
