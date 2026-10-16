@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.2.6.000                           -->
-<!-- Data de atualização: 16/10/2026 - 05:19                                        -->
-<!-- Descrição: Adicionado o link para o módulo 2.3- Galeria da Dignidade no menu.  -->
+<!-- Programa: consulta.html. Versão do Módulo: v.2.7.000                           -->
+<!-- Data de atualização: 16/10/2026 - 07:22                                        -->
+<!-- Descrição: Menu atualizado com Atendimentos e integração ao config.js.         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -79,6 +79,8 @@
 </head>
 <body>
 
+    <!-- Importação do Config de API Centralizada -->
+    <script src="config.js"></script>
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
@@ -86,6 +88,7 @@
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
+        const API_URL = CONFIG.API_URL;
     </script>
 
     <div class="navbar">
@@ -104,6 +107,7 @@
             <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
                 <i class="fa-solid fa-house"></i> Início (Página Inicial)
             </a>
+            
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
                 <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
@@ -117,9 +121,10 @@
                 <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
             </div>
 
-            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Relatórios</div>
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
             <div class="side-menu-sublinks">
-                <a href="relatorios.html" class="menu-sublink-item"><i class="fa-solid fa-file-pdf"></i> 3.1- Relatórios e Fichas</a>
+                <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registo de Atendimentos</a>
+                <a href="relatorios.html" class="menu-sublink-item"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios e Fichas</a>
             </div>
             
             <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
@@ -200,8 +205,6 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwhiYYc05iO2sLcaYN4D1kiRmFAF2FZToh-NO8c1RrnSUqTTJi5KXfSY5jJvwmIY5-8kg/exec";
-
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
