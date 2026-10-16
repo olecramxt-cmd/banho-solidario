@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.0.000                       -->
-<!-- Data de atualização: 16/10/2026 - 14:14                                        -->
-<!-- Descrição: Módulo de Controle de Atendimentos com busca fluida em tempo real,  -->
-<!--            gráfico com rótulos de dados e correção ortográfica para português-BR.-->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.1.000                       -->
+<!-- Data de atualização: 16/10/2026 - 14:30                                        -->
+<!-- Descrição: Módulo de Controle de Atendimentos com carregamento garantido da    -->
+<!--            base de assistidos e busca fluida em tempo real sem falhas.         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -15,7 +15,7 @@
     <title>SISTEMAS iPeC - Controle de Atendimentos / Banho Solidário</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js & Plugin de DataLabels para exibir valores e percentuais -->
+    <!-- Chart.js & Plugin de DataLabels -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <style>
@@ -58,8 +58,7 @@
         .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
         .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
 
-        /* Lista de sugestões flutuante */
-        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 6px 6px; max-height: 180px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 6px 6px; max-height: 200px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
         .autocomplete-item { padding: 10px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
         .autocomplete-item:hover { background: #e0f2fe; color: var(--primary-dark); font-weight: 500; }
 
@@ -235,7 +234,7 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data.status === "encontrado") {
+                if (data.status === "encontrado" && data.lista) {
                     listaGeralAssistidos = data.lista;
                 }
             })
@@ -252,6 +251,13 @@
                 return;
             }
 
+            // Se os dados ainda estiverem a carregar, avisa subtilmente
+            if (!listaGeralAssistidos || listaGeralAssistidos.length === 0) {
+                container.innerHTML = `<div class="autocomplete-item" style="color:#64748b;">A carregar base de assistidos, aguarde um instante...</div>`;
+                container.style.display = 'block';
+                return;
+            }
+
             const filtrados = listaGeralAssistidos.filter(item => {
                 const reg = item.registro;
                 return (reg.nomeCompleto && reg.nomeCompleto.toLowerCase().includes(termo)) || 
@@ -264,12 +270,23 @@
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
                     div.innerHTML = `<strong>${reg.matricula}</strong> - ${reg.nomeCompleto}`;
-                    div.onclick = () => selecionarAssistido(reg);
+                    
+                    // Utiliza mousedown para disparar antes do blur do input
+                    div.onmousedown = function(e) {
+                        e.preventDefault();
+                        selecionarAssistido(reg);
+                    };
+                    
                     container.appendChild(div);
                 });
                 container.style.display = 'block';
             } else {
-                container.style.display = 'none';
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.style.color = "#dc2626";
+                div.innerText = "Nenhum assistido encontrado.";
+                container.appendChild(div);
+                container.style.display = 'block';
             }
         }
 
@@ -367,7 +384,7 @@
             .then(data => {
                 if (data.status === "encontrado") {
                     listaAtendimentosGeral = data.lista || [];
-                    processarE AtualizarGraficos();
+                    processarEAtualizarGraficos();
                 }
             })
             .catch(err => console.error("Erro ao carregar dados do dashboard", err));
@@ -382,7 +399,6 @@
             let totalCurativos = 0;
 
             listaAtendimentosGeral.forEach(item => {
-                // item.dataAcao vem no formato DD/MM/AAAA
                 if (item.dataAcao) {
                     const partes = item.dataAcao.split('/');
                     if (partes.length === 3) {
