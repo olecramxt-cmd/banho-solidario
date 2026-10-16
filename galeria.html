@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.1.2.000                            -->
-<!-- Data de atualização: 16/10/2026 - 05:50                                        -->
-<!-- Descrição: Galeria da Dignidade com ordenação alfabética automática dos nomes. -->
+<!-- Programa: galeria.html. Versão do Módulo: v.1.3.000                            -->
+<!-- Data de atualização: 16/10/2026 - 06:06                                        -->
+<!-- Descrição: Galeria da Dignidade integrada ao config.js e ordenação alfabética. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -76,6 +76,8 @@
 </head>
 <body onload="carregarGaleria()">
 
+    <!-- Importação do Config de API Centralizada -->
+    <script src="config.js"></script>
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
@@ -83,6 +85,8 @@
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
+        // Atribuição automática da API a partir do config.js
+        const API_URL = CONFIG.API_URL;
     </script>
 
     <div class="navbar">
@@ -185,8 +189,6 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyEuX4yOn2gJYxoGzrrttDWy2IJDUr37BoCEtJUx31ov4dZV9uyl184B7u5-rYnhRhWCQ/exec";
-
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
