@@ -9,5 +9,5 @@
 
 // © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
 const CONFIG = {
-    API_URL: "https://script.google.com/macros/s/AKfycbzM-XmG6NJ_Ux_ro_QvHO8GFUyNPd5B2eec3FEH9OH0LlqP1ybW7m2SmvcW_dKjPDze-A/exec"
+    API_URL: "https://script.google.com/macros/s/AKfycbwpPuOeffZaUecUbBsaFYGngd-hgaIy1VcxewGHG4XftSJf2qMgjE_aEhrmgYFscDFf6g/exec"
 };
