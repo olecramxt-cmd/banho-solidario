@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.4.000                              -->
-<!-- Data de atualização: 17/10/2026 - 05:38                                        -->
-<!-- Descrição: Tela de login com link e modal para alteração / recuperação de senha.-->
+<!-- Programa: login.html. Versão do Módulo: v.1.5.000                              -->
+<!-- Data de atualização: 17/10/2026 - 05:57                                        -->
+<!-- Descrição: Tela de login com link centralizado e rótulo ajustado no modal.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -37,8 +37,9 @@
         .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 0.95rem; }
         .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
         
-        .forgot-password-link { text-align: right; margin-bottom: 20px; }
-        .forgot-password-link a { font-size: 0.85rem; color: var(--secondary-color); text-decoration: none; font-weight: 500; }
+        /* Frase centralizada perfeitamente */
+        .forgot-password-link { text-align: center; margin-bottom: 20px; }
+        .forgot-password-link a { font-size: 0.88rem; color: var(--secondary-color); text-decoration: none; font-weight: 500; }
         .forgot-password-link a:hover { text-decoration: underline; }
 
         .btn-login { background: var(--secondary-color); color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background 0.3s; }
@@ -86,7 +87,7 @@
             <h3>Recuperar / Alterar Senha</h3>
             <form onsubmit="solicitarAlteracaoSenha(event)">
                 <div class="form-group">
-                    <label>Seu Usuário (Username)</label>
+                    <label>Seu Usuário</label>
                     <input type="text" id="modalUser" class="form-control" placeholder="Digite seu usuário..." required>
                 </div>
                 <div class="form-group">
