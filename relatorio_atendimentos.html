@@ -1,0 +1,432 @@
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.1.0.000             -->
+<!-- Data de atualização: 17/10/2026 - 02:56                                        -->
+<!-- Descrição: Relatório Geral de Atendimentos com filtros, tabela de movimentação,-->
+<!--            opções de impressão por checkboxes e rodapé oficial de assinatura.  -->
+<!-- ============================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMAS iPeC - Relatório Geral de Atendimentos / Banho Solidário</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js & Plugin de DataLabels -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        :root {
+            --primary-color: #0284c7;
+            --primary-dark: #0369a1;
+            --success-color: #16a34a;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #cbd5e1;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .menu-toggle:hover { background: white; color: var(--primary-dark); }
+        .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
+        .side-menu.active { right: 0; }
+        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0f2fe; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .side-menu-header h3 { color: var(--primary-dark); font-size: 1.2rem; margin: 0; }
+        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        .side-menu-links { display: flex; flex-direction: column; gap: 1rem; }
+        .menu-link-item { background: var(--bg-color); color: var(--primary-dark); padding: 12px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary-color); transition: all 0.3s; }
+        .menu-link-item:hover { background: #e0f2fe; transform: translateX(5px); }
+        .side-menu-sublinks { padding-left: 20px; display: flex; flex-direction: column; gap: 0.5rem; }
+        .menu-sublink-item { font-size: 0.9rem; color: var(--text-color); padding: 8px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .menu-sublink-item:hover { background: #e0f2fe; color: var(--primary-dark); }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
+        .menu-overlay.active { display: block; }
+
+        .container { max-width: 1100px; margin: 30px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 25px; font-size: 0.95rem; }
+
+        .section-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 10px; margin-bottom: 25px; }
+        .section-title { font-size: 1.1rem; color: var(--primary-dark); border-bottom: 2px solid #cbd5e1; padding-bottom: 5px; margin-bottom: 15px; font-weight: 700; }
+
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: white; }
+
+        /* Painel de Opções de Impressão */
+        .print-options-panel { background: #e0f2fe; border: 1px solid #bae6fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--primary-dark); }
+        .checkbox-label input { width: 18px; height: 18px; accent-color: var(--primary-color); cursor: pointer; }
+
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #15803d; }
+
+        /* Dashboard 3D */
+        .dashboard-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-top: 20px; }
+        .chart-card { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            padding: 25px; 
+            border-radius: 16px; 
+            text-align: center; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+        .chart-card h3 { font-size: 1.05rem; color: var(--primary-dark); margin-bottom: 20px; font-weight: 700; }
+
+        /* Tabela de Movimentação do Mês */
+        .table-container { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; }
+        th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: left; }
+        th { background-color: #0f172a; color: white; font-weight: 600; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+
+        /* Rodapé de Assinatura Impressa */
+        .assinatura-area { display: none; margin-top: 60px; text-align: center; page-break-inside: avoid; }
+        .linha-assinatura { width: 350px; border-top: 1px solid #334155; margin: 0 auto 8px auto; }
+
+        @media print {
+            body { background: white; }
+            .navbar, .side-menu, .menu-overlay, .print-options-panel, .no-print { display: none !important; }
+            .container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
+            .section-box { border: none; padding: 0; box-shadow: none; margin-bottom: 20px; }
+            .assinatura-area { display: block !important; }
+        }
+    </style>
+</head>
+<body onload="inicializarRelatorioMovimentacao()">
+
+    <!-- Importação do Config de API Centralizada -->
+    <script src="config.js"></script>
+    <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
+            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+            window.location.href = 'login.html';
+        }
+        const API_URL = CONFIG.API_URL;
+    </script>
+
+    <div class="navbar">
+        <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+        <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Banho Solidário</span>
+    </div>
+
+    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h3>Menu do Sistema</h3>
+            <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-menu-links">
+            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
+                <i class="fa-solid fa-house"></i> Início (Página Inicial)
+            </a>
+            
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
+            <div class="side-menu-sublinks">
+                <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
+                <a href="relatorio_atendimentos.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios e Fichas</a>
+            </div>
+
+            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
+            <a href="./ebook/" target="_blank" class="menu-link-item"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Relatório Geral de Atendimentos (Movimentação)</h2>
+        <p class="subtitle">Estatísticas, análises gráficas e listagem oficial do Projeto Banho Solidário.</p>
+
+        <!-- Painel de Controlo e Opções de Impressão -->
+        <div class="print-options-panel no-print">
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <label class="checkbox-label"><input type="checkbox" id="chkGraficos" checked onchange="alternarSecoesImpressao()"> Incluir Gráficos</label>
+                <label class="checkbox-label"><input type="checkbox" id="chkTabela" checked onchange="alternarSecoesImpressao()"> Incluir Tabela Resumo do Mês</label>
+            </div>
+            <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Relatório Oficial</button>
+        </div>
+
+        <!-- Filtros de Período -->
+        <div class="section-box">
+            <div class="section-title">Filtro de Período do Relatório</div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div class="form-group" style="flex: 1; margin:0;">
+                    <label>Filtrar por Ano</label>
+                    <select id="filtroAno" onchange="processarEAtualizarTudo()">
+                        <option value="2026" selected>2026</option>
+                        <option value="2025">2025</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; margin:0;">
+                    <label>Filtrar por Mês</label>
+                    <select id="filtroMes" onchange="processarEAtualizarTudo()">
+                        <option value="TODOS">Todos os Meses</option>
+                        <option value="01">Janeiro</option><option value="02">Fevereiro</option><option value="03">Março</option>
+                        <option value="04">Abril</option><option value="05">Maio</option><option value="06">Junho</option>
+                        <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
+                        <option value="10" selected>Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secção de Gráficos Analíticos -->
+        <div class="section-box" id="blocoGraficos">
+            <div class="section-title">Dashboard Analítico de Atendimentos</div>
+            <div class="dashboard-container">
+                <div class="chart-card">
+                    <h3>Distribuição Proporcional (Pizza)</h3>
+                    <canvas id="pizzaChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Volume Quantitativo (Barras)</h3>
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secção de Tabela Detalhada de Movimentação do Mês -->
+        <div class="section-box" id="blocoTabela">
+            <div class="section-title">Listagem Detalhada da Movimentação no Período</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Matrícula</th>
+                            <th>Nome do Assistido</th>
+                            <th>Sexo</th>
+                            <th>Banho</th>
+                            <th>Janta</th>
+                            <th>Curativos</th>
+                            <th>Operador</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaMovimentacaoCorpo">
+                        <tr><td colspan="8" style="text-align: center; color: #64748b;">Carregando dados da movimentação...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Rodapé de Assinatura Oficial (Visível apenas na Impressão) -->
+        <div class="assinatura-area">
+            <div class="linha-assinatura"></div>
+            <p style="font-weight: 600; margin: 0 0 5px 0;">Coordenação Geral / Operacional - Banho Solidário</p>
+            <p id="lblDataAssinatura" style="font-size: 13px; color: #64748b; margin: 0;">Unaí - MG</p>
+        </div>
+    </div>
+
+    <script>
+        let listaAtendimentosGeral = [];
+        let pizzaInstance = null;
+        let barInstance = null;
+
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function inicializarRelatorioMovimentacao() {
+            atualizarDataExtensoRodape();
+            carregarDadosRelatorio();
+        }
+
+        function atualizarDataExtensoRodape() {
+            const agora = new Date();
+            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+            let dia = String(agora.getDate()).padStart(2, '0');
+            let mes = meses[agora.getMonth()];
+            let ano = agora.getFullYear();
+            document.getElementById('lblDataAssinatura').innerText = `${dia} de ${mes} de ${ano}, Unaí - MG`;
+        }
+
+        function alternarSecoesImpressao() {
+            const exibirGraficos = document.getElementById('chkGraficos').checked;
+            const exibirTabela = document.getElementById('chkTabela').checked;
+
+            document.getElementById('blocoGraficos').style.display = exibirGraficos ? 'block' : 'none';
+            document.getElementById('blocoTabela').style.display = exibirTabela ? 'block' : 'none';
+        }
+
+        function carregarDadosRelatorio() {
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarAtendimentos" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "encontrado" && data.lista) {
+                    listaAtendimentosGeral = data.lista;
+                } else {
+                    listaAtendimentosGeral = [];
+                }
+                processarEAtualizarTudo();
+            })
+            .catch(err => {
+                console.error("Erro ao carregar dados", err);
+                listaAtendimentosGeral = [];
+                processarEAtualizarTudo();
+            });
+        }
+
+        function processarEAtualizarTudo() {
+            const anoSelecionado = document.getElementById('filtroAno').value;
+            const mesSelecionado = document.getElementById('filtroMes').value;
+
+            let totalBanho = 0;
+            let totalJanta = 0;
+            let totalCurativos = 0;
+            let filtradosTabela = [];
+
+            listaAtendimentosGeral.forEach(item => {
+                let dataRef = item.dataAcao || item.carimbo;
+                if (dataRef) {
+                    let dAno = "";
+                    let dMes = "";
+
+                    if (String(dataRef).includes('-')) {
+                        let partesIso = String(dataRef).split('T')[0].split('-');
+                        if (partesIso.length === 3) {
+                            dAno = partesIso[0];
+                            dMes = partesIso[1];
+                        }
+                    } 
+                    else if (String(dataRef).includes('/')) {
+                        let partesBr = String(dataRef).split(' ')[0].split('/');
+                        if (partesBr.length === 3) {
+                            dAno = partesBr[2];
+                            dMes = partesBr[1];
+                        }
+                    }
+
+                    if (dAno === anoSelecionado) {
+                        if (mesSelecionado === "TODOS" || dMes === mesSelecionado) {
+                            filtradosTabela.push(item);
+                            if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
+                            if (String(item.janta).toUpperCase() === "SIM") totalJanta++;
+                            if (String(item.curativos).toUpperCase() === "SIM") totalCurativos++;
+                        }
+                    }
+                }
+            });
+
+            renderizarGraficos(totalBanho, totalJanta, totalCurativos);
+            preencherTabelaMovimentacao(filtradosTabela);
+        }
+
+        function preencherTabelaMovimentacao(lista) {
+            const tbody = document.getElementById('tabelaMovimentacaoCorpo');
+            tbody.innerHTML = "";
+
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum atendimento registado para o período selecionado.</td></tr>`;
+                return;
+            }
+
+            lista.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.carimbo || item.dataAcao || '---'}</td>
+                    <td><strong>${item.matricula || '---'}</strong></td>
+                    <td>${item.nomeAssistido || '---'}</td>
+                    <td>${item.sexo || '---'}</td>
+                    <td style="text-align:center; color:${String(item.banho).toUpperCase() === 'SIM' ? '#16a34a' : '#dc2626'}; font-weight:600;">${item.banho || 'NÃO'}</td>
+                    <td style="text-align:center; color:${String(item.janta).toUpperCase() === 'SIM' ? '#16a34a' : '#dc2626'}; font-weight:600;">${item.janta || 'NÃO'}</td>
+                    <td style="text-align:center; color:${String(item.curativos).toUpperCase() === 'SIM' ? '#16a34a' : '#dc2626'}; font-weight:600;">${item.curativos || 'NÃO'}</td>
+                    <td>${item.operador || 'Sistema'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderizarGraficos(banho, janta, curativos) {
+            const dataValores = [banho, janta, curativos];
+            
+            // Gráfico de Pizza
+            const ctxPizza = document.getElementById('pizzaChart').getContext('2d');
+            if (pizzaInstance) pizzaInstance.destroy();
+
+            pizzaInstance = new Chart(ctxPizza, {
+                type: 'pie',
+                data: {
+                    labels: ['Banho', 'Janta', 'Curativos'],
+                    datasets: [{
+                        data: dataValores,
+                        backgroundColor: ['#0284c7', '#16a34a', '#d97706']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: 13 },
+                            formatter: (value, ctx) => {
+                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                if (sum === 0) return '0 (0%)';
+                                let percentage = (value * 100 / sum).toFixed(1) + "%";
+                                return `${value} (${percentage})`;
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            // Gráfico de Barras com Margem Superior e Percentuais
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            if (barInstance) barInstance.destroy();
+
+            barInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['Banho', 'Janta', 'Curativos'],
+                    datasets: [{
+                        label: 'Atendimentos',
+                        data: dataValores,
+                        backgroundColor: ['#0284c7', '#16a34a', '#d97706']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { precision: 0 },
+                            suggestedMax: Math.max(...dataValores, 5) * 1.2 
+                        } 
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: '#1e293b',
+                            font: { weight: 'bold', size: 11 },
+                            formatter: (value, ctx) => {
+                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                if (sum === 0) return '0 (0%)';
+                                let percentage = (value * 100 / sum).toFixed(1) + "%";
+                                return `${value} (${percentage})`;
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+    </script>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
