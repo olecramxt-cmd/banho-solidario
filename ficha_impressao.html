@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: ficha_impressao.html. Versão do Módulo: v.2.0.000                    -->
-<!-- Data de atualização: 17/10/2026 - 01:50                                        -->
-<!-- Descrição: Tela de Consulta Cadastral e Impressão com o mapeamento exato       -->
-<!--            de todos os campos da Triagem, marca d'água diagonal e padrão A4.   -->
+<!-- Programa: ficha_impressao.html. Versão do Módulo: v.2.1.000                    -->
+<!-- Data de atualização: 17/10/2026 - 02:02                                        -->
+<!-- Descrição: Ficha de impressão com fallback de propriedades para preencher      -->
+<!--            corretamente todos os campos independentemente do nome na planilha. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -252,7 +252,7 @@
                 div.innerHTML = `
                     <div>
                         <strong>Matrícula:</strong> ${reg.matricula} | 
-                        <strong>Nome:</strong> ${reg.nomeCompleto} 
+                        <strong>Nome:</strong> ${reg.nomeCompleto || reg.nome} 
                         ${reg.nomeSocial ? `(${reg.nomeSocial})` : ''} | 
                         <strong>CPF:</strong> ${reg.cpf || 'Não informado'}
                     </div>
@@ -269,7 +269,7 @@
             return url;
         }
 
-        function formatarDataAmigavelFicha(dataStr, operadorNome) {
+        function formatarDataAmigavelFicha(dataStr) {
             if (!dataStr) return "Data não informada";
             try {
                 let d = new Date(dataStr);
@@ -292,43 +292,77 @@
             document.getElementById('listaResultadosContainer').style.display = 'none';
             document.getElementById('fichaImpressaoArea').style.display = 'block';
 
-            document.getElementById('lblNomeFicha').innerText = reg.nomeCompleto || "---";
-            document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + (reg.matricula || "---");
-            
-            let operadorCad = reg.operador || "Sistema";
-            document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + formatarDataAmigavelFicha(reg.dataHora) + " - Operador: " + operadorCad;
+            // Fallback para nomes de propriedades caso venham diferentes da planilha antiga
+            const nomeComp = reg.nomeCompleto || reg.nome || "---";
+            const matricula = reg.matricula || reg.mat || "---";
+            const dataCad = reg.dataHora || reg.carimbo || reg.dataCadastro || "";
+            const operador = reg.operador || reg.usuario || "Sistema";
+
+            document.getElementById('lblNomeFicha').innerText = nomeComp;
+            document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + matricula;
+            document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + formatarDataAmigavelFicha(dataCad) + " - Operador: " + operador;
 
             // Avatar
             const avatarContainer = document.getElementById('avatarFichaContainer');
-            const urlFinal = converterLinkDriveFicha(reg.foto);
+            const urlFoto = reg.foto || reg.urlFoto || reg.imagem || "";
+            const urlFinal = converterLinkDriveFicha(urlFoto);
             if (urlFinal) {
                 avatarContainer.innerHTML = `<img src="${urlFinal}" alt="Foto" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/145/145867.png';">`;
             } else {
                 avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: #0284c7;"></i>`;
             }
 
-            // Campos Mapeados Exatamente com a Triagem
-            document.getElementById('fSocial').innerText = reg.nomeSocial || "Nenhum";
-            document.getElementById('fNascIdade').innerText = (reg.dataNascimento || "---") + " (" + (reg.idade || "---") + ")";
-            document.getElementById('fSexo').innerText = reg.sexo || "---";
-            document.getElementById('fCpfRg').innerText = `CPF: ${reg.cpf || "Não informado"} | RG: ${reg.rg || "Não informado"}`;
-            document.getElementById('fEscNat').innerText = `${reg.escolaridade || "---"} | Nat: ${reg.naturalidade || "---"}`;
-            document.getElementById('fCorRaca').innerText = reg.corRaca || "---";
-            document.getElementById('fFiliacao').innerText = `Mãe: ${reg.filiacaoMae || "---"} | Pai: ${reg.filiacaoPai || "---"}`;
-            document.getElementById('fEndCidade').innerText = `${reg.endereco || "---"} (${reg.cidade || "Unaí-MG"})`;
-            document.getElementById('fTel').innerText = reg.telefone || "Não informado";
-            document.getElementById('fResUnai').innerText = reg.residenciaUnaí || "---";
-            document.getElementById('fTipoTempo').innerText = `${reg.tipoUsuario || "---"} | Rua: ${reg.tempoRua || "---"} | Unaí: ${reg.tempoUnaí || "---"}`;
+            // Atribuição de campos com Fallback robusto
+            document.getElementById('fSocial').innerText = reg.nomeSocial || reg.social || "Nenhum";
             
-            let motivosTxt = reg.motivosPermanencia || "";
-            if (reg.outrosMotivos) motivosTxt += " - Outros: " + reg.outrosMotivos;
+            let nasc = reg.dataNascimento || reg.nascimento || reg.dataNasc || "---";
+            let idade = reg.idade || reg.anos || "";
+            document.getElementById('fNascIdade').innerText = nasc + (idade ? " (" + idade + ")" : "");
+
+            document.getElementById('fSexo').innerText = reg.sexo || reg.genero || "---";
+            
+            let cpf = reg.cpf || "Não informado";
+            let rg = reg.rg || "Não informado";
+            document.getElementById('fCpfRg').innerText = `CPF: ${cpf} | RG: ${rg}`;
+
+            let escolaridade = reg.escolaridade || reg.instrucao || "---";
+            let naturalidade = reg.naturalidade || reg.nat || "---";
+            document.getElementById('fEscNat').innerText = `${escolaridade} | Nat: ${naturalidade}`;
+
+            document.getElementById('fCorRaca').innerText = reg.corRaca || reg.raca || "---";
+            
+            let mae = reg.filiacaoMae || reg.mae || "---";
+            let pai = reg.filiacaoPai || reg.pai || "---";
+            document.getElementById('fFiliacao').innerText = `Mãe: ${mae} | Pai: ${pai}`;
+
+            let endereco = reg.endereco || reg.end || "---";
+            let cidade = reg.cidade || "Unaí-MG";
+            document.getElementById('fEndCidade').innerText = `${endereco} (${cidade})`;
+
+            document.getElementById('fTel').innerText = reg.telefone || reg.tel || reg.celular || "Não informado";
+            document.getElementById('fResUnai').innerText = reg.residenciaUnaí || reg.residenciaUnai || "---";
+            
+            let tipoUsu = reg.tipoUsuario || reg.tipo || "---";
+            let tempoRua = reg.tempoRua || reg.rua || "---";
+            let tempoUnai = reg.tempoUnaí || reg.tempoUnai || "---";
+            document.getElementById('fTipoTempo').innerText = `${tipoUsu} | Rua: ${tempoRua} | Unaí: ${tempoUnai}`;
+            
+            let motivosTxt = reg.motivosPermanencia || reg.motivos || "";
+            if (reg.outrosMotivos || reg.outroMotivo) motivosTxt += " - Outros: " + (reg.outrosMotivos || reg.outroMotivo);
             document.getElementById('fMotivos').innerText = motivosTxt || "Nenhum informado";
 
-            document.getElementById('fPassouAtend').innerText = reg.passouAtendimento || "Nenhum";
-            document.getElementById('fAuxilio').innerText = `${reg.recebeAuxilio || "Não"} (${reg.qualBeneficio || "Nenhum"})`;
-            document.getElementById('fDocs').innerText = `Possui Docs: ${reg.possuiDocumentos || "Sim"} | Faltam: ${reg.documentosFaltam || "Nenhum"}`;
-            document.getElementById('fCarteira').innerText = reg.carteiraTrabalho || "Sim";
-            document.getElementById('fOperador').innerText = reg.operador || "Sistema";
+            document.getElementById('fPassouAtend').innerText = reg.passouAtendimento || reg.atendimentoAntigo || "Nenhum";
+            
+            let auxilio = reg.recebeAuxilio || reg.auxilio || "Não";
+            let qualAux = reg.qualBeneficio || reg.beneficio || "Nenhum";
+            document.getElementById('fAuxilio').innerText = `${auxilio} (${qualAux})`;
+
+            let possuiDocs = reg.possuiDocumentos || reg.documentos || "Sim";
+            let faltamDocs = reg.documentosFaltam || reg.faltaDoc || "Nenhum";
+            document.getElementById('fDocs').innerText = `Possui Docs: ${possuiDocs} | Faltam: ${faltamDocs}`;
+
+            document.getElementById('fCarteira').innerText = reg.carteiraTrabalho || reg.carteira || "Sim";
+            document.getElementById('fOperador').innerText = operador;
         }
     </script>
 </body>
