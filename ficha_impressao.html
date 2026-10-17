@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: ficha_impressao.html. Versão do Módulo: v.1.0.000                    -->
-<!-- Data de atualização: 17/10/2026 - 01:29                                        -->
-<!-- Descrição: Tela de Consulta Cadastral para emissão, visualização e impressão   -->
-<!--            de fichas individuais com marca d'água diagonal otimizada A4.        -->
+<!-- Programa: ficha_impressao.html. Versão do Módulo: v.2.0.000                    -->
+<!-- Data de atualização: 17/10/2026 - 01:50                                        -->
+<!-- Descrição: Tela de Consulta Cadastral e Impressão com o mapeamento exato       -->
+<!--            de todos os campos da Triagem, marca d'água diagonal e padrão A4.   -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -178,12 +178,13 @@
                     <div class="ficha-field"><strong>Endereço / Cidade:</strong> <span id="fEndCidade">---</span></div>
                     <div class="ficha-field"><strong>Telefone:</strong> <span id="fTel">---</span></div>
                     <div class="ficha-field"><strong>Residência em Unaí:</strong> <span id="fResUnai">---</span></div>
-                    <div class="ficha-field"><strong>Tipo de Usuário / Tempo de Rua:</strong> <span id="fTipoTempo">---</span></div>
+                    <div class="ficha-field"><strong>Tipo de Usuário / Tempo de Rua / Tempo de Unaí:</strong> <span id="fTipoTempo">---</span></div>
                     <div class="ficha-field"><strong>Motivos de Permanência:</strong> <span id="fMotivos">---</span></div>
                     <div class="ficha-field"><strong>Passou por Atendimento:</strong> <span id="fPassouAtend">---</span></div>
                     <div class="ficha-field"><strong>Recebe Auxílio / Qual:</strong> <span id="fAuxilio">---</span></div>
                     <div class="ficha-field"><strong>Documentação Completa:</strong> <span id="fDocs">---</span></div>
-                    <div class="ficha-field"><strong>Operador Responsável:</strong> <span id="fOperador">---</span></div>
+                    <div class="ficha-field"><strong>Carteira de Trabalho:</strong> <span id="fCarteira">---</span></div>
+                    <div class="ficha-field" style="grid-column: 1 / -1;"><strong>Operador Responsável:</strong> <span id="fOperador">---</span></div>
                 </div>
 
                 <div class="btn-print-area" style="margin-top: 30px; text-align: right;">
@@ -268,13 +269,34 @@
             return url;
         }
 
+        function formatarDataAmigavelFicha(dataStr, operadorNome) {
+            if (!dataStr) return "Data não informada";
+            try {
+                let d = new Date(dataStr);
+                if (isNaN(d.getTime())) return dataStr;
+                
+                const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+                let dia = String(d.getDate()).padStart(2, '0');
+                let mes = meses[d.getMonth()];
+                let ano = d.getFullYear();
+                let hora = String(d.getHours()).padStart(2, '0');
+                let min = String(d.getMinutes()).padStart(2, '0');
+
+                return `${dia}/${mes}/${ano} - ${hora}:${min}`;
+            } catch(e) {
+                return dataStr;
+            }
+        }
+
         function exibirFichaImpressao(reg) {
             document.getElementById('listaResultadosContainer').style.display = 'none';
             document.getElementById('fichaImpressaoArea').style.display = 'block';
 
             document.getElementById('lblNomeFicha').innerText = reg.nomeCompleto || "---";
             document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + (reg.matricula || "---");
-            document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + (reg.dataHora ? new Date(reg.dataHora).toLocaleDateString('pt-BR') : "---");
+            
+            let operadorCad = reg.operador || "Sistema";
+            document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + formatarDataAmigavelFicha(reg.dataHora) + " - Operador: " + operadorCad;
 
             // Avatar
             const avatarContainer = document.getElementById('avatarFichaContainer');
@@ -285,7 +307,7 @@
                 avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: #0284c7;"></i>`;
             }
 
-            // Campos da Ficha
+            // Campos Mapeados Exatamente com a Triagem
             document.getElementById('fSocial').innerText = reg.nomeSocial || "Nenhum";
             document.getElementById('fNascIdade').innerText = (reg.dataNascimento || "---") + " (" + (reg.idade || "---") + ")";
             document.getElementById('fSexo').innerText = reg.sexo || "---";
@@ -296,11 +318,16 @@
             document.getElementById('fEndCidade').innerText = `${reg.endereco || "---"} (${reg.cidade || "Unaí-MG"})`;
             document.getElementById('fTel').innerText = reg.telefone || "Não informado";
             document.getElementById('fResUnai').innerText = reg.residenciaUnaí || "---";
-            document.getElementById('fTipoTempo').innerText = `${reg.tipoUsuario || "---"} | Tempo de Rua: ${reg.tempoRua || "---"}`;
-            document.getElementById('fMotivos').innerText = reg.motivosPermanencia || "Nenhum informado";
+            document.getElementById('fTipoTempo').innerText = `${reg.tipoUsuario || "---"} | Rua: ${reg.tempoRua || "---"} | Unaí: ${reg.tempoUnaí || "---"}`;
+            
+            let motivosTxt = reg.motivosPermanencia || "";
+            if (reg.outrosMotivos) motivosTxt += " - Outros: " + reg.outrosMotivos;
+            document.getElementById('fMotivos').innerText = motivosTxt || "Nenhum informado";
+
             document.getElementById('fPassouAtend').innerText = reg.passouAtendimento || "Nenhum";
             document.getElementById('fAuxilio').innerText = `${reg.recebeAuxilio || "Não"} (${reg.qualBeneficio || "Nenhum"})`;
             document.getElementById('fDocs').innerText = `Possui Docs: ${reg.possuiDocumentos || "Sim"} | Faltam: ${reg.documentosFaltam || "Nenhum"}`;
+            document.getElementById('fCarteira').innerText = reg.carteiraTrabalho || "Sim";
             document.getElementById('fOperador').innerText = reg.operador || "Sistema";
         }
     </script>
