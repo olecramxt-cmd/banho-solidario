@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.0.000                    -->
-<!-- Data de atualização: 17/10/2026 - 02:17                                        -->
-<!-- Descrição: Ficha de impressão cadastral com layout idêntico à Galeria da       -->
-<!--            Dignidade, marca d'água diagonal e formatação de impressão A4.       -->
+<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.1.000                    -->
+<!-- Data de atualização: 17/10/2026 - 02:22                                        -->
+<!-- Descrição: Ficha de impressão cadastral com marca d'água diagonal em destaque  -->
+<!--            sobre o documento, garantindo legibilidade e padrão A4.             -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -57,23 +57,23 @@
         .resultado-item { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .resultado-item:hover { border-color: var(--primary-color); background: #e0f2fe; }
 
-        /* Área da Ficha A4 com Marca d'Água Diagonal */
+        /* Área da Ficha A4 com Marca d'Água Diagonal em Destaque */
         #fichaImpressaoArea { display: none; position: relative; background: white; padding: 40px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 20px; overflow: hidden; }
         
-        /* Marca d'água Diagonal Centralizada e Otimizada */
+        /* Marca d'água Diagonal em Destaque e Visível */
         .watermark-diagonal {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-35deg);
-            font-size: 42px;
-            font-weight: 700;
-            color: rgba(220, 38, 38, 0.08);
+            font-size: 44px;
+            font-weight: 800;
+            color: rgba(220, 38, 38, 0.14);
             white-space: nowrap;
             pointer-events: none;
-            z-index: 0;
+            z-index: 10;
             text-align: center;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             text-transform: uppercase;
         }
 
@@ -84,7 +84,7 @@
         
         .secao-titulo { font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e0f2fe; padding-bottom: 4px; margin: 20px 0 12px 0; font-weight: 700; }
         .ficha-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13px; }
-        .ficha-field { background: #f8fafc; padding: 8px 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .ficha-field { background: rgba(248, 250, 252, 0.85); padding: 8px 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
         .ficha-field strong { color: var(--primary-dark); display: block; font-size: 11px; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.03em; }
 
         @media print {
@@ -152,7 +152,7 @@
             <div id="listaResultadosItens"></div>
         </div>
 
-        <!-- Área Pronta para Impressão com Marca d'Água Diagonal e Layout Seccionado -->
+        <!-- Área Pronta para Impressão com Marca d'Água Diagonal em Destaque -->
         <div id="fichaImpressaoArea">
             <div class="watermark-diagonal">DOCUMENTO PROTEGIDO POR SIGILO</div>
             
