@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.0.000             -->
-<!-- Data de atualização: 17/10/2026 - 03:48                                        -->
-<!-- Descrição: Relatório Geral com totalizadores, valores por extenso, data antes  -->
-<!--            da assinatura, formatação mm/aa - hh:mm e filtro individual opcional.-->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.1.000             -->
+<!-- Data de atualização: 17/10/2026 - 04:13                                        -->
+<!-- Descrição: Relatório Geral de Atendimentos com menu lateral corrigido,         -->
+<!--            totalizadores, extenso, data mm/aa e filtro individual.             -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -80,7 +80,6 @@
         th { background-color: #0f172a; color: white; font-weight: 600; }
         tr:nth-child(even) { background-color: #f8fafc; }
 
-        /* Resumo Estatístico */
         .resumo-estatistico { margin-top: 15px; padding: 15px; background: #f1f5f9; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; line-height: 1.6; }
 
         /* Rodapé de Assinatura Oficial (Data Acima, Assinatura Abaixo) */
@@ -279,7 +278,7 @@
         function imprimirRelatorioOficial() {
             const mes = document.getElementById('filtroMes').value;
             const ano = document.getElementById('filtroAno').value;
-            document.title = `Relatorio_${mes === 'TODOS' ? 'Geral' : mes}_${ano}`;
+            document.title = `Relatorio_${mes}_${ano}`;
             window.print();
         }
 
@@ -420,7 +419,6 @@
 
                     if (dAno === anoSelecionado) {
                         if (mesSelecionado === "TODOS" || dMes === mesSelecionado) {
-                            // Aplicar filtro individual se ativado
                             if (!ativarIndividual || !nomeFiltro || (item.nomeAssistido && item.nomeAssistido.toLowerCase().includes(nomeFiltro))) {
                                 filtradosTabela.push(item);
                                 if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
@@ -465,7 +463,6 @@
                 tbody.appendChild(tr);
             });
 
-            // Linha de Totalização
             tfoot.innerHTML = `
                 <tr style="background-color: #f1f5f9; font-weight: bold;">
                     <td colspan="4" style="text-align: right;">TOTAL DE SERVIÇOS NO PERÍODO:</td>
@@ -476,7 +473,6 @@
                 </tr>
             `;
 
-            // Resumo Por Extenso
             let totalGeral = b + j + c;
             resumoDiv.innerHTML = `<strong>Resumo Estatístico Oficial:</strong> Foram realizados no período um total de <strong>${totalGeral}</strong> (${numeroPorExtenso(totalGeral)}) atendimentos, sendo <strong>${b}</strong> (${numeroPorExtenso(b)}) banhos, <strong>${j}</strong> (${numeroPorExtenso(j)}) jantas e <strong>${c}</strong> (${numeroPorExtenso(c)}) curativos.`;
         }
@@ -484,7 +480,6 @@
         function renderizarGraficos(banho, janta, curativos) {
             const dataValores = [banho, janta, curativos];
             
-            // Gráfico de Pizza
             const ctxPizza = document.getElementById('pizzaChart').getContext('2d');
             if (pizzaInstance) pizzaInstance.destroy();
 
@@ -516,7 +511,6 @@
                 plugins: [ChartDataLabels]
             });
 
-            // Gráfico de Barras
             const ctxBar = document.getElementById('barChart').getContext('2d');
             if (barInstance) barInstance.destroy();
 
