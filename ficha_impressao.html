@@ -1,0 +1,309 @@
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
+<!-- Programa: ficha_impressao.html. Versão do Módulo: v.1.0.000                    -->
+<!-- Data de atualização: 17/10/2026 - 01:29                                        -->
+<!-- Descrição: Tela de Consulta Cadastral para emissão, visualização e impressão   -->
+<!--            de fichas individuais com marca d'água diagonal otimizada A4.        -->
+<!-- ============================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMAS iPeC - Consulta Cadastral e Impressão / Banho Solidário</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0284c7;
+            --primary-dark: #0369a1;
+            --success-color: #16a34a;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #cbd5e1;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .menu-toggle:hover { background: white; color: var(--primary-dark); }
+        .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
+        .side-menu.active { right: 0; }
+        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0f2fe; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .side-menu-header h3 { color: var(--primary-dark); font-size: 1.2rem; margin: 0; }
+        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        .side-menu-links { display: flex; flex-direction: column; gap: 1rem; }
+        .menu-link-item { background: var(--bg-color); color: var(--primary-dark); padding: 12px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary-color); transition: all 0.3s; }
+        .menu-link-item:hover { background: #e0f2fe; transform: translateX(5px); }
+        .side-menu-sublinks { padding-left: 20px; display: flex; flex-direction: column; gap: 0.5rem; }
+        .menu-sublink-item { font-size: 0.9rem; color: var(--text-color); padding: 8px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .menu-sublink-item:hover { background: #e0f2fe; color: var(--primary-dark); }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
+        .menu-overlay.active { display: block; }
+
+        .container { max-width: 900px; margin: 30px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 25px; }
+
+        .search-box { display: flex; gap: 10px; margin-bottom: 25px; background: #f1f5f9; padding: 15px; border-radius: 8px; }
+        .search-box input { flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #15803d; }
+
+        #listaResultadosContainer { display: none; margin-bottom: 25px; }
+        .resultado-item { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .resultado-item:hover { border-color: var(--primary-color); background: #e0f2fe; }
+
+        /* Área da Ficha A4 com Marca d'Água Diagonal */
+        #fichaImpressaoArea { display: none; position: relative; background: white; padding: 40px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 20px; overflow: hidden; }
+        
+        /* Marca d'água Diagonal Centralizada e Otimizada */
+        .watermark-diagonal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-35deg);
+            font-size: 42px;
+            font-weight: 700;
+            color: rgba(220, 38, 38, 0.08);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .ficha-conteudo { position: relative; z-index: 1; }
+        .ficha-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px; }
+        .ficha-avatar { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
+        .ficha-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .ficha-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 14px; }
+        .ficha-field { background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .ficha-field strong { color: var(--primary-dark); display: block; font-size: 12px; margin-bottom: 2px; }
+
+        @media print {
+            body { background: white; }
+            .navbar, .search-box, .side-menu, .menu-overlay, .btn-print-area { display: none !important; }
+            .container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
+            #fichaImpressaoArea { border: none; padding: 0; margin: 0; }
+        }
+    </style>
+</head>
+<body onload="inicializarConsultaFicha()">
+
+    <!-- Importação do Config de API Centralizada -->
+    <script src="config.js"></script>
+    <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
+            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+            window.location.href = 'login.html';
+        }
+        const API_URL = CONFIG.API_URL;
+    </script>
+
+    <div class="navbar">
+        <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+        <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Banho Solidário</span>
+    </div>
+
+    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h3>Menu do Sistema</h3>
+            <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-menu-links">
+            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
+                <i class="fa-solid fa-house"></i> Início (Página Inicial)
+            </a>
+            
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
+            <div class="side-menu-sublinks">
+                <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
+                <a href="relatorios.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios e Fichas</a>
+            </div>
+
+            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
+            <a href="./ebook/" target="_blank" class="menu-link-item"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Consulta Cadastral</h2>
+
+        <div class="search-box">
+            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF, o Nome, o Nome Social ou 'TODOS'..." onkeypress="if(event.key === 'Enter') pesquisarCadastrosFicha();">
+            <button class="btn" onclick="pesquisarCadastrosFicha()"><i class="fa-solid fa-magnifying-glass"></i> Pesquisar</button>
+        </div>
+
+        <div id="mensagemStatus" style="text-align: center; font-weight: bold; margin-bottom: 15px;"></div>
+
+        <div id="listaResultadosContainer">
+            <h3 style="font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 15px;">Selecione o Assistido para Exibir a Ficha:</h3>
+            <div id="listaResultadosItens"></div>
+        </div>
+
+        <!-- Área Pronta para Impressão com Marca d'Água Diagonal -->
+        <div id="fichaImpressaoArea">
+            <div class="watermark-diagonal">DOCUMENTO PROTEGIDO POR SIGILO</div>
+            
+            <div class="ficha-conteudo">
+                <div class="ficha-header">
+                    <div class="ficha-avatar" id="avatarFichaContainer">
+                        <i class="fa-solid fa-user" style="font-size: 2.5rem; color: #0284c7;"></i>
+                    </div>
+                    <div>
+                        <h3 id="lblNomeFicha" style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem;">Nome Completo</h3>
+                        <p id="lblMatriculaFicha" style="margin: 2px 0; font-weight: 600; color: var(--primary-dark);">Matrícula: ---</p>
+                        <p id="lblDataCadFicha" style="margin: 2px 0; font-size: 13px; color: #64748b;">Data do Cadastro: --/--/----</p>
+                    </div>
+                </div>
+
+                <div class="ficha-grid">
+                    <div class="ficha-field"><strong>Nome Social:</strong> <span id="fSocial">---</span></div>
+                    <div class="ficha-field"><strong>Data de Nascimento / Idade:</strong> <span id="fNascIdade">---</span></div>
+                    <div class="ficha-field"><strong>Sexo:</strong> <span id="fSexo">---</span></div>
+                    <div class="ficha-field"><strong>CPF / RG:</strong> <span id="fCpfRg">---</span></div>
+                    <div class="ficha-field"><strong>Escolaridade / Naturalidade:</strong> <span id="fEscNat">---</span></div>
+                    <div class="ficha-field"><strong>Cor / Raça:</strong> <span id="fCorRaca">---</span></div>
+                    <div class="ficha-field"><strong>Filiação (Mãe / Pai):</strong> <span id="fFiliacao">---</span></div>
+                    <div class="ficha-field"><strong>Endereço / Cidade:</strong> <span id="fEndCidade">---</span></div>
+                    <div class="ficha-field"><strong>Telefone:</strong> <span id="fTel">---</span></div>
+                    <div class="ficha-field"><strong>Residência em Unaí:</strong> <span id="fResUnai">---</span></div>
+                    <div class="ficha-field"><strong>Tipo de Usuário / Tempo de Rua:</strong> <span id="fTipoTempo">---</span></div>
+                    <div class="ficha-field"><strong>Motivos de Permanência:</strong> <span id="fMotivos">---</span></div>
+                    <div class="ficha-field"><strong>Passou por Atendimento:</strong> <span id="fPassouAtend">---</span></div>
+                    <div class="ficha-field"><strong>Recebe Auxílio / Qual:</strong> <span id="fAuxilio">---</span></div>
+                    <div class="ficha-field"><strong>Documentação Completa:</strong> <span id="fDocs">---</span></div>
+                    <div class="ficha-field"><strong>Operador Responsável:</strong> <span id="fOperador">---</span></div>
+                </div>
+
+                <div class="btn-print-area" style="margin-top: 30px; text-align: right;">
+                    <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Ficha Oficial</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function inicializarConsultaFicha() {
+            // Inicialização padrão
+        }
+
+        function pesquisarCadastrosFicha() {
+            const termo = document.getElementById('termoBusca').value.trim();
+            const statusDiv = document.getElementById('mensagemStatus');
+            document.getElementById('listaResultadosContainer').style.display = 'none';
+            document.getElementById('fichaImpressaoArea').style.display = 'none';
+
+            if (!termo) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Por favor, digite um termo ou 'TODOS' para pesquisar.";
+                return;
+            }
+
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "Pesquisando assistidos na nuvem...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarTriagem", termo: termo })
+            })
+            .then(res => res.json())
+            .then(data => {
+                statusDiv.innerText = "";
+                if (data.status === "encontrado") {
+                    montarListaSelecaoFicha(data.lista);
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Nenhum registo encontrado.";
+                }
+            })
+            .catch(err => {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão com o servidor.";
+            });
+        }
+
+        function montarListaSelecaoFicha(lista) {
+            const container = document.getElementById('listaResultadosItens');
+            container.innerHTML = "";
+            document.getElementById('listaResultadosContainer').style.display = 'block';
+
+            lista.forEach(item => {
+                const reg = item.registro;
+                const div = document.createElement('div');
+                div.className = 'resultado-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>Matrícula:</strong> ${reg.matricula} | 
+                        <strong>Nome:</strong> ${reg.nomeCompleto} 
+                        ${reg.nomeSocial ? `(${reg.nomeSocial})` : ''} | 
+                        <strong>CPF:</strong> ${reg.cpf || 'Não informado'}
+                    </div>
+                    <button class="btn" onclick='exibirFichaImpressao(${JSON.stringify(reg)})'><i class="fa-solid fa-file-lines"></i> Selecionar Ficha</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function converterLinkDriveFicha(url) {
+            if (!url) return "";
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            return url;
+        }
+
+        function exibirFichaImpressao(reg) {
+            document.getElementById('listaResultadosContainer').style.display = 'none';
+            document.getElementById('fichaImpressaoArea').style.display = 'block';
+
+            document.getElementById('lblNomeFicha').innerText = reg.nomeCompleto || "---";
+            document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + (reg.matricula || "---");
+            document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + (reg.dataHora ? new Date(reg.dataHora).toLocaleDateString('pt-BR') : "---");
+
+            // Avatar
+            const avatarContainer = document.getElementById('avatarFichaContainer');
+            const urlFinal = converterLinkDriveFicha(reg.foto);
+            if (urlFinal) {
+                avatarContainer.innerHTML = `<img src="${urlFinal}" alt="Foto" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/145/145867.png';">`;
+            } else {
+                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: #0284c7;"></i>`;
+            }
+
+            // Campos da Ficha
+            document.getElementById('fSocial').innerText = reg.nomeSocial || "Nenhum";
+            document.getElementById('fNascIdade').innerText = (reg.dataNascimento || "---") + " (" + (reg.idade || "---") + ")";
+            document.getElementById('fSexo').innerText = reg.sexo || "---";
+            document.getElementById('fCpfRg').innerText = `CPF: ${reg.cpf || "Não informado"} | RG: ${reg.rg || "Não informado"}`;
+            document.getElementById('fEscNat').innerText = `${reg.escolaridade || "---"} | Nat: ${reg.naturalidade || "---"}`;
+            document.getElementById('fCorRaca').innerText = reg.corRaca || "---";
+            document.getElementById('fFiliacao').innerText = `Mãe: ${reg.filiacaoMae || "---"} | Pai: ${reg.filiacaoPai || "---"}`;
+            document.getElementById('fEndCidade').innerText = `${reg.endereco || "---"} (${reg.cidade || "Unaí-MG"})`;
+            document.getElementById('fTel').innerText = reg.telefone || "Não informado";
+            document.getElementById('fResUnai').innerText = reg.residenciaUnaí || "---";
+            document.getElementById('fTipoTempo').innerText = `${reg.tipoUsuario || "---"} | Tempo de Rua: ${reg.tempoRua || "---"}`;
+            document.getElementById('fMotivos').innerText = reg.motivosPermanencia || "Nenhum informado";
+            document.getElementById('fPassouAtend').innerText = reg.passouAtendimento || "Nenhum";
+            document.getElementById('fAuxilio').innerText = `${reg.recebeAuxilio || "Não"} (${reg.qualBeneficio || "Nenhum"})`;
+            document.getElementById('fDocs').innerText = `Possui Docs: ${reg.possuiDocumentos || "Sim"} | Faltam: ${reg.documentosFaltam || "Nenhum"}`;
+            document.getElementById('fOperador').innerText = reg.operador || "Sistema";
+        }
+    </script>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
