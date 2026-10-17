@@ -2,17 +2,17 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.1.0.000             -->
-<!-- Data de atualização: 17/10/2026 - 02:56                                        -->
-<!-- Descrição: Relatório Geral de Atendimentos com filtros, tabela de movimentação,-->
-<!--            opções de impressão por checkboxes e rodapé oficial de assinatura.  -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.0.000             -->
+<!-- Data de atualização: 17/10/2026 - 03:48                                        -->
+<!-- Descrição: Relatório Geral com totalizadores, valores por extenso, data antes  -->
+<!--            da assinatura, formatação mm/aa - hh:mm e filtro individual opcional.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMAS iPeC - Relatório Geral de Atendimentos / Banho Solidário</title>
+    <title id="pageTitle">Relatorio_10_2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js & Plugin de DataLabels -->
@@ -50,45 +50,42 @@
         h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; }
         .subtitle { text-align: center; color: #64748b; margin-bottom: 25px; font-size: 0.95rem; }
 
-        .section-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 10px; margin-bottom: 25px; }
+        .section-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 10px; margin-bottom: 25px; position: relative; }
         .section-title { font-size: 1.1rem; color: var(--primary-dark); border-bottom: 2px solid #cbd5e1; padding-bottom: 5px; margin-bottom: 15px; font-weight: 700; }
 
-        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; position: relative; }
         .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
-        .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: white; }
+        .form-group select, .form-group input { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: white; }
 
-        /* Painel de Opções de Impressão */
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 6px 6px; max-height: 200px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
+        .autocomplete-item { padding: 10px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+        .autocomplete-item:hover { background: #e0f2fe; color: var(--primary-dark); font-weight: 500; }
+
         .print-options-panel { background: #e0f2fe; border: 1px solid #bae6fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; }
         .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--primary-dark); }
         .checkbox-label input { width: 18px; height: 18px; accent-color: var(--primary-color); cursor: pointer; }
 
-        .btn { background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
         .btn:hover { background-color: var(--primary-dark); }
         .btn-success { background-color: var(--success-color); }
         .btn-success:hover { background-color: #15803d; }
 
-        /* Dashboard 3D */
         .dashboard-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-top: 20px; }
-        .chart-card { 
-            background: #ffffff; 
-            border: 1px solid #e2e8f0; 
-            padding: 25px; 
-            border-radius: 16px; 
-            text-align: center; 
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-        }
+        .chart-card { background: #ffffff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 16px; text-align: center; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); }
         .chart-card h3 { font-size: 1.05rem; color: var(--primary-dark); margin-bottom: 20px; font-weight: 700; }
 
-        /* Tabela de Movimentação do Mês */
         .table-container { overflow-x: auto; margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; }
         th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: left; }
         th { background-color: #0f172a; color: white; font-weight: 600; }
         tr:nth-child(even) { background-color: #f8fafc; }
 
-        /* Rodapé de Assinatura Impressa */
-        .assinatura-area { display: none; margin-top: 60px; text-align: center; page-break-inside: avoid; }
-        .linha-assinatura { width: 350px; border-top: 1px solid #334155; margin: 0 auto 8px auto; }
+        /* Resumo Estatístico */
+        .resumo-estatistico { margin-top: 15px; padding: 15px; background: #f1f5f9; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 14px; line-height: 1.6; }
+
+        /* Rodapé de Assinatura Oficial (Data Acima, Assinatura Abaixo) */
+        .assinatura-area { display: none; margin-top: 50px; text-align: center; page-break-inside: avoid; }
+        .linha-assinatura { width: 350px; border-top: 1px solid #334155; margin: 25px auto 8px auto; }
 
         @media print {
             body { background: white; }
@@ -151,21 +148,21 @@
                 <label class="checkbox-label"><input type="checkbox" id="chkGraficos" checked onchange="alternarSecoesImpressao()"> Incluir Gráficos</label>
                 <label class="checkbox-label"><input type="checkbox" id="chkTabela" checked onchange="alternarSecoesImpressao()"> Incluir Tabela Resumo do Mês</label>
             </div>
-            <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Relatório Oficial</button>
+            <button class="btn btn-success" onclick="imprimirRelatorioOficial()"><i class="fa-solid fa-print"></i> Imprimir Relatório Oficial</button>
         </div>
 
-        <!-- Filtros de Período -->
+        <!-- Filtros de Período e Consulta Individual -->
         <div class="section-box">
-            <div class="section-title">Filtro de Período do Relatório</div>
-            <div style="display: flex; gap: 15px; align-items: center;">
-                <div class="form-group" style="flex: 1; margin:0;">
+            <div class="section-title">Filtros e Parâmetros do Relatório</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="form-group" style="margin:0;">
                     <label>Filtrar por Ano</label>
                     <select id="filtroAno" onchange="processarEAtualizarTudo()">
                         <option value="2026" selected>2026</option>
                         <option value="2025">2025</option>
                     </select>
                 </div>
-                <div class="form-group" style="flex: 1; margin:0;">
+                <div class="form-group" style="margin:0;">
                     <label>Filtrar por Mês</label>
                     <select id="filtroMes" onchange="processarEAtualizarTudo()">
                         <option value="TODOS">Todos os Meses</option>
@@ -174,6 +171,20 @@
                         <option value="07">Julho</option><option value="08">Agosto</option><option value="09">Setembro</option>
                         <option value="10" selected>Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Consulta Individual Opcional -->
+            <div style="display: flex; gap: 15px; align-items: flex-end;">
+                <div class="form-group" style="flex: 1; margin:0;">
+                    <label>Consultar Assistido Específico (Opcional)</label>
+                    <input type="text" id="buscaAssistidoFiltro" placeholder="Digite o nome do assistido..." oninput="filtrarNomesAssistidos()" autocomplete="off">
+                    <div id="listaSugestoesRel" class="autocomplete-list"></div>
+                </div>
+                <div style="display: flex; align-items: center; height: 42px;">
+                    <label class="checkbox-label" style="font-size: 14px; margin: 0;">
+                        <input type="checkbox" id="chkFiltroIndividual" onchange="processarEAtualizarTudo()"> Ativar Relatório Individual
+                    </label>
                 </div>
             </div>
         </div>
@@ -200,7 +211,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Data/Hora</th>
+                            <th>Data / Hora</th>
                             <th>Matrícula</th>
                             <th>Nome do Assistido</th>
                             <th>Sexo</th>
@@ -213,22 +224,29 @@
                     <tbody id="tabelaMovimentacaoCorpo">
                         <tr><td colspan="8" style="text-align: center; color: #64748b;">Carregando dados da movimentação...</td></tr>
                     </tbody>
+                    <tfoot id="tabelaMovimentacaoRodape"></tfoot>
                 </table>
+            </div>
+            <!-- Resumo Estatístico Por Extenso -->
+            <div class="resumo-estatistico" id="resumoEstatisticoTexto">
+                A carregar resumo estatístico...
             </div>
         </div>
 
-        <!-- Rodapé de Assinatura Oficial (Visível apenas na Impressão) -->
+        <!-- Rodapé de Assinatura Oficial (Data Acima, Assinatura Abaixo) -->
         <div class="assinatura-area">
+            <p id="lblDataAssinatura" style="font-size: 14px; color: #334155; margin: 0 0 40px 0; font-weight: 500;">Unaí - MG</p>
             <div class="linha-assinatura"></div>
-            <p style="font-weight: 600; margin: 0 0 5px 0;">Coordenação Geral / Operacional - Banho Solidário</p>
-            <p id="lblDataAssinatura" style="font-size: 13px; color: #64748b; margin: 0;">Unaí - MG</p>
+            <p style="font-weight: 600; margin: 5px 0 0 0; color: #0f172a;">Coordenação Geral / Operacional - Banho Solidário</p>
         </div>
     </div>
 
     <script>
         let listaAtendimentosGeral = [];
+        let listaGeralAssistidosNomes = [];
         let pizzaInstance = null;
         let barInstance = null;
+        let assistidoSelecionadoFiltro = "";
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
@@ -238,6 +256,7 @@
         function inicializarRelatorioMovimentacao() {
             atualizarDataExtensoRodape();
             carregarDadosRelatorio();
+            carregarNomesAssistidosCache();
         }
 
         function atualizarDataExtensoRodape() {
@@ -256,6 +275,67 @@
             document.getElementById('blocoGraficos').style.display = exibirGraficos ? 'block' : 'none';
             document.getElementById('blocoTabela').style.display = exibirTabela ? 'block' : 'none';
         }
+
+        function imprimirRelatorioOficial() {
+            const mes = document.getElementById('filtroMes').value;
+            const ano = document.getElementById('filtroAno').value;
+            document.title = `Relatorio_${mes === 'TODOS' ? 'Geral' : mes}_${ano}`;
+            window.print();
+        }
+
+        function carregarNomesAssistidosCache() {
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarTriagem", termo: "todos" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "encontrado" && data.lista) {
+                    listaGeralAssistidosNomes = data.lista.map(i => i.registro.nomeCompleto);
+                }
+            })
+            .catch(err => console.error("Erro ao carregar nomes", err));
+        }
+
+        function filtrarNomesAssistidos() {
+            const termo = document.getElementById('buscaAssistidoFiltro').value.trim().toLowerCase();
+            const container = document.getElementById('listaSugestoesRel');
+            container.innerHTML = "";
+
+            if (!termo || termo.length < 1) {
+                container.style.display = 'none';
+                assistidoSelecionadoFiltro = "";
+                processarEAtualizarTudo();
+                return;
+            }
+
+            const filtrados = listaGeralAssistidosNomes.filter(nome => nome && nome.toLowerCase().includes(termo));
+            if (filtrados.length > 0) {
+                filtrados.forEach(nome => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    div.innerText = nome;
+                    div.onmousedown = function(e) {
+                        e.preventDefault();
+                        document.getElementById('buscaAssistidoFiltro').value = nome;
+                        assistidoSelecionadoFiltro = nome;
+                        container.style.display = 'none';
+                        processarEAtualizarTudo();
+                    };
+                    container.appendChild(div);
+                });
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#buscaAssistidoFiltro') && !e.target.closest('#listaSugestoesRel')) {
+                document.getElementById('listaSugestoesRel').style.display = 'none';
+            }
+        });
 
         function carregarDadosRelatorio() {
             fetch(API_URL, {
@@ -279,9 +359,38 @@
             });
         }
 
+        function formatarDataMmAaHhMm(dataStr) {
+            if (!dataStr) return "---";
+            try {
+                let d = new Date(dataStr);
+                if (isNaN(d.getTime())) return dataStr;
+                let mm = String(d.getMonth() + 1).padStart(2, '0');
+                let aa = String(d.getFullYear()).slice(-2);
+                let hh = String(d.getHours()).padStart(2, '0');
+                let min = String(d.getMinutes()).padStart(2, '0');
+                return `${mm}/${aa} - ${hh}:${min}`;
+            } catch(e) {
+                return dataStr;
+            }
+        }
+
+        function numeroPorExtenso(num) {
+            const unidades = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+            const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+            if (num < 20) return unidades[num];
+            if (num < 100) {
+                let d = Math.floor(num / 10);
+                let u = num % 10;
+                return u === 0 ? dezenas[d] : `${dezenas[d]} e ${unidades[u]}`;
+            }
+            return String(num);
+        }
+
         function processarEAtualizarTudo() {
             const anoSelecionado = document.getElementById('filtroAno').value;
             const mesSelecionado = document.getElementById('filtroMes').value;
+            const ativarIndividual = document.getElementById('chkFiltroIndividual').checked;
+            const nomeFiltro = assistidoSelecionadoFiltro.toLowerCase();
 
             let totalBanho = 0;
             let totalJanta = 0;
@@ -311,32 +420,40 @@
 
                     if (dAno === anoSelecionado) {
                         if (mesSelecionado === "TODOS" || dMes === mesSelecionado) {
-                            filtradosTabela.push(item);
-                            if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
-                            if (String(item.janta).toUpperCase() === "SIM") totalJanta++;
-                            if (String(item.curativos).toUpperCase() === "SIM") totalCurativos++;
+                            // Aplicar filtro individual se ativado
+                            if (!ativarIndividual || !nomeFiltro || (item.nomeAssistido && item.nomeAssistido.toLowerCase().includes(nomeFiltro))) {
+                                filtradosTabela.push(item);
+                                if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
+                                if (String(item.janta).toUpperCase() === "SIM") totalJanta++;
+                                if (String(item.curativos).toUpperCase() === "SIM") totalCurativos++;
+                            }
                         }
                     }
                 }
             });
 
             renderizarGraficos(totalBanho, totalJanta, totalCurativos);
-            preencherTabelaMovimentacao(filtradosTabela);
+            preencherTabelaMovimentacao(filtradosTabela, totalBanho, totalJanta, totalCurativos);
         }
 
-        function preencherTabelaMovimentacao(lista) {
+        function preencherTabelaMovimentacao(lista, b, j, c) {
             const tbody = document.getElementById('tabelaMovimentacaoCorpo');
+            const tfoot = document.getElementById('tabelaMovimentacaoRodape');
+            const resumoDiv = document.getElementById('resumoEstatisticoTexto');
             tbody.innerHTML = "";
 
             if (lista.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum atendimento registado para o período selecionado.</td></tr>`;
+                tfoot.innerHTML = "";
+                resumoDiv.innerText = "Nenhum atendimento registado no período.";
                 return;
             }
 
             lista.forEach(item => {
+                const dataFormatada = formatarDataMmAaHhMm(item.carimbo || item.dataAcao);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${item.carimbo || item.dataAcao || '---'}</td>
+                    <td>${dataFormatada}</td>
                     <td><strong>${item.matricula || '---'}</strong></td>
                     <td>${item.nomeAssistido || '---'}</td>
                     <td>${item.sexo || '---'}</td>
@@ -347,6 +464,21 @@
                 `;
                 tbody.appendChild(tr);
             });
+
+            // Linha de Totalização
+            tfoot.innerHTML = `
+                <tr style="background-color: #f1f5f9; font-weight: bold;">
+                    <td colspan="4" style="text-align: right;">TOTAL DE SERVIÇOS NO PERÍODO:</td>
+                    <td style="text-align: center; color: #0284c7;">${b}</td>
+                    <td style="text-align: center; color: #16a34a;">${j}</td>
+                    <td style="text-align: center; color: #d97706;">${c}</td>
+                    <td></td>
+                </tr>
+            `;
+
+            // Resumo Por Extenso
+            let totalGeral = b + j + c;
+            resumoDiv.innerHTML = `<strong>Resumo Estatístico Oficial:</strong> Foram realizados no período um total de <strong>${totalGeral}</strong> (${numeroPorExtenso(totalGeral)}) atendimentos, sendo <strong>${b}</strong> (${numeroPorExtenso(b)}) banhos, <strong>${j}</strong> (${numeroPorExtenso(j)}) jantas e <strong>${c}</strong> (${numeroPorExtenso(c)}) curativos.`;
         }
 
         function renderizarGraficos(banho, janta, curativos) {
@@ -384,7 +516,7 @@
                 plugins: [ChartDataLabels]
             });
 
-            // Gráfico de Barras com Margem Superior e Percentuais
+            // Gráfico de Barras
             const ctxBar = document.getElementById('barChart').getContext('2d');
             if (barInstance) barInstance.destroy();
 
