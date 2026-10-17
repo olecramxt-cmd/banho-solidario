@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: ficha_impressao.html. Versão do Módulo: v.2.1.000                    -->
-<!-- Data de atualização: 17/10/2026 - 02:02                                        -->
-<!-- Descrição: Ficha de impressão com fallback de propriedades para preencher      -->
-<!--            corretamente todos os campos independentemente do nome na planilha. -->
+<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.0.000                    -->
+<!-- Data de atualização: 17/10/2026 - 02:17                                        -->
+<!-- Descrição: Ficha de impressão cadastral com layout idêntico à Galeria da       -->
+<!--            Dignidade, marca d'água diagonal e formatação de impressão A4.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -79,12 +79,13 @@
 
         .ficha-conteudo { position: relative; z-index: 1; }
         .ficha-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px; }
-        .ficha-avatar { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
+        .ficha-avatar { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background: #f1f5f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .ficha-avatar img { width: 100%; height: 100%; object-fit: cover; }
         
-        .ficha-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 14px; }
-        .ficha-field { background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .ficha-field strong { color: var(--primary-dark); display: block; font-size: 12px; margin-bottom: 2px; }
+        .secao-titulo { font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e0f2fe; padding-bottom: 4px; margin: 20px 0 12px 0; font-weight: 700; }
+        .ficha-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 13px; }
+        .ficha-field { background: #f8fafc; padding: 8px 10px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .ficha-field strong { color: var(--primary-dark); display: block; font-size: 11px; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.03em; }
 
         @media print {
             body { background: white; }
@@ -151,7 +152,7 @@
             <div id="listaResultadosItens"></div>
         </div>
 
-        <!-- Área Pronta para Impressão com Marca d'Água Diagonal -->
+        <!-- Área Pronta para Impressão com Marca d'Água Diagonal e Layout Seccionado -->
         <div id="fichaImpressaoArea">
             <div class="watermark-diagonal">DOCUMENTO PROTEGIDO POR SIGILO</div>
             
@@ -167,24 +168,52 @@
                     </div>
                 </div>
 
+                <!-- 1. Dados Pessoais e Identificação -->
+                <div class="secao-titulo">1. Dados Pessoais e Identificação</div>
                 <div class="ficha-grid">
-                    <div class="ficha-field"><strong>Nome Social:</strong> <span id="fSocial">---</span></div>
-                    <div class="ficha-field"><strong>Data de Nascimento / Idade:</strong> <span id="fNascIdade">---</span></div>
-                    <div class="ficha-field"><strong>Sexo:</strong> <span id="fSexo">---</span></div>
-                    <div class="ficha-field"><strong>CPF / RG:</strong> <span id="fCpfRg">---</span></div>
-                    <div class="ficha-field"><strong>Escolaridade / Naturalidade:</strong> <span id="fEscNat">---</span></div>
-                    <div class="ficha-field"><strong>Cor / Raça:</strong> <span id="fCorRaca">---</span></div>
-                    <div class="ficha-field"><strong>Filiação (Mãe / Pai):</strong> <span id="fFiliacao">---</span></div>
-                    <div class="ficha-field"><strong>Endereço / Cidade:</strong> <span id="fEndCidade">---</span></div>
-                    <div class="ficha-field"><strong>Telefone:</strong> <span id="fTel">---</span></div>
-                    <div class="ficha-field"><strong>Residência em Unaí:</strong> <span id="fResUnai">---</span></div>
-                    <div class="ficha-field"><strong>Tipo de Usuário / Tempo de Rua / Tempo de Unaí:</strong> <span id="fTipoTempo">---</span></div>
-                    <div class="ficha-field"><strong>Motivos de Permanência:</strong> <span id="fMotivos">---</span></div>
-                    <div class="ficha-field"><strong>Passou por Atendimento:</strong> <span id="fPassouAtend">---</span></div>
-                    <div class="ficha-field"><strong>Recebe Auxílio / Qual:</strong> <span id="fAuxilio">---</span></div>
-                    <div class="ficha-field"><strong>Documentação Completa:</strong> <span id="fDocs">---</span></div>
-                    <div class="ficha-field"><strong>Carteira de Trabalho:</strong> <span id="fCarteira">---</span></div>
-                    <div class="ficha-field" style="grid-column: 1 / -1;"><strong>Operador Responsável:</strong> <span id="fOperador">---</span></div>
+                    <div class="ficha-field"><strong>Nome Completo</strong> <span id="fNomeComp">---</span></div>
+                    <div class="ficha-field"><strong>Nome Social</strong> <span id="fSocial">---</span></div>
+                    <div class="ficha-field"><strong>Data de Nascimento</strong> <span id="fNasc">---</span></div>
+                    <div class="ficha-field"><strong>Idade</strong> <span id="fIdade">---</span></div>
+                    <div class="ficha-field"><strong>Sexo</strong> <span id="fSexo">---</span></div>
+                    <div class="ficha-field"><strong>Escolaridade</strong> <span id="fEscolaridade">---</span></div>
+                    <div class="ficha-field"><strong>Naturalidade</strong> <span id="fNaturalidade">---</span></div>
+                    <div class="ficha-field"><strong>RG</strong> <span id="fRg">---</span></div>
+                    <div class="ficha-field"><strong>CPF</strong> <span id="fCpf">---</span></div>
+                    <div class="ficha-field" style="grid-column: span 3;"><strong>Cor / Raça</strong> <span id="fCorRaca">---</span></div>
+                </div>
+
+                <!-- 2. Filiação e Contactos -->
+                <div class="secao-titulo">2. Filiação e Contactos</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field"><strong>Filiação (Mãe)</strong> <span id="fMae">---</span></div>
+                    <div class="ficha-field"><strong>Filiação (Pai)</strong> <span id="fPai">---</span></div>
+                    <div class="ficha-field"><strong>Endereço</strong> <span id="fEndereco">---</span></div>
+                    <div class="ficha-field"><strong>Cidade</strong> <span id="fCidade">---</span></div>
+                    <div class="ficha-field"><strong>Telefone / Contato</strong> <span id="fTelefone">---</span></div>
+                    <div class="ficha-field"><strong>Residência em Unaí</strong> <span id="fResidenciaUnai">---</span></div>
+                </div>
+
+                <!-- 3. Perfil Social e Permanência na Rua -->
+                <div class="secao-titulo">3. Perfil Social e Permanência na Rua</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field"><strong>Tipo de Usuário</strong> <span id="fTipoUsuario">---</span></div>
+                    <div class="ficha-field"><strong>Tempo de Rua</strong> <span id="fTempoRua">---</span></div>
+                    <div class="ficha-field"><strong>Tempo de Unaí</strong> <span id="fTempoUnai">---</span></div>
+                    <div class="ficha-field" style="grid-column: span 3;"><strong>Motivos Permanência</strong> <span id="fMotivos">---</span></div>
+                    <div class="ficha-field" style="grid-column: span 3;"><strong>Outros Motivos</strong> <span id="fOutrosMotivos">---</span></div>
+                </div>
+
+                <!-- 4. Atendimentos, Benefícios e Documentação -->
+                <div class="secao-titulo">4. Atendimentos, Benefícios e Documentação</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field"><strong>Passou Atendimento</strong> <span id="fPassouAtend">---</span></div>
+                    <div class="ficha-field"><strong>Recebe Auxílio</strong> <span id="fRecebeAuxilio">---</span></div>
+                    <div class="ficha-field"><strong>Qual Benefício</strong> <span id="fQualBeneficio">---</span></div>
+                    <div class="ficha-field"><strong>Possui Documentos</strong> <span id="fPossuiDocs">---</span></div>
+                    <div class="ficha-field"><strong>Documentos Faltam</strong> <span id="fDocsFaltam">---</span></div>
+                    <div class="ficha-field"><strong>Carteira de Trabalho</strong> <span id="fCarteiraTrabalho">---</span></div>
+                    <div class="ficha-field" style="grid-column: span 3;"><strong>Operador Responsável</strong> <span id="fOperador">---</span></div>
                 </div>
 
                 <div class="btn-print-area" style="margin-top: 30px; text-align: right;">
@@ -252,7 +281,7 @@
                 div.innerHTML = `
                     <div>
                         <strong>Matrícula:</strong> ${reg.matricula} | 
-                        <strong>Nome:</strong> ${reg.nomeCompleto || reg.nome} 
+                        <strong>Nome:</strong> ${reg.nomeCompleto || reg.nome || '---'} 
                         ${reg.nomeSocial ? `(${reg.nomeSocial})` : ''} | 
                         <strong>CPF:</strong> ${reg.cpf || 'Não informado'}
                     </div>
@@ -275,9 +304,8 @@
                 let d = new Date(dataStr);
                 if (isNaN(d.getTime())) return dataStr;
                 
-                const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
                 let dia = String(d.getDate()).padStart(2, '0');
-                let mes = meses[d.getMonth()];
+                let mes = String(d.getMonth() + 1).padStart(2, '0');
                 let ano = d.getFullYear();
                 let hora = String(d.getHours()).padStart(2, '0');
                 let min = String(d.getMinutes()).padStart(2, '0');
@@ -292,15 +320,14 @@
             document.getElementById('listaResultadosContainer').style.display = 'none';
             document.getElementById('fichaImpressaoArea').style.display = 'block';
 
-            // Fallback para nomes de propriedades caso venham diferentes da planilha antiga
-            const nomeComp = reg.nomeCompleto || reg.nome || "---";
+            const nomeComp = reg.nomeCompleto || reg.nome || "Não informado";
             const matricula = reg.matricula || reg.mat || "---";
             const dataCad = reg.dataHora || reg.carimbo || reg.dataCadastro || "";
             const operador = reg.operador || reg.usuario || "Sistema";
 
             document.getElementById('lblNomeFicha').innerText = nomeComp;
             document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + matricula;
-            document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + formatarDataAmigavelFicha(dataCad) + " - Operador: " + operador;
+            document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + formatarDataAmigavelFicha(dataCad) + " | Operador: " + operador;
 
             // Avatar
             const avatarContainer = document.getElementById('avatarFichaContainer');
@@ -312,56 +339,37 @@
                 avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: #0284c7;"></i>`;
             }
 
-            // Atribuição de campos com Fallback robusto
-            document.getElementById('fSocial').innerText = reg.nomeSocial || reg.social || "Nenhum";
-            
-            let nasc = reg.dataNascimento || reg.nascimento || reg.dataNasc || "---";
-            let idade = reg.idade || reg.anos || "";
-            document.getElementById('fNascIdade').innerText = nasc + (idade ? " (" + idade + ")" : "");
+            // Atribuição de todos os campos com mapeamento exato
+            document.getElementById('fNomeComp').innerText = nomeComp;
+            document.getElementById('fSocial').innerText = reg.nomeSocial || reg.social || "Não informado";
+            document.getElementById('fNasc').innerText = reg.dataNascimento || reg.nascimento || reg.dataNasc || "Não informado";
+            document.getElementById('fIdade').innerText = reg.idade || "Não informado";
+            document.getElementById('fSexo').innerText = reg.sexo || reg.genero || "Não informado";
+            document.getElementById('fEscolaridade').innerText = reg.escolaridade || reg.instrucao || "Não informado";
+            document.getElementById('fNaturalidade').innerText = reg.naturalidade || reg.nat || "Não informado";
+            document.getElementById('fRg').innerText = reg.rg || "Não informado";
+            document.getElementById('fCpf').innerText = reg.cpf || "Não informado";
+            document.getElementById('fCorRaca').innerText = reg.corRaca || reg.raca || "Não informado";
 
-            document.getElementById('fSexo').innerText = reg.sexo || reg.genero || "---";
-            
-            let cpf = reg.cpf || "Não informado";
-            let rg = reg.rg || "Não informado";
-            document.getElementById('fCpfRg').innerText = `CPF: ${cpf} | RG: ${rg}`;
+            document.getElementById('fMae').innerText = reg.filiacaoMae || reg.mae || "Não informado";
+            document.getElementById('fPai').innerText = reg.filiacaoPai || reg.pai || "Não informado";
+            document.getElementById('fEndereco').innerText = reg.endereco || reg.end || "Não informado";
+            document.getElementById('fCidade').innerText = reg.cidade || "Unaí-MG";
+            document.getElementById('fTelefone').innerText = reg.telefone || reg.tel || reg.celular || "Não informado";
+            document.getElementById('fResidenciaUnai').innerText = reg.residenciaUnaí || reg.residenciaUnai || "Não informado";
 
-            let escolaridade = reg.escolaridade || reg.instrucao || "---";
-            let naturalidade = reg.naturalidade || reg.nat || "---";
-            document.getElementById('fEscNat').innerText = `${escolaridade} | Nat: ${naturalidade}`;
+            document.getElementById('fTipoUsuario').innerText = reg.tipoUsuario || reg.tipo || "Não informado";
+            document.getElementById('fTempoRua').innerText = reg.tempoRua || reg.rua || "Não informado";
+            document.getElementById('fTempoUnai').innerText = reg.tempoUnaí || reg.tempoUnai || "Não informado";
+            document.getElementById('fMotivos').innerText = reg.motivosPermanencia || reg.motivos || "Não informado";
+            document.getElementById('fOutrosMotivos').innerText = reg.outrosMotivos || reg.outroMotivo || "Não informado";
 
-            document.getElementById('fCorRaca').innerText = reg.corRaca || reg.raca || "---";
-            
-            let mae = reg.filiacaoMae || reg.mae || "---";
-            let pai = reg.filiacaoPai || reg.pai || "---";
-            document.getElementById('fFiliacao').innerText = `Mãe: ${mae} | Pai: ${pai}`;
-
-            let endereco = reg.endereco || reg.end || "---";
-            let cidade = reg.cidade || "Unaí-MG";
-            document.getElementById('fEndCidade').innerText = `${endereco} (${cidade})`;
-
-            document.getElementById('fTel').innerText = reg.telefone || reg.tel || reg.celular || "Não informado";
-            document.getElementById('fResUnai').innerText = reg.residenciaUnaí || reg.residenciaUnai || "---";
-            
-            let tipoUsu = reg.tipoUsuario || reg.tipo || "---";
-            let tempoRua = reg.tempoRua || reg.rua || "---";
-            let tempoUnai = reg.tempoUnaí || reg.tempoUnai || "---";
-            document.getElementById('fTipoTempo').innerText = `${tipoUsu} | Rua: ${tempoRua} | Unaí: ${tempoUnai}`;
-            
-            let motivosTxt = reg.motivosPermanencia || reg.motivos || "";
-            if (reg.outrosMotivos || reg.outroMotivo) motivosTxt += " - Outros: " + (reg.outrosMotivos || reg.outroMotivo);
-            document.getElementById('fMotivos').innerText = motivosTxt || "Nenhum informado";
-
-            document.getElementById('fPassouAtend').innerText = reg.passouAtendimento || reg.atendimentoAntigo || "Nenhum";
-            
-            let auxilio = reg.recebeAuxilio || reg.auxilio || "Não";
-            let qualAux = reg.qualBeneficio || reg.beneficio || "Nenhum";
-            document.getElementById('fAuxilio').innerText = `${auxilio} (${qualAux})`;
-
-            let possuiDocs = reg.possuiDocumentos || reg.documentos || "Sim";
-            let faltamDocs = reg.documentosFaltam || reg.faltaDoc || "Nenhum";
-            document.getElementById('fDocs').innerText = `Possui Docs: ${possuiDocs} | Faltam: ${faltamDocs}`;
-
-            document.getElementById('fCarteira').innerText = reg.carteiraTrabalho || reg.carteira || "Sim";
+            document.getElementById('fPassouAtend').innerText = reg.passouAtendimento || reg.atendimentoAntigo || "Não informado";
+            document.getElementById('fRecebeAuxilio').innerText = reg.recebeAuxilio || reg.auxilio || "Não";
+            document.getElementById('fQualBeneficio').innerText = reg.qualBeneficio || reg.beneficio || "Não informado";
+            document.getElementById('fPossuiDocs').innerText = reg.possuiDocumentos || reg.documentos || "Sim";
+            document.getElementById('fDocsFaltam').innerText = reg.documentosFaltam || reg.faltaDoc || "Não informado";
+            document.getElementById('fCarteiraTrabalho').innerText = reg.carteiraTrabalho || reg.carteira || "Sim";
             document.getElementById('fOperador').innerText = operador;
         }
     </script>
