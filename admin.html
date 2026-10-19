@@ -2,10 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.5.000                              -->
-<!-- Data de atualização: 19/10/2026 - 18:45                                        -->
-<!-- Descrição: Painel administrativo com restrição rigorosa e redirecionamento de  -->
-<!--            segurança para o login em caso de acesso não autorizado.            -->
+<!-- Programa: admin.html. Versão do Módulo: v.2.6.000                              -->
+<!-- Data de atualização: 19/10/2026 - 19:00                                        -->
+<!-- Descrição: Painel administrativo com trava estrita de permissão de admin.      -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -87,8 +86,7 @@
 
     <script src="config.js"></script>
     <script>
-        // Verificação estrita de Administrador
-        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        // Verificação estrita e definitiva de Administrador na carga da página
         let ativoLocal = {};
         try {
             ativoLocal = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
@@ -97,11 +95,11 @@
         }
 
         const tipoUsuario = String(ativoLocal.tipo || "").trim().toLowerCase();
-        const ehAdmin = autorizado || (tipoUsuario === 'admin' || tipoUsuario === 'administrador');
+        const ehAdmin = (tipoUsuario === 'admin' || tipoUsuario === 'administrador');
 
         if (!ehAdmin) {
-            sessionStorage.setItem('pbs_destino', 'admin.html');
-            window.location.href = 'login.html';
+            alert("Acesso negado! Esta página é restrita exclusivamente a administradores.");
+            window.location.href = 'index.html';
         }
 
         const API_URL = CONFIG.API_URL;
