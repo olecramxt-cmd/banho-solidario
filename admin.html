@@ -2,9 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.3.000                              -->
-<!-- Data de atualização: 19/10/2026 - 05:00                                        -->
-<!-- Descrição: Painel administrativo com restrição rigorosa e controle de menu.    -->
+<!-- Programa: admin.html. Versão do Módulo: v.2.4.000                              -->
+<!-- Data de atualização: 19/10/2026 - 05:08                                        -->
+<!-- Descrição: Painel administrativo com restrição rigorosa e redirecionamento de  -->
+<!--            segurança para o login em caso de acesso não autorizado.            -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -86,7 +87,7 @@
 
     <script src="config.js"></script>
     <script>
-        // Verificação estrita de Administrador baseada no objeto salvo no localStorage
+        // Verificação estrita e redirecionamento correto para login se não for admin
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         let ativoLocal = {};
         try {
@@ -99,7 +100,8 @@
         const ehAdmin = autorizado || (tipoUsuario === 'admin' || tipoUsuario === 'administrador');
 
         if (!ehAdmin) {
-            window.location.replace('index.html');
+            sessionStorage.setItem('pbs_destino', 'admin.html');
+            window.location.href = 'login.html';
         }
 
         const API_URL = CONFIG.API_URL;
