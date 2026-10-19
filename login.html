@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.8.000                              -->
-<!-- Data de atualização: 19/10/2026 - 19:00                                        -->
-<!-- Descrição: Tela de login limpa, rápida e integrada com autenticação padrão.    -->
+<!-- Programa: login.html. Versão do Módulo: v.1.6.000                              -->
+<!-- Data de atualização: 17/10/2026 - 14:00                                        -->
+<!-- Descrição: Tela de login com integração ao config.js e padronização da ação.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -102,6 +102,7 @@
         </div>
     </div>
 
+    <!-- Importação do arquivo de configuração centralizado -->
     <script src="config.js"></script>
     <script>
         const API_URL = CONFIG.API_URL;
@@ -150,7 +151,7 @@
                         nameDisplay.innerText = "";
                     }
                 } catch (e) {
-                    console.error("Busca de foto ignorada", e);
+                    console.error("Busca de foto ignorada por latência de rede", e);
                 }
             }, 350);
         }
@@ -179,7 +180,6 @@
                     localStorage.setItem('usuario_ativo', JSON.stringify(resposta.operador));
                     sessionStorage.setItem('pbs_autorizado', 'true');
                     
-                    // Redireciona sempre de forma limpa para a tela de Atendimentos ou destino salvo válido
                     const destino = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
                     sessionStorage.removeItem('pbs_destino');
                     window.location.href = destino;
