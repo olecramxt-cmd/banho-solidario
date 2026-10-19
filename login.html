@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.6.000                              -->
-<!-- Data de atualização: 17/10/2026 - 14:00                                        -->
-<!-- Descrição: Tela de login com integração ao config.js e padronização da ação.    -->
+<!-- Programa: login.html. Versão do Módulo: v.1.7.000                              -->
+<!-- Data de atualização: 19/10/2026 - 18:45                                        -->
+<!-- Descrição: Tela de login com validação estrita de perfil para o Painel Admin.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -177,11 +177,22 @@
                 const resposta = await res.json();
 
                 if (resposta.status === 'sucesso') {
-                    localStorage.setItem('usuario_ativo', JSON.stringify(resposta.operador));
-                    sessionStorage.setItem('pbs_autorizado', 'true');
-                    
+                    const operador = resposta.operador;
+                    const tipoOp = String(operador.tipo || "").trim().toLowerCase();
                     const destino = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
+
+                    // Trava de segurança rigorosa para o Painel Administrativo
+                    if (destino.includes('admin.html') && tipoOp !== 'admin' && tipoOp !== 'administrador') {
+                        erroDiv.style.color = "#dc2626";
+                        erroDiv.innerText = "Acesso negado! Este usuário não possui privilégios de administrador.";
+                        sessionStorage.removeItem('pbs_destino');
+                        return;
+                    }
+
+                    localStorage.setItem('usuario_ativo', JSON.stringify(operador));
+                    sessionStorage.setItem('pbs_autorizado', 'true');
                     sessionStorage.removeItem('pbs_destino');
+                    
                     window.location.href = destino;
                 } else {
                     erroDiv.style.color = "#dc2626";
