@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.1.000                              -->
-<!-- Data de atualização: 19/10/2026 - 04:20                                        -->
-<!-- Descrição: Painel administrativo com menu lateral completo e operações CRUD.   -->
+<!-- Programa: admin.html. Versão do Módulo: v.2.2.000                              -->
+<!-- Data de atualização: 19/10/2026 - 04:55                                        -->
+<!-- Descrição: Painel administrativo com restrição rigorosa para administradores.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -86,13 +86,23 @@
 
     <script src="config.js"></script>
     <script>
+        // Trava de Segurança Estrita para Administradores
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
-        const ativoLocal = localStorage.getItem('usuario_ativo');
-
-        if (!autorizado && !ativoLocal) {
-            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
-            window.location.href = 'login.html';
+        let ativoLocal = {};
+        try {
+            ativoLocal = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
+        } catch (e) {
+            ativoLocal = {};
         }
+
+        const tipoUsuario = String(ativoLocal.tipo || "").trim().toLowerCase();
+        const ehAdmin = autorizado || (tipoUsuario === 'admin' || tipoUsuario === 'administrador');
+
+        if (!ehAdmin) {
+            alert('Acesso negado! Esta página é restrita exclusivamente a administradores.');
+            window.location.href = 'index.html';
+        }
+
         const API_URL = CONFIG.API_URL;
     </script>
 
