@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.7.000                              -->
-<!-- Data de atualização: 19/10/2026 - 18:45                                        -->
-<!-- Descrição: Tela de login com validação estrita de perfil para o Painel Admin.  -->
+<!-- Programa: login.html. Versão do Módulo: v.1.8.000                              -->
+<!-- Data de atualização: 19/10/2026 - 19:00                                        -->
+<!-- Descrição: Tela de login limpa, rápida e integrada com autenticação padrão.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -102,7 +102,6 @@
         </div>
     </div>
 
-    <!-- Importação do arquivo de configuração centralizado -->
     <script src="config.js"></script>
     <script>
         const API_URL = CONFIG.API_URL;
@@ -151,7 +150,7 @@
                         nameDisplay.innerText = "";
                     }
                 } catch (e) {
-                    console.error("Busca de foto ignorada por latência de rede", e);
+                    console.error("Busca de foto ignorada", e);
                 }
             }, 350);
         }
@@ -177,22 +176,12 @@
                 const resposta = await res.json();
 
                 if (resposta.status === 'sucesso') {
-                    const operador = resposta.operador;
-                    const tipoOp = String(operador.tipo || "").trim().toLowerCase();
-                    const destino = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
-
-                    // Trava de segurança rigorosa para o Painel Administrativo
-                    if (destino.includes('admin.html') && tipoOp !== 'admin' && tipoOp !== 'administrador') {
-                        erroDiv.style.color = "#dc2626";
-                        erroDiv.innerText = "Acesso negado! Este usuário não possui privilégios de administrador.";
-                        sessionStorage.removeItem('pbs_destino');
-                        return;
-                    }
-
-                    localStorage.setItem('usuario_ativo', JSON.stringify(operador));
+                    localStorage.setItem('usuario_ativo', JSON.stringify(resposta.operador));
                     sessionStorage.setItem('pbs_autorizado', 'true');
-                    sessionStorage.removeItem('pbs_destino');
                     
+                    // Redireciona sempre de forma limpa para a tela de Atendimentos ou destino salvo válido
+                    const destino = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
+                    sessionStorage.removeItem('pbs_destino');
                     window.location.href = destino;
                 } else {
                     erroDiv.style.color = "#dc2626";
