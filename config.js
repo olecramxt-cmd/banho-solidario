@@ -8,6 +8,6 @@
 // ==============================================================================
 
 const CONFIG = {
-    API_URL: "https://script.google.com/macros/s/AKfycbwnF0mYf8tkZbEKNjMGmq0Xj6iGp_t7uFhkZBZclYpkqCiR0SzE_UFHlh8yytTgH5M5RA/exec"
+    API_URL: "https://script.google.com/macros/s/AKfycbxknukR0V0-UNTtMqQtH7-ISzIVaiG0x_dscoQQpyqc45noTBInvL7JJKpuXtOQ78YYSg/exec"
 };
 // © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
