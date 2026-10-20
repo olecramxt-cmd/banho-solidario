@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.5.000                              -->
-<!-- Data de atualização: 20/10/2026 - 04:00                                        -->
-<!-- Descrição: Painel administrativo com validação estrita de perfil admin no      -->
-<!--            servidor (Apps Script), eliminando o acesso por usuários comuns.    -->
+<!-- Programa: admin.html. Versão do Módulo: v.2.6.000                              -->
+<!-- Data de atualização: 20/10/2026 - 04:10                                        -->
+<!-- Descrição: Painel administrativo com bloqueio visual imediato e validação      -->
+<!--            estrita no servidor, eliminando a exibição momentânea da tela.      -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -16,6 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Oculta o corpo inicialmente para evitar qualquer piscar de tela antes da validação */
+        body { visibility: hidden; background-color: #f8fafc; color: #4b5563; padding: 2rem 1rem; font-family: 'Poppins', sans-serif; }
         :root {
             --primary-color: #0ea5e9;
             --secondary-color: #7c3aed;
@@ -25,7 +27,6 @@
             --text-color: #4b5563;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--light-color); color: var(--text-color); padding: 2rem 1rem; }
         
         .navbar-top { position: fixed; top: 0; left: 0; width: 100%; background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 998; }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
@@ -83,14 +84,14 @@
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
     </style>
 </head>
-<body onload="verificarPermissaoAdminEcarregar()">
+<body>
 
     <script src="config.js"></script>
     <script>
         const API_URL = CONFIG.API_URL;
 
-        // Validação estrita e assídua de Administrador no Servidor (Apps Script)
-        async function verificarPermissaoAdminEcarregar() {
+        // Validação imediata e síncrona/bloqueante antes mesmo de renderizar o corpo
+        (async function() {
             let ativoLocal = {};
             try {
                 ativoLocal = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
@@ -99,14 +100,20 @@
             }
 
             const usernameLogado = String(ativoLocal.username || "").trim().toLowerCase();
+            const tipoLogado = String(ativoLocal.tipo || "").trim().toLowerCase();
 
-            if (!usernameLogado) {
+            // Verificação rápida local do tipo antes da requisição
+            if (!usernameLogado || (tipoLogado !== "admin" && tipoLogado !== "administrador")) {
+                alert("Acesso Negado: Esta área é restrita a administradores.");
+                localStorage.removeItem('usuario_ativo');
+                sessionStorage.removeItem('pbs_autorizado');
                 sessionStorage.setItem('pbs_destino', 'admin.html');
                 window.location.href = 'login.html';
                 return;
             }
 
             try {
+                // Validação estrita dupla com o servidor
                 const res = await fetch(API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -123,14 +130,15 @@
                     return;
                 }
 
-                // Se autorizado com sucesso, carrega os dados do painel
+                // Se passou em todas as validações, revela o corpo da página e carrega os dados
+                document.body.style.visibility = "visible";
                 carregarVoluntariosAdmin();
 
             } catch (err) {
                 alert("Erro de conexão ao validar permissões com a nuvem.");
                 window.location.href = 'login.html';
             }
-        }
+        })();
     </script>
 
     <div class="navbar-top">
