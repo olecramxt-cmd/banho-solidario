@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.4.000                              -->
-<!-- Data de atualização: 19/10/2026 - 05:08                                        -->
-<!-- Descrição: Painel administrativo com restrição rigorosa e redirecionamento de  -->
-<!--            segurança para o login em caso de acesso não autorizado.            -->
+<!-- Programa: admin.html. Versão do Módulo: v.2.5.000                              -->
+<!-- Data de atualização: 20/10/2026 - 04:00                                        -->
+<!-- Descrição: Painel administrativo com validação estrita de perfil admin no      -->
+<!--            servidor (Apps Script), eliminando o acesso por usuários comuns.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -83,28 +83,54 @@
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
     </style>
 </head>
-<body onload="carregarVoluntariosAdmin()">
+<body onload="verificarPermissaoAdminEcarregar()">
 
     <script src="config.js"></script>
     <script>
-        // Verificação estrita e redirecionamento correto para login se não for admin
-        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
-        let ativoLocal = {};
-        try {
-            ativoLocal = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
-        } catch (e) {
-            ativoLocal = {};
-        }
-
-        const tipoUsuario = String(ativoLocal.tipo || "").trim().toLowerCase();
-        const ehAdmin = autorizado || (tipoUsuario === 'admin' || tipoUsuario === 'administrador');
-
-        if (!ehAdmin) {
-            sessionStorage.setItem('pbs_destino', 'admin.html');
-            window.location.href = 'login.html';
-        }
-
         const API_URL = CONFIG.API_URL;
+
+        // Validação estrita e assídua de Administrador no Servidor (Apps Script)
+        async function verificarPermissaoAdminEcarregar() {
+            let ativoLocal = {};
+            try {
+                ativoLocal = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
+            } catch (e) {
+                ativoLocal = {};
+            }
+
+            const usernameLogado = String(ativoLocal.username || "").trim().toLowerCase();
+
+            if (!usernameLogado) {
+                sessionStorage.setItem('pbs_destino', 'admin.html');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "verificarAdmin", username: usernameLogado })
+                });
+                const data = await res.json();
+
+                if (data.status !== "sucesso") {
+                    alert("Acesso Negado: Esta área é restrita a administradores.");
+                    localStorage.removeItem('usuario_ativo');
+                    sessionStorage.removeItem('pbs_autorizado');
+                    sessionStorage.setItem('pbs_destino', 'admin.html');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Se autorizado com sucesso, carrega os dados do painel
+                carregarVoluntariosAdmin();
+
+            } catch (err) {
+                alert("Erro de conexão ao validar permissões com a nuvem.");
+                window.location.href = 'login.html';
+            }
+        }
     </script>
 
     <div class="navbar-top">
@@ -247,7 +273,7 @@
                             avatarHtml = `<img src="${fotoFinal}" class="avatar-mini" alt="Foto" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'color: var(--secondary-color);\'></i>';">`;
                         }
 
-                        const perfilFormatado = (op.tipo === "admin" || op.tipo === "Administrador") ? "Administrador" : "Comum";
+                        const perfilFormatado = (String(op.tipo).trim().toLowerCase() === "admin" || String(op.tipo).trim().toLowerCase() === "administrador") ? "Administrador" : "Comum";
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
@@ -327,7 +353,7 @@
             document.getElementById('nomeCompleto').value = op.nome || "";
             document.getElementById('username').value = op.username || "";
             document.getElementById('senha').value = op.senha || "";
-            document.getElementById('tipoPerfil').value = (op.tipo === "admin") ? "admin" : "comum";
+            document.getElementById('tipoPerfil').value = (String(op.tipo).trim().toLowerCase() === "admin" || String(op.tipo).trim().toLowerCase() === "administrador") ? "admin" : "comum";
             document.getElementById('fotoUrl').value = op.foto || "";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
