@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.2.000                       -->
-<!-- Data de atualização: 21/10/2026 - 02:54                                        -->
-<!-- Descrição: Atendimentos com responsividade total mobile, busca por nome,      -->
-<!--            exibição de foto/histórico do assistido e menu lateral completo.    -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.6.000                       -->
+<!-- Data de atualização: 21/10/2026 - 03:14                                        -->
+<!-- Descrição: Registro de Atendimentos com segurança de login, operador dinâmico, -->
+<!--            menu lateral completo com chaves e total responsividade mobile.     -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -40,8 +40,8 @@
         .menu-link-item { background: var(--light-color); color: var(--secondary-color); padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--secondary-color); transition: all 0.3s; font-size: 0.95rem; }
         .menu-link-item:hover { background: var(--accent-color); transform: translateX(5px); }
         .side-menu-sublinks { padding-left: 18px; display: flex; flex-direction: column; gap: 0.4rem; }
-        .menu-sublink-item { font-size: 0.88rem; color: var(--text-color); padding: 7px 10px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
-        .menu-sublink-item:hover { background: var(--accent-color); color: var(--secondary-color); }
+        .menu-sublink-item { font-size: 0.88rem; color: var(--text-color); padding: 7px 10px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; border-left: 3px solid transparent; }
+        .menu-sublink-item:hover { background: var(--accent-color); color: var(--secondary-color); border-left-color: var(--secondary-color); }
         
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
         .menu-overlay.active { display: block; }
@@ -84,9 +84,8 @@
         .stat-number { font-size: 1.6rem; font-weight: 700; color: var(--secondary-color); }
         .stat-label { font-size: 0.85rem; color: #64748b; font-weight: 500; }
 
-        /* Estilo do Card de Perfil Selecionado na Movimentação */
         .assistido-selecionado-box { display: flex; align-items: center; gap: 15px; background: var(--accent-color); padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--secondary-color); }
-        .avatar-mini-mov { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .avatar-mini-mov { width: 55px; height: 55px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .avatar-mini-mov img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
         .table-responsive { width: 100%; overflow-x: auto; margin-top: 1rem; -webkit-overflow-scrolling: touch; }
@@ -102,13 +101,21 @@
 
     <script src="config.js"></script>
     <script>
-        const API_URL = CONFIG.API_URL;
+        // Verificação estrita de login (barreira de segurança)
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         let operadorAtivo = {};
-        let listaGeralAssistidos = [];
-        let assistidoSelecionadoGlobal = null;
         try {
             operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
         } catch (e) { operadorAtivo = {}; }
+
+        if (!autorizado || !operadorAtivo.username) {
+            sessionStorage.setItem('pbs_destino', 'atendimentos.html');
+            window.location.href = 'login.html';
+        }
+
+        const API_URL = CONFIG.API_URL;
+        let listaGeralAssistidos = [];
+        let assistidoSelecionadoGlobal = null;
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
@@ -129,14 +136,16 @@
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
-    <!-- MENU LATERAL COMPLETO E PADRONIZADO (ITENS 1 A 5) -->
+    <!-- MENU LATERAL COMPLETO E PADRONIZADO (ITENS 1 A 5 COM CHAVES LATERAIS) -->
     <nav class="side-menu" id="sideMenu">
         <div class="side-menu-header">
             <h3>Menu do Sistema</h3>
             <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="side-menu-links">
-            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;"><i class="fa-solid fa-house"></i> Início (Página Inicial)</a>
+            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
+                <i class="fa-solid fa-house"></i> Início (Página Inicial)
+            </a>
             
             <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
@@ -152,7 +161,7 @@
             
             <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">3. Atendimentos & Movimentação</div>
             <div class="side-menu-sublinks">
-                <a href="atendimentos.html" class="menu-sublink-item" style="background: var(--accent-color); color: var(--secondary-color); font-weight: 600;"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
+                <a href="atendimentos.html" class="menu-sublink-item" style="background: var(--accent-color); color: var(--secondary-color); font-weight: 600; border-left-color: var(--secondary-color);"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
                 <a href="ficha_impressao.html" class="menu-sublink-item"><i class="fa-solid fa-print"></i> 3.2- Relatórios & Fichas</a>
             </div>
 
@@ -168,17 +177,17 @@
     <div class="container">
         <div class="header-flex">
             <h2><i class="fa-solid fa-clipboard-user"></i> Registro de Atendimentos & Movimentação</h2>
-            <span id="operadorLogadoBadge" style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Operador: ---</span>
+            <span id="operadorLogadoBadge" style="font-size: 0.88rem; font-weight: 600; color: var(--secondary-color);">Operador: ---</span>
         </div>
 
         <form id="formAtendimento" onsubmit="salvarAtendimento(event)">
             <div class="form-grid">
-                <!-- Data do Serviço Atual -->
+                <!-- Data do Atendimento -->
                 <div class="form-group">
                     <label>Data do Atendimento</label>
                     <input type="date" id="dataAtendimento" class="form-control" required>
                 </div>
-                <!-- Nome do Assistido com busca dinâmica (Autocomplete) - Sem a palavra pesquisa -->
+                <!-- Nome do Assistido (Busca sem o termo pesquisa) -->
                 <div class="form-group">
                     <label>Nome do Assistido</label>
                     <input type="text" id="nomeAssistidoBusca" class="form-control" placeholder="Digite para buscar assistido..." autocomplete="off" oninput="filtrarAssistidos(this.value)" required>
@@ -254,9 +263,15 @@
 
     <script>
         function inicializarAtendimentos() {
+            // Renderiza o nome do operador ativo corretamente no badge superior
             if (operadorAtivo.nome) {
                 document.getElementById('operadorLogadoBadge').innerText = `Operador: ${operadorAtivo.nome}`;
+            } else if (operadorAtivo.username) {
+                document.getElementById('operadorLogadoBadge').innerText = `Operador: ${operadorAtivo.username}`;
+            } else {
+                document.getElementById('operadorLogadoBadge').innerText = `Operador: Sistema`;
             }
+
             const hoje = new Date().toISOString().split('T')[0];
             document.getElementById('dataAtendimento').value = hoje;
 
@@ -286,7 +301,7 @@
                 container.style.display = "none";
                 assistidoSelecionadoGlobal = null;
                 document.getElementById('painelAssistidoSelecionado').innerHTML = "";
-                carregarAtendimentosRecentes(); // Restaura geral 6 meses
+                carregarAtendimentosRecentes(); 
                 return;
             }
 
@@ -320,10 +335,7 @@
             document.getElementById('sexoAssistido').value = reg.sexo || "";
             document.getElementById('listaAutocomplete').style.display = "none";
 
-            // Renderiza o card com a foto do assistido selecionado acima da tabela
             renderizarCardAssistidoSelecionado(reg);
-
-            // Carrega o histórico acumulado e filtra a tabela apenas para este assistido
             carregarHistoricoAcumuladoAssistido(reg.matricula, nomeExibicao);
             carregarAtendimentosRecentes(reg.matricula);
         }
@@ -390,7 +402,7 @@
                 janta: document.getElementById('checkJanta').checked,
                 curativos: document.getElementById('checkCurativos').checked,
                 dataAcao: document.getElementById('dataAtendimento').value,
-                operador: operadorAtivo.nome || "Sistema"
+                operador: operadorAtivo.nome || operadorAtivo.username || "Sistema"
             };
 
             const statusDiv = document.getElementById('mensagemStatus');
@@ -418,86 +430,3 @@
                     if (assistidoSelecionadoGlobal) {
                         document.getElementById('nomeAssistidoBusca').value = nomeGravado;
                         document.getElementById('matriculaAssistido').value = matGravada;
-                        document.getElementById('sexoAssistido').value = assistidoSelecionadoGlobal.sexo || "";
-                        carregarHistoricoAcumuladoAssistido(matGravada, nomeGravado);
-                        carregarAtendimentosRecentes(matGravada);
-                    } else {
-                        document.getElementById('tituloHistoricoAssistido').innerText = `Histórico Acumulado do Assistido: Selecione um assistido`;
-                        document.getElementById('histBanhos').innerText = 0;
-                        document.getElementById('histJantas').innerText = 0;
-                        document.getElementById('histCurativos').innerText = 0;
-                        carregarAtendimentosRecentes();
-                    }
-
-                    setTimeout(() => { statusDiv.innerText = ""; }, 3000);
-                } else {
-                    statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Erro ao gravar.";
-                }
-            })
-            .catch(() => {
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Erro de conexão com o servidor.";
-            });
-        }
-
-        function carregarAtendimentosRecentes(filtroMatricula = null) {
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarAtendimentos" })
-            })
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.getElementById('tabelaAtendimentos');
-                if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
-                    tbody.innerHTML = "";
-                    
-                    const agora = new Date();
-                    const limiteSeisMeses = new Date();
-                    limiteSeisMeses.setMonth(agora.getMonth() - 6);
-
-                    let listaFiltrada = data.lista.filter(at => {
-                        const dataAt = at.carimbo ? new Date(at.carimbo) : (at.dataAcao ? new Date(at.dataAcao) : null);
-                        if (!dataAt) return true;
-                        return dataAt >= limiteSeisMeses;
-                    });
-
-                    // Se houver filtro de matrícula selecionada, exibe apenas os dele
-                    if (filtroMatricula) {
-                        listaFiltrada = listaFiltrada.filter(at => String(at.matricula).trim() === String(filtroMatricula).trim());
-                    }
-
-                    if (listaFiltrada.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Nenhum atendimento registado para este filtro.</td></tr>`;
-                        return;
-                    }
-
-                    const listaInvertida = listaFiltrada.reverse();
-                    listaInvertida.forEach(at => {
-                        const dataFmt = at.carimbo ? new Date(at.carimbo).toLocaleString('pt-BR') : (at.dataAcao || '---');
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${dataFmt}</td>
-                            <td><strong>${at.matricula || '---'}</strong></td>
-                            <td>${at.nomeAssistido || '---'}</td>
-                            <td>${at.sexo || '---'}</td>
-                            <td style="text-align: center;">${String(at.banho).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                            <td style="text-align: center;">${String(at.janta).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                            <td style="text-align: center;">${String(at.curativos).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                            <td>${at.operador || 'Sistema'}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Nenhum atendimento registado.</td></tr>`;
-                }
-            })
-            .catch(() => {
-                document.getElementById('tabelaAtendimentos').innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar atendimentos.</td></tr>`;
-            });
-        }
-    </script>
-</body>
-</html>
-<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
