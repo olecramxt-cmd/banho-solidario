@@ -2,90 +2,100 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.2.1.000                            -->
-<!-- Data de atualização: 22/10/2026 - 04:44                                        -->
-<!-- Descrição: Galeria da Dignidade limpa, com login obrigatório e apenas o         -->
-<!--            prontuário/movimentação individual ativo nos cards.                 -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.0.000                            -->
+<!-- Data de atualização: 22/10/2026 - 05:00                                        -->
+<!-- Descrição: Galeria da Dignidade independente, com login obrigatório, modal de   -->
+<!--            prontuário completo, histórico individual e impressão direta.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMAS iPeC - Galeria da Dignidade</title>
+    <title>SISTEMAS iPeC - Galeria da Dignidade / Banho Solidário</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #0ea5e9;
+            --primary-color: #0284c7;
+            --primary-dark: #0369a1;
             --secondary-color: #7c3aed;
-            --accent-color: #e0f2fe;
-            --dark-color: #1f2937;
-            --light-color: #f8fafc;
-            --text-color: #4b5563;
+            --success-color: #16a34a;
+            --warning-color: #eab308;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #cbd5e1;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--light-color); color: var(--text-color); padding: 1rem; width: 100%; overflow-x: hidden; }
+        body { background-color: var(--bg-color); color: var(--text-color); }
         
-        .navbar-top { position: fixed; top: 0; left: 0; width: 100%; background-color: #0f172a; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 998; }
-        .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
-        .menu-toggle:hover { background: white; color: var(--secondary-color); }
+        .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: fixed; top: 0; left: 0; width: 100%; z-index: 998; }
+        .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .menu-toggle:hover { background: white; color: var(--primary-dark); }
         
         .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
         .side-menu.active { right: 0; }
-        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
-        .side-menu-header h3 { color: var(--secondary-color); font-size: 1.2rem; margin: 0; }
+        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0f2fe; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .side-menu-header h3 { color: var(--primary-dark); font-size: 1.2rem; margin: 0; }
         .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
         .side-menu-links { display: flex; flex-direction: column; gap: 0.8rem; }
-        .menu-link-item { background: var(--light-color); color: var(--secondary-color); padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--secondary-color); transition: all 0.3s; font-size: 0.95rem; }
-        .menu-link-item:hover { background: var(--accent-color); transform: translateX(5px); }
+        .menu-link-item { background: var(--bg-color); color: var(--primary-dark); padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary-color); transition: all 0.3s; font-size: 0.95rem; }
+        .menu-link-item:hover { background: #e0f2fe; transform: translateX(5px); }
         .side-menu-sublinks { padding-left: 18px; display: flex; flex-direction: column; gap: 0.4rem; }
         .menu-sublink-item { font-size: 0.88rem; color: var(--text-color); padding: 7px 10px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; border-left: 3px solid transparent; }
-        .menu-sublink-item:hover { background: var(--accent-color); color: var(--secondary-color); border-left-color: var(--secondary-color); }
-        
+        .menu-sublink-item:hover { background: #e0f2fe; color: var(--primary-dark); border-left-color: var(--primary-color); }
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
         .menu-overlay.active { display: block; }
 
-        .container { max-width: 1200px; width: 100%; margin: 60px auto 20px auto; background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; }
-        @media(min-width: 768px) { .container { padding: 2.5rem; } }
-
-        h2 { color: var(--secondary-color); font-size: 1.6rem; margin-bottom: 5px; }
-        .subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 25px; }
-
-        .stats-badge { background: var(--accent-color); color: var(--secondary-color); padding: 10px 20px; border-radius: 30px; font-weight: 600; display: inline-block; margin-bottom: 30px; font-size: 0.9rem; }
-
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; text-align: left; }
-        .card-assistido { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; text-align: center; transition: transform 0.2s; }
-        .card-assistido:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
-
-        .avatar-box { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 3px solid var(--secondary-color); margin-bottom: 12px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .container { max-width: 1200px; margin: 90px auto 30px auto; padding: 0 20px; }
+        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 15px; font-size: 0.95rem; }
+        .stats-banner { text-align: center; color: var(--primary-dark); font-weight: 600; font-size: 1rem; margin-bottom: 25px; background: #e0f2fe; padding: 12px; border-radius: 10px; border: 1px solid #bae6fd; }
         
-        .nome-assistido { font-weight: 600; font-size: 1rem; color: var(--dark-color); margin-bottom: 4px; cursor: pointer; }
-        .nome-assistido:hover { color: var(--secondary-color); }
-        .matricula-assistido { font-size: 0.85rem; color: #64748b; margin-bottom: 15px; }
+        #mensagemStatus { text-align: center; font-weight: bold; margin: 20px 0; }
 
-        .acoes-card { display: flex; gap: 10px; justify-content: center; margin-top: auto; }
-        .btn-acao-card { border: none; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: opacity 0.2s; text-decoration: none; }
-        .btn-acao-card:hover { opacity: 0.85; }
-        .btn-prontuario { background-color: #0ea5e9; } /* Azul - Histórico e Movimentação Individual */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .gallery-card { background: white; border-radius: 12px; padding: 18px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; border: 1px solid #e2e8f0; transition: transform 0.2s; }
+        .gallery-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.12); border-color: var(--primary-color); }
+        
+        .gallery-avatar { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background: #e2e8f0; cursor: pointer; }
+        .gallery-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .gallery-name { font-weight: 600; font-size: 1rem; color: #0f172a; margin-bottom: 2px; cursor: pointer; }
+        .gallery-name:hover { color: var(--primary-color); }
+        .gallery-matricula { font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 15px; }
 
-        /* Estilos da Tela de Histórico e Movimentação Individual */
-        #telaHistoricoIndividual { display: none; text-align: left; margin-top: 20px; }
-        .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
-        @media(min-width: 768px) { .stats-grid-ind { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
-        .stat-card-ind { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; text-align: center; }
-        .stat-number-ind { font-size: 1.6rem; font-weight: 700; color: var(--secondary-color); }
-        .stat-label-ind { font-size: 0.85rem; color: #64748b; font-weight: 500; }
-        .table-responsive-ind { width: 100%; overflow-x: auto; margin-top: 1rem; }
-        table.tabela-ind { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 650px; }
-        table.tabela-ind th, table.tabela-ind td { border: 1px solid #e2e8f0; padding: 10px 12px; text-align: left; vertical-align: middle; }
-        table.tabela-ind th { background-color: #f8fafc; color: var(--secondary-color); font-weight: 600; }
+        /* Botões de Ação Direta nos Cards */
+        .acoes-card { display: flex; gap: 8px; justify-content: center; margin-top: auto; width: 100%; }
+        .btn-acao { border: none; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: opacity 0.2s; text-decoration: none; }
+        .btn-acao:hover { opacity: 0.85; }
+        .btn-azul { background-color: var(--primary-color); }   /* Prontuário Completo */
+        .btn-amarelo { background-color: #d97706; } /* Histórico de Atendimentos */
+        .btn-roxo { background-color: var(--secondary-color); } /* Impressão Direta */
+
+        /* Modal de Prontuário Completo */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box; }
+        .modal-card { background: white; width: 100%; max-width: 850px; max-height: 90vh; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow-y: auto; padding: 30px; position: relative; box-sizing: border-box; }
+        .close-modal { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 1.5rem; color: #64748b; cursor: pointer; }
+        .close-modal:hover { color: #dc2626; }
+        
+        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; }
+        .modal-avatar { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; flex-shrink: 0; }
+        .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .modal-info h3 { margin: 0 0 5px 0; color: #0f172a; font-size: 1.4rem; }
+        .modal-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
+        
+        .read-only-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
+        .read-field { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; }
+        .read-field label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
+        .read-field span { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
+        .section-title { grid-column: 1 / -1; font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; }
     </style>
 </head>
-<body onload="carregarGaleriaDignidade()">
+<body onload="carregarGaleria()">
 
-    <!-- Validação Obrigatória de Sessão / Login -->
+    <!-- Validação de Sessão / Login Obrigatória -->
     <script src="config.js"></script>
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
@@ -95,22 +105,11 @@
             window.location.href = 'login.html';
         }
         const API_URL = CONFIG.API_URL;
-
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-        function converterLinkDrive(url) {
-            if (!url) return "";
-            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            return url;
-        }
     </script>
 
-    <div class="navbar-top">
+    <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
-        <span style="font-weight: bold; font-size: 16px;">SISTEMAS iPeC - Galeria da Dignidade</span>
+        <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Galeria da Dignidade</span>
     </div>
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -125,90 +124,112 @@
                 <i class="fa-solid fa-house"></i> Início (Página Inicial)
             </a>
             
-            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">1. Voluntários</div>
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
                 <a href="admin.html" class="menu-sublink-item"><i class="fa-solid fa-users-gear"></i> 1.1- Painel Administrativo</a>
             </div>
-
-            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">2. Assistidos (Área Restrita)</div>
+            
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
             <div class="side-menu-sublinks">
                 <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
                 <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
-                <a href="galeria.html" class="menu-sublink-item" style="background: var(--accent-color); color: var(--secondary-color); font-weight: 600; border-left-color: var(--secondary-color);"><i class="fa-solid fa-users"></i> 2.3- Galeria da Dignidade</a>
+                <a href="galeria.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid id-card-clip"></i> 2.3- Galeria da Dignidade</a>
             </div>
-            
-            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">3. Atendimentos & Movimentação</div>
+
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
             <div class="side-menu-sublinks">
                 <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
                 <a href="ficha_impressao.html" class="menu-sublink-item"><i class="fa-solid fa-print"></i> 3.2- Relatórios & Fichas</a>
             </div>
-
-            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">4. Administração</div>
-            <div class="side-menu-sublinks">
-                <a href="admin.html" class="menu-sublink-item"><i class="fa-solid fa-shield-halved"></i> 4.1- Gestão de Acessos</a>
-            </div>
             
-            <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
+            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
+            <a href="./ebook/" target="_blank" class="menu-link-item"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
         </div>
     </nav>
 
-    <!-- TELA PRINCIPAL DA GALERIA -->
-    <div class="container" id="telaPrincipalGaleria">
+    <div class="container">
         <h2>Galeria da Dignidade</h2>
         <p class="subtitle">Registro visual humanizado e prontuário de leitura rápida dos assistidos cadastrados.</p>
-        
-        <div id="badgeEstatisticas" class="stats-badge">Carregando as estatísticas da nuvem...</div>
+        <div class="stats-banner" id="statsBanner">A calcular estatísticas da base...</div>
 
-        <div class="cards-grid" id="gridAssistidos">
-            <div style="grid-column: 1/-1; text-align: center; color: #0284c7; padding: 30px;">Carregando os registros da base de dados...</div>
-        </div>
+        <div id="mensagemStatus"></div>
+        <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 
-    <!-- TELA DE HISTÓRICO E MOVIMENTAÇÃO INDIVIDUAL (ABERTA PELO ÍCONE AZUL OU FOTO) -->
-    <div class="container" id="telaHistoricoIndividual">
-        <button onclick="voltarParaGaleria()" class="btn-acao-card btn-prontuario" style="width: auto; padding: 0 15px; margin-bottom: 20px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
-        
-        <div id="cabecalhoAssistidoInd" style="display: flex; align-items: center; gap: 15px; background: var(--accent-color); padding: 15px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--secondary-color);"></div>
+    <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
+    <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
+        <div class="modal-card">
+            <button class="close-modal" onclick="fecharModal()"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="profile-header">
+                <div class="modal-avatar" id="modalAvatarContainer"></div>
+                <div class="modal-info">
+                    <h3 id="mMatricula">MATRÍCULA</h3>
+                    <p id="mDataCadastro">Data do Cadastro: --/--/----</p>
+                    <p>Modo: <span style="color: var(--primary-dark); font-weight: bold;">Prontuário de Leitura Instantânea</span></p>
+                </div>
+            </div>
 
-        <div class="stats-grid-ind">
-            <div class="stat-card-ind">
-                <div class="stat-number-ind" id="indBanhos">0</div>
-                <div class="stat-label-ind">Total de Banhos (Histórico)</div>
-            </div>
-            <div class="stat-card-ind">
-                <div class="stat-number-ind" id="indJantas">0</div>
-                <div class="stat-label-ind">Total de Jantas (Histórico)</div>
-            </div>
-            <div class="stat-card-ind">
-                <div class="stat-number-ind" id="indCurativos">0</div>
-                <div class="stat-label-ind">Total de Curativos (Histórico)</div>
-            </div>
-        </div>
+            <div class="read-only-grid">
+                <div class="section-title">1. Dados Pessoais e Identificação</div>
+                <div class="read-field"><label>Nome Completo</label><span id="mNomeCompleto">---</span></div>
+                <div class="read-field"><label>Nome Social</label><span id="mNomeSocial">---</span></div>
+                <div class="read-field"><label>Data de Nascimento</label><span id="mDataNascimento">---</span></div>
+                <div class="read-field"><label>Idade</label><span id="mIdade">---</span></div>
+                <div class="read-field"><label>Sexo</label><span id="mSexo">---</span></div>
+                <div class="read-field"><label>Escolaridade</label><span id="mEscolaridade">---</span></div>
+                <div class="read-field"><label>Naturalidade</label><span id="mNaturalidade">---</span></div>
+                <div class="read-field"><label>RG</label><span id="mRg">---</span></div>
+                <div class="read-field"><label>CPF</label><span id="mCpf">---</span></div>
+                <div class="read-field"><label>Cor / Raça</label><span id="mCorRaca">---</span></div>
 
-        <h3 style="font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 1rem;"><i class="fa-solid fa-list-check"></i> Movimentação Recente do Assistido</h3>
-        <div class="table-responsive-ind">
-            <table class="tabela-ind">
-                <thead>
-                    <tr>
-                        <th>Data / Horário</th>
-                        <th>Matrícula</th>
-                        <th>Assistido</th>
-                        <th>Sexo</th>
-                        <th style="text-align: center;">Banho</th>
-                        <th style="text-align: center;">Janta</th>
-                        <th style="text-align: center;">Curativos</th>
-                        <th>Operador</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaHistoricoInd">
-                    <tr><td colspan="8" style="text-align: center; color: #0284c7;">Carregando o histórico de atendimentos...</td></tr>
-                </tbody>
-            </table>
+                <div class="section-title">2. Filiação e Contatos</div>
+                <div class="read-field"><label>Filiação (Mãe)</label><span id="mFiliacaoMae">---</span></div>
+                <div class="read-field"><label>Filiação (Pai)</label><span id="mFiliacaoPai">---</span></div>
+                <div class="read-field"><label>Endereço</label><span id="mEndereco">---</span></div>
+                <div class="read-field"><label>Cidade</label><span id="mCidade">---</span></div>
+                <div class="read-field"><label>Telefone / Contato</label><span id="mTelefone">---</span></div>
+                <div class="read-field"><label>Residência em Unaí</label><span id="mResidenciaUnai">---</span></div>
+
+                <div class="section-title">3. Perfil Social e Permanência na Rua</div>
+                <div class="read-field"><label>Tipo de Usuário</label><span id="mTipoUsuario">---</span></div>
+                <div class="read-field"><label>Tempo de Rua</label><span id="mTempoRua">---</span></div>
+                <div class="read-field"><label>Tempo de Unaí</label><span id="mTempoUnai">---</span></div>
+                <div class="read-field"><label>Motivos Permanência</label><span id="mMotivosPermanencia">---</span></div>
+                <div class="read-field"><label>Outros Motivos</label><span id="mOutrosMotivos">---</span></div>
+
+                <div class="section-title">4. Atendimentos, Benefícios e Documentação</div>
+                <div class="read-field"><label>Passou Atendimento</label><span id="mPassouAtendimento">---</span></div>
+                <div class="read-field"><label>Recebe Auxílio</label><span id="mRecebeAuxilio">---</span></div>
+                <div class="read-field"><label>Qual Benefício</label><span id="mQualBeneficio">---</span></div>
+                <div class="read-field"><label>Possui Documentos</label><span id="mPossuiDocumentos">---</span></div>
+                <div class="read-field"><label>Documentos Faltam</label><span id="mDocumentosFaltam">---</span></div>
+                <div class="read-field"><label>Carteira de Trabalho</label><span id="mCarteiraTrabalho">---</span></div>
+            </div>
         </div>
     </div>
 
     <script>
-        function carregarGaleriaDignidade() {
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function converterLinkDrive(url) {
+            if (!url) return "";
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            return url;
+        }
+
+        function carregarGaleria() {
+            const statusDiv = document.getElementById('mensagemStatus');
+            const statsBanner = document.getElementById('statsBanner');
+            const grid = document.getElementById('galleryGrid');
+
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "A carregar galeria de assistidos...";
+
             fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -216,140 +237,137 @@
             })
             .then(res => res.json())
             .then(data => {
-                const grid = document.getElementById('gridAssistidos');
-                const badge = document.getElementById('badgeEstatisticas');
-                
+                statusDiv.innerText = "";
                 if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
                     grid.innerHTML = "";
-                    let totalHomens = 0;
-                    let totalMulheres = 0;
+                    
+                    const totalRegistros = data.lista.length;
+                    let qtdHomens = 0;
+                    let qtdMulheres = 0;
+
+                    data.lista.forEach(item => {
+                        const sexo = (item.registro.sexo || "").trim().toLowerCase();
+                        if (sexo.includes("masculino") || sexo === "m") {
+                            qtdHomens++;
+                        } else if (sexo.includes("feminino") || sexo === "f") {
+                            qtdMulheres++;
+                        }
+                    });
+
+                    const percHomens = totalRegistros > 0 ? ((qtdHomens / totalRegistros) * 100).toFixed(1) : 0;
+                    const percMulheres = totalRegistros > 0 ? ((qtdMulheres / totalRegistros) * 100).toFixed(1) : 0;
+
+                    statsBanner.innerHTML = `Total: ${totalRegistros} registros | ${qtdHomens} (${percHomens}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheres} (${percMulheres}%) Mulheres`;
+
+                    // Ordenação alfabética pelo nome completo
+                    data.lista.sort((a, b) => {
+                        const nomeA = (a.registro.nomeCompleto || "").toLowerCase();
+                        const nomeB = (b.registro.nomeCompleto || "").toLowerCase();
+                        return nomeA.localeCompare(nomeB, 'pt-BR');
+                    });
 
                     data.lista.forEach(item => {
                         const reg = item.registro;
-                        const sexo = String(reg.sexo || "").trim().toLowerCase();
-                        if (sexo.includes("masculino") || sexo === "m") totalHomens++;
-                        if (sexo.includes("feminino") || sexo === "f") totalMulheres++;
-
+                        const nomeCompleto = reg.nomeCompleto || reg.nomeSocial || "Sem Nome";
+                        const matricula = reg.matricula || "---";
                         const fotoFinal = converterLinkDrive(reg.foto);
-                        let avatarHtml = `<div class="avatar-box"><i class="fa-solid fa-user" style="font-size: 2.2rem; color: var(--secondary-color);"></i></div>`;
-                        if (fotoFinal) {
-                            avatarHtml = `<div class="avatar-box"><img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.2rem; color: var(--secondary-color);\'></i>';"></div>`;
-                        }
-
-                        const nomeSeguro = encodeURIComponent(reg.nomeSocial || reg.nomeCompleto || "---");
-                        const matSegura = encodeURIComponent(reg.matricula || "");
-                        const sexoSeguro = encodeURIComponent(reg.sexo || "");
-                        const fotoSegura = encodeURIComponent(reg.foto || "");
-                        const matriculaReg = reg.matricula || "";
 
                         const card = document.createElement('div');
-                        card.className = 'card-assistido';
+                        card.className = 'gallery-card';
+
+                        let avatarHtml = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--primary-color);"></i>`;
+                        if (fotoFinal) {
+                            avatarHtml = `<img src="${fotoFinal}" alt="Assistido" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
+                        }
+
                         card.innerHTML = `
-                            <div onclick="abrirHistoricoAssistido('${matSegura}', '${nomeSeguro}', '${sexoSeguro}', '${fotoSegura}')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 100%;">
-                                ${avatarHtml}
-                                <div class="nome-assistido">${reg.nomeSocial || reg.nomeCompleto || '---'}</div>
-                                <div class="matricula-assistido">${matriculaReg || 'Sem Matrícula'}</div>
-                            </div>
+                            <div class="gallery-avatar" onclick='abrirProntuario(${JSON.stringify(reg)})'>${avatarHtml}</div>
+                            <div class="gallery-name" title="${nomeCompleto}" onclick='abrirProntuario(${JSON.stringify(reg)})'>${nomeCompleto}</div>
+                            <div class="gallery-matricula">${matricula}</div>
                             <div class="acoes-card">
-                                <button type="button" class="btn-acao-card btn-prontuario" title="Histórico e Movimentação" onclick="abrirHistoricoAssistido('${matSegura}', '${nomeSeguro}', '${sexoSeguro}', '${fotoSegura}')"><i class="fa-solid fa-address-card"></i></button>
+                                <button type="button" class="btn-acao btn-azul" title="Prontuário Completo (Leitura)" onclick='abrirProntuario(${JSON.stringify(reg)})'><i class="fa-solid fa-address-card"></i></button>
+                                <button type="button" class="btn-acao btn-amarelo" title="Histórico de Atendimentos" onclick='abrirHistoricoDireto("${matricula}")'><i class="fa-solid fa-list-check"></i></button>
+                                <button type="button" class="btn-acao btn-roxo" title="Impressão Direta da Ficha" onclick='imprimirFichaDireta("${matricula}")'><i class="fa-solid fa-print"></i></button>
                             </div>
                         `;
                         grid.appendChild(card);
                     });
-
-                    const total = data.lista.length;
-                    const pHomens = ((totalHomens / total) * 100).toFixed(1);
-                    const pMulheres = ((totalMulheres / total) * 100).toFixed(1);
-                    badge.innerText = `Total: ${total} registos | ${totalHomens} (${pHomens}%) Homens • ${totalMulheres} (${pMulheres}%) Mulheres`;
                 } else {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: red;">Nenhum assistido cadastrado encontrado.</div>`;
-                    badge.innerText = `Total: 0 registos`;
+                    statsBanner.innerText = "Total: 0 registros | 0 (0%) Homens • 0 (0%) Mulheres";
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = "Nenhum registro encontrado na base de dados.";
                 }
             })
             .catch(err => {
-                document.getElementById('gridAssistidos').innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: red;">Erro de conexão com o servidor.</div>`;
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão ao carregar a galeria.";
             });
         }
 
-        function abrirHistoricoAssistido(matricula, nomeEnc, sexoEnc, fotoEnc) {
-            const matriculaDec = decodeURIComponent(matricula);
-            const nomeDec = decodeURIComponent(nomeEnc);
-            const sexoDec = decodeURIComponent(sexoEnc);
-            const fotoDec = decodeURIComponent(fotoEnc);
+        function abrirProntuario(reg) {
+            document.getElementById('mMatricula').innerText = "Matrícula: " + (reg.matricula || "---");
+            document.getElementById('mDataCadastro').innerText = "Data do Cadastro: " + (reg.dataHora || reg.carimbo || "---");
 
-            document.getElementById('telaPrincipalGaleria').style.display = 'none';
-            document.getElementById('telaHistoricoIndividual').style.display = 'block';
+            document.getElementById('mNomeCompleto').innerText = reg.nomeCompleto || "Não informado";
+            document.getElementById('mNomeSocial').innerText = reg.nomeSocial || "Não informado";
+            document.getElementById('mDataNascimento').innerText = reg.dataNascimento || "Não informado";
+            document.getElementById('mIdade').innerText = reg.idade || "Não informado";
+            document.getElementById('mSexo').innerText = reg.sexo || "Não informado";
+            document.getElementById('mEscolaridade').innerText = reg.escolaridade || "Não informado";
+            document.getElementById('mNaturalidade').innerText = reg.naturalidade || "Não informado";
+            document.getElementById('mRg').innerText = reg.rg || "Não informado";
+            document.getElementById('mCpf').innerText = reg.cpf || "Não informado";
+            document.getElementById('mCorRaca').innerText = reg.corRaca || "Não informado";
 
-            const fotoFinal = converterLinkDrive(fotoDec);
-            let avatarHtml = `<div style="width: 60px; height: 60px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fa-solid fa-user" style="font-size: 1.6rem; color: var(--secondary-color);"></i></div>`;
+            document.getElementById('mFiliacaoMae').innerText = reg.filiacaoMae || "Não informado";
+            document.getElementById('mFiliacaoPai').innerText = reg.filiacaoPai || "Não informado";
+            document.getElementById('mEndereco').innerText = reg.endereco || "Não informado";
+            document.getElementById('mCidade').innerText = reg.cidade || "Não informado";
+            document.getElementById('mTelefone').innerText = reg.telefone || "Não informado";
+            document.getElementById('mResidenciaUnai').innerText = reg.residenciaUnaí || "Não informado";
+
+            document.getElementById('mTipoUsuario').innerText = reg.tipoUsuario || "Não informado";
+            document.getElementById('mTempoRua').innerText = reg.tempoRua || "Não informado";
+            document.getElementById('mTempoUnai').innerText = reg.tempoUnaí || "Não informado";
+            document.getElementById('mMotivosPermanencia').innerText = reg.motivosPermanencia || "Não informado";
+            document.getElementById('mOutrosMotivos').innerText = reg.outrosMotivos || "Não informado";
+
+            document.getElementById('mPassouAtendimento').innerText = reg.passouAtendimento || "Não informado";
+            document.getElementById('mRecebeAuxilio').innerText = reg.recebeAuxilio || "Não informado";
+            document.getElementById('mQualBeneficio').innerText = reg.qualBeneficio || "Não informado";
+            document.getElementById('mPossuiDocumentos').innerText = reg.possuiDocumentos || "Não informado";
+            document.getElementById('mDocumentosFaltam').innerText = reg.documentosFaltam || "Não informado";
+            document.getElementById('mCarteiraTrabalho').innerText = reg.carteiraTrabalho || "Não informado";
+
+            const avatarContainer = document.getElementById('modalAvatarContainer');
+            const fotoFinal = converterLinkDrive(reg.foto);
             if (fotoFinal) {
-                avatarHtml = `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0;"><img src="${fotoFinal}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.6rem; color: var(--secondary-color);\'></i>';"></div>`;
+                avatarContainer.innerHTML = `<img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
+            } else {
+                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--primary-color);"></i>`;
             }
 
-            document.getElementById('cabecalhoAssistidoInd').innerHTML = `
-                ${avatarHtml}
-                <div>
-                    <div style="font-weight: 700; font-size: 1.15rem; color: var(--secondary-color);">${nomeDec}</div>
-                    <div style="font-size: 0.9rem; color: #64748b;">Matrícula: <strong>${matriculaDec}</strong> | Sexo: ${sexoDec || '---'}</div>
-                </div>
-            `;
-
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarAtendimentos" })
-            })
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.getElementById('tabelaHistoricoInd');
-                let b = 0, j = 0, c = 0;
-                tbody.innerHTML = "";
-
-                if (data.status === "encontrado" && data.lista) {
-                    const listaAssistido = data.lista.filter(at => String(at.matricula).trim() === String(matriculaDec).trim());
-                    
-                    if (listaAssistido.length > 0) {
-                        listaAssistido.forEach(at => {
-                            if (String(at.banho).toUpperCase() === "SIM") b++;
-                            if (String(at.janta).toUpperCase() === "SIM") j++;
-                            if (String(at.curativos).toUpperCase() === "SIM") c++;
-                        });
-
-                        const listaInvertida = listaAssistido.reverse();
-                        listaInvertida.forEach(at => {
-                            const dataFmt = at.carimbo ? new Date(at.carimbo).toLocaleString('pt-BR') : (at.dataAcao || '---');
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `
-                                <td>${dataFmt}</td>
-                                <td><strong>${at.matricula || '---'}</strong></td>
-                                <td>${at.nomeAssistido || '---'}</td>
-                                <td>${at.sexo || '---'}</td>
-                                <td style="text-align: center;">${String(at.banho).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                                <td style="text-align: center;">${String(at.janta).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                                <td style="text-align: center;">${String(at.curativos).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                                <td>${at.operador || 'Sistema'}</td>
-                            `;
-                            tbody.appendChild(tr);
-                        });
-                    } else {
-                        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Nenhum atendimento registado para este assistido.</td></tr>`;
-                    }
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Nenhum atendimento encontrado na base.</td></tr>`;
-                }
-
-                document.getElementById('indBanhos').innerText = b;
-                document.getElementById('indJantas').innerText = j;
-                document.getElementById('indCurativos').innerText = c;
-            })
-            .catch(() => {
-                document.getElementById('tabelaHistoricoInd').innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar o histórico.</td></tr>`;
-            });
+            document.getElementById('modalProntuario').style.display = 'flex';
         }
 
-        function voltarParaGaleria() {
-            document.getElementById('telaHistoricoIndividual').style.display = 'none';
-            document.getElementById('telaPrincipalGaleria').style.display = 'block';
+        function abrirHistoricoDireto(matricula) {
+            // Redireciona para a tela de atendimentos/relatório filtrando pela matrícula
+            window.location.href = `atendimentos.html?matricula=${matricula}`;
+        }
+
+        function imprimirFichaDireta(matricula) {
+            // Redireciona para a ficha de impressão passando a matrícula
+            window.open(`ficha_impressao.html?termo=${matricula}`, '_blank');
+        }
+
+        function fecharModal() {
+            document.getElementById('modalProntuario').style.display = 'none';
+        }
+
+        function fecharModalFora(event) {
+            if (event.target === document.getElementById('modalProntuario')) {
+                fecharModal();
+            }
         }
     </script>
 </body>
