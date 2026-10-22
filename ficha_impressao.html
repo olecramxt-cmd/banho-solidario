@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.2.000                    -->
-<!-- Data de atualização: 22/10/2026 - 16:05                                        -->
-<!-- Descrição: Ficha de impressão cadastral com suporte a carregamento direto via    -->
-<!--            localStorage (recebimento instantâneo da Galeria da Dignidade).     -->
+<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.3.000                    -->
+<!-- Data de atualização: 22/10/2026 - 16:10                                        -->
+<!-- Descrição: Ficha de impressão com suporte a carregamento via localStorage e     -->
+<!--            botão de retorno imediato para a Galeria da Dignidade.              -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -46,21 +46,14 @@
         .container { max-width: 900px; margin: 30px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         h2 { color: var(--primary-dark); text-align: center; margin-bottom: 25px; }
 
-        .search-box { display: flex; gap: 10px; margin-bottom: 25px; background: #f1f5f9; padding: 15px; border-radius: 8px; }
-        .search-box input { flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; }
-        .btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; transition: background 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
         .btn:hover { background-color: var(--primary-dark); }
         .btn-success { background-color: var(--success-color); }
         .btn-success:hover { background-color: #15803d; }
 
-        #listaResultadosContainer { display: none; margin-bottom: 25px; }
-        .resultado-item { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .resultado-item:hover { border-color: var(--primary-color); background: #e0f2fe; }
-
         /* Área da Ficha A4 com Marca d'Água Diagonal em Destaque */
         #fichaImpressaoArea { display: none; position: relative; background: white; padding: 40px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 20px; overflow: hidden; }
         
-        /* Marca d'água Diagonal em Destaque e Visível */
         .watermark-diagonal {
             position: absolute;
             top: 50%;
@@ -89,7 +82,7 @@
 
         @media print {
             body { background: white; }
-            .navbar, .search-box, .side-menu, .menu-overlay, .btn-print-area { display: none !important; }
+            .navbar, .side-menu, .menu-overlay, .btn-print-area, .btn-voltar-topo { display: none !important; }
             .container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
             #fichaImpressaoArea { border: none; padding: 0; margin: 0; }
         }
@@ -97,7 +90,6 @@
 </head>
 <body onload="inicializarConsultaFicha()">
 
-    <!-- Importação do Config de API Centralizada -->
     <script src="config.js"></script>
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
@@ -116,7 +108,7 @@
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
-   <nav class="side-menu" id="sideMenu">
+    <nav class="side-menu" id="sideMenu">
         <div class="side-menu-header">
             <h3>Menu do Sistema</h3>
             <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
@@ -125,48 +117,21 @@
             <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
                 <i class="fa-solid fa-house"></i> Início (Página Inicial)
             </a>
-            
-            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
-            <div class="side-menu-sublinks">
-                <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
-                <a href="#" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta</a>
-            </div>
-            
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
             <div class="side-menu-sublinks">
-                <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
-                <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
                 <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
             </div>
-
-            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
-            <div class="side-menu-sublinks">
-                <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
-                <a href="ficha_impressao.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios e Fichas</a>
-            </div>
-            
-            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
-            <a href="./ebook/" target="_blank" class="menu-link-item"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
         </div>
     </nav>
 
     <div class="container">
+        <!-- BOTÃO DE VOLTAR PARA A GALERIA NO TOPO -->
+        <button onclick="window.location.href='galeria.html'" class="btn btn-voltar-topo" style="margin-bottom: 20px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
+
         <h2>Consulta Cadastral e Impressão</h2>
 
-        <div class="search-box">
-            <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF, o Nome, o Nome Social ou 'TODOS'..." onkeypress="if(event.key === 'Enter') pesquisarCadastrosFicha();">
-            <button class="btn" onclick="pesquisarCadastrosFicha()"><i class="fa-solid fa-magnifying-glass"></i> Pesquisar</button>
-        </div>
-
-        <div id="mensagemStatus" style="text-align: center; font-weight: bold; margin-bottom: 15px;"></div>
-
-        <div id="listaResultadosContainer">
-            <h3 style="font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 15px;">Selecione o Assistido para Exibir a Ficha:</h3>
-            <div id="listaResultadosItens"></div>
-        </div>
-
         <!-- Área Pronta para Impressão com Marca d'Água Diagonal em Destaque -->
-        <div id="fichaImpressaoArea">
+        <div id="fichaImpressaoArea" style="display: block;">
             <div class="watermark-diagonal">DOCUMENTO PROTEGIDO POR SIGILO</div>
             
             <div class="ficha-conteudo">
@@ -229,7 +194,8 @@
                     <div class="ficha-field" style="grid-column: span 3;"><strong>Operador Responsável</strong> <span id="fOperador">---</span></div>
                 </div>
 
-                <div class="btn-print-area" style="margin-top: 30px; text-align: right;">
+                <div class="btn-print-area" style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+                    <button onclick="window.location.href='galeria.html'" class="btn" style="background-color: #64748b;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
                     <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Ficha Oficial</button>
                 </div>
             </div>
@@ -243,75 +209,16 @@
         }
 
         function inicializarConsultaFicha() {
-            // Verifica se veio um assistido diretamente da Galeria para impressão instantânea
             const assistidoSalvo = localStorage.getItem('assistido_imprimir');
             if (assistidoSalvo) {
                 try {
                     const reg = JSON.parse(assistidoSalvo);
-                    localStorage.removeItem('assistido_imprimir'); // Limpa após o uso
-                    exibirFichaImpressao(reg); // Exibe direto sem passar por consulta
+                    localStorage.removeItem('assistido_imprimir');
+                    exibirFichaImpressao(reg);
                 } catch(e) {
-                    console.error("Erro ao processar impressão direta do assistido.");
+                    console.error("Erro ao processar impressão direta.");
                 }
             }
-        }
-
-        function pesquisarCadastrosFicha() {
-            const termo = document.getElementById('termoBusca').value.trim();
-            const statusDiv = document.getElementById('mensagemStatus');
-            document.getElementById('listaResultadosContainer').style.display = 'none';
-            document.getElementById('fichaImpressaoArea').style.display = 'none';
-
-            if (!termo) {
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Por favor, digite um termo ou 'TODOS' para pesquisar.";
-                return;
-            }
-
-            statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "Pesquisando assistidos na nuvem...";
-
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarTriagem", termo: termo })
-            })
-            .then(res => res.json())
-            .then(data => {
-                statusDiv.innerText = "";
-                if (data.status === "encontrado") {
-                    montarListaSelecaoFicha(data.lista);
-                } else {
-                    statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Nenhum registo encontrado.";
-                }
-            })
-            .catch(err => {
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Erro de conexão com o servidor.";
-            });
-        }
-
-        function montarListaSelecaoFicha(lista) {
-            const container = document.getElementById('listaResultadosItens');
-            container.innerHTML = "";
-            document.getElementById('listaResultadosContainer').style.display = 'block';
-
-            lista.forEach(item => {
-                const reg = item.registro;
-                const div = document.createElement('div');
-                div.className = 'resultado-item';
-                div.innerHTML = `
-                    <div>
-                        <strong>Matrícula:</strong> ${reg.matricula} | 
-                        <strong>Nome:</strong> ${reg.nomeCompleto || reg.nome || '---'} 
-                        ${reg.nomeSocial ? `(${reg.nomeSocial})` : ''} | 
-                        <strong>CPF:</strong> ${reg.cpf || 'Não informado'}
-                    </div>
-                    <button class="btn" onclick='exibirFichaImpressao(${JSON.stringify(reg)})'><i class="fa-solid fa-file-lines"></i> Selecionar Ficha</button>
-                `;
-                container.appendChild(div);
-            });
         }
 
         function converterLinkDriveFicha(url) {
@@ -326,13 +233,11 @@
             try {
                 let d = new Date(dataStr);
                 if (isNaN(d.getTime())) return dataStr;
-                
                 let dia = String(d.getDate()).padStart(2, '0');
                 let mes = String(d.getMonth() + 1).padStart(2, '0');
                 let ano = d.getFullYear();
                 let hora = String(d.getHours()).padStart(2, '0');
                 let min = String(d.getMinutes()).padStart(2, '0');
-
                 return `${dia}/${mes}/${ano} - ${hora}:${min}`;
             } catch(e) {
                 return dataStr;
@@ -340,9 +245,6 @@
         }
 
         function exibirFichaImpressao(reg) {
-            document.getElementById('listaResultadosContainer').style.display = 'none';
-            document.getElementById('fichaImpressaoArea').style.display = 'block';
-
             const nomeComp = reg.nomeCompleto || reg.nome || "Não informado";
             const matricula = reg.matricula || reg.mat || "---";
             const dataCad = reg.dataHora || reg.carimbo || reg.dataCadastro || "";
@@ -352,7 +254,6 @@
             document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + matricula;
             document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + formatarDataAmigavelFicha(dataCad) + " | Operador: " + operador;
 
-            // Avatar
             const avatarContainer = document.getElementById('avatarFichaContainer');
             const urlFoto = reg.foto || reg.urlFoto || reg.imagem || "";
             const urlFinal = converterLinkDriveFicha(urlFoto);
@@ -362,7 +263,6 @@
                 avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: #0284c7;"></i>`;
             }
 
-            // Atribuição de todos os campos com mapeamento exato
             document.getElementById('fNomeComp').innerText = nomeComp;
             document.getElementById('fSocial').innerText = reg.nomeSocial || reg.social || "Não informado";
             document.getElementById('fNasc').innerText = reg.dataNascimento || reg.nascimento || reg.dataNasc || "Não informado";
