@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.1.9.000                            -->
-<!-- Data de atualização: 22/10/2026 - 04:30                                        -->
-<!-- Descrição: Galeria da Dignidade com autenticação obrigatória, limpeza de      -->
-<!--            rótulos e links diretos corrigidos para cadastro e impressão.       -->
+<!-- Programa: galeria.html. Versão do Módulo: v.2.0.000                            -->
+<!-- Data de atualização: 22/10/2026 - 04:42                                        -->
+<!-- Descrição: Galeria da Dignidade definitiva, com autenticação obrigatória,      -->
+<!--            histórico individual, cadastro direto e impressão automatizada.     -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -69,7 +69,7 @@
         .btn-acao-card { border: none; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: opacity 0.2s; text-decoration: none; }
         .btn-acao-card:hover { opacity: 0.85; }
         .btn-prontuario { background-color: #0ea5e9; } /* Azul - Histórico e Movimentação Individual */
-        .btn-editar-card { background-color: #eab308; } /* Amarelo - Cadastro Direto */
+        .btn-editar-card { background-color: #eab308; } /* Amarelo - Consulta/Cadastro Direto */
         .btn-ficha { background-color: #7c3aed; } /* Roxo - Impressão Direta */
 
         /* Estilos da Tela de Histórico e Movimentação Individual */
@@ -242,6 +242,7 @@
                         const matSegura = encodeURIComponent(reg.matricula || "");
                         const sexoSeguro = encodeURIComponent(reg.sexo || "");
                         const fotoSegura = encodeURIComponent(reg.foto || "");
+                        const matriculaReg = reg.matricula || "";
 
                         const card = document.createElement('div');
                         card.className = 'card-assistido';
@@ -249,12 +250,12 @@
                             <div onclick="abrirHistoricoAssistido('${matSegura}', '${nomeSeguro}', '${sexoSeguro}', '${fotoSegura}')" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; width: 100%;">
                                 ${avatarHtml}
                                 <div class="nome-assistido">${reg.nomeSocial || reg.nomeCompleto || '---'}</div>
-                                <div class="matricula-assistido">${reg.matricula || 'Sem Matrícula'}</div>
+                                <div class="matricula-assistido">${matriculaReg || 'Sem Matrícula'}</div>
                             </div>
                             <div class="acoes-card">
                                 <button type="button" class="btn-acao-card btn-prontuario" title="Histórico e Movimentação" onclick="abrirHistoricoAssistido('${matSegura}', '${nomeSeguro}', '${sexoSeguro}', '${fotoSegura}')"><i class="fa-solid fa-address-card"></i></button>
-                                <a href="cadastro.html?linha=${item.linha}" class="btn-acao-card btn-editar-card" title="Cadastro Direto"><i class="fa-solid fa-pen-to-square"></i></a>
-                                <a href="ficha_impressao.html?matricula=${reg.matricula}&imprimir=true" class="btn-acao-card btn-ficha" title="Impressão Direta" onclick="setTimeout(() => window.print(), 500);"><i class="fa-solid fa-print"></i></a>
+                                <a href="consulta.html?termo=${matriculaReg}" class="btn-acao-card btn-editar-card" title="Abrir Cadastro/Consulta Direta"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="ficha_impressao.html?termo=${matriculaReg}" class="btn-acao-card btn-ficha" title="Impressão Direta da Ficha" target="_blank"><i class="fa-solid fa-print"></i></a>
                             </div>
                         `;
                         grid.appendChild(card);
