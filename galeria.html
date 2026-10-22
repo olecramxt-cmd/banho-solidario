@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.1.8.000                            -->
-<!-- Data de atualização: 21/10/2026 - 04:45                                        -->
-<!-- Descrição: Galeria da Dignidade com modal de prontuário, histórico/movimentação -->
-<!--            no ícone azul, cadastro direto no amarelo e impressão no roxo.      -->
+<!-- Programa: galeria.html. Versão do Módulo: v.1.9.000                            -->
+<!-- Data de atualização: 22/10/2026 - 04:30                                        -->
+<!-- Descrição: Galeria da Dignidade com autenticação obrigatória, limpeza de      -->
+<!--            rótulos e links diretos corrigidos para cadastro e impressão.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -72,7 +72,7 @@
         .btn-editar-card { background-color: #eab308; } /* Amarelo - Cadastro Direto */
         .btn-ficha { background-color: #7c3aed; } /* Roxo - Impressão Direta */
 
-        /* Estilos da Tela de Histórico / Movimentação Individual */
+        /* Estilos da Tela de Histórico e Movimentação Individual */
         #telaHistoricoIndividual { display: none; text-align: left; margin-top: 20px; }
         .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
         @media(min-width: 768px) { .stats-grid-ind { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
@@ -87,9 +87,17 @@
 </head>
 <body onload="carregarGaleriaDignidade()">
 
+    <!-- Validação Obrigatória de Sessão / Login -->
     <script src="config.js"></script>
     <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
+            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+            window.location.href = 'login.html';
+        }
         const API_URL = CONFIG.API_URL;
+
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
@@ -167,31 +175,31 @@
         <div class="stats-grid-ind">
             <div class="stat-card-ind">
                 <div class="stat-number-ind" id="indBanhos">0</div>
-                <div class="stat-label-ind">Total de Banhos (Histórico)[cite: 14]</div>
+                <div class="stat-label-ind">Total de Banhos (Histórico)</div>
             </div>
             <div class="stat-card-ind">
                 <div class="stat-number-ind" id="indJantas">0</div>
-                <div class="stat-label-ind">Total de Jantas (Histórico)[cite: 14]</div>
+                <div class="stat-label-ind">Total de Jantas (Histórico)</div>
             </div>
             <div class="stat-card-ind">
                 <div class="stat-number-ind" id="indCurativos">0</div>
-                <div class="stat-label-ind">Total de Curativos (Histórico)[cite: 14]</div>
+                <div class="stat-label-ind">Total de Curativos (Histórico)</div>
             </div>
         </div>
 
-        <h3 style="font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 1rem;"><i class="fa-solid fa-list-check"></i> Movimentação Recente do Assistido[cite: 14]</h3>
+        <h3 style="font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 1rem;"><i class="fa-solid fa-list-check"></i> Movimentação Recente do Assistido</h3>
         <div class="table-responsive-ind">
             <table class="tabela-ind">
                 <thead>
                     <tr>
-                        <th>Data / Horário[cite: 14]</th>
-                        <th>Matrícula[cite: 14]</th>
-                        <th>Assistido[cite: 14]</th>
-                        <th>Sexo[cite: 14]</th>
-                        <th style="text-align: center;">Banho[cite: 14]</th>
-                        <th style="text-align: center;">Janta[cite: 14]</th>
-                        <th style="text-align: center;">Curativos[cite: 14]</th>
-                        <th>Operador[cite: 14]</th>
+                        <th>Data / Horário</th>
+                        <th>Matrícula</th>
+                        <th>Assistido</th>
+                        <th>Sexo</th>
+                        <th style="text-align: center;">Banho</th>
+                        <th style="text-align: center;">Janta</th>
+                        <th style="text-align: center;">Curativos</th>
+                        <th>Operador</th>
                     </tr>
                 </thead>
                 <tbody id="tabelaHistoricoInd">
@@ -246,7 +254,7 @@
                             <div class="acoes-card">
                                 <button type="button" class="btn-acao-card btn-prontuario" title="Histórico e Movimentação" onclick="abrirHistoricoAssistido('${matSegura}', '${nomeSeguro}', '${sexoSeguro}', '${fotoSegura}')"><i class="fa-solid fa-address-card"></i></button>
                                 <a href="cadastro.html?linha=${item.linha}" class="btn-acao-card btn-editar-card" title="Cadastro Direto"><i class="fa-solid fa-pen-to-square"></i></a>
-                                <a href="ficha_impressao.html?matricula=${reg.matricula}" class="btn-acao-card btn-ficha" title="Impressão Direta"><i class="fa-solid fa-print"></i></a>
+                                <a href="ficha_impressao.html?matricula=${reg.matricula}&imprimir=true" class="btn-acao-card btn-ficha" title="Impressão Direta" onclick="setTimeout(() => window.print(), 500);"><i class="fa-solid fa-print"></i></a>
                             </div>
                         `;
                         grid.appendChild(card);
