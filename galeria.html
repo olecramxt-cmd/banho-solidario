@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.3.000                            -->
-<!-- Data de atualização: 22/10/2026 - 15:53                                        -->
-<!-- Descrição: Galeria da Dignidade com impressão direta via localStorage,          -->
-<!--            excluindo qualquer tela intermediária de consulta.                  -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.4.000                            -->
+<!-- Data de atualização: 22/10/2026 - 16:18                                        -->
+<!-- Descrição: Galeria da Dignidade completa com botões de retorno explícitos no    -->
+<!--            modal do prontuário, histórico nativo e impressão direta.           -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -218,7 +218,10 @@
     <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
     <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
         <div class="modal-card">
-            <button class="close-modal" onclick="fecharModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
+                <button class="close-modal" onclick="fecharModal()" style="position: static;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             
             <div class="profile-header">
                 <div class="modal-avatar" id="modalAvatarContainer"></div>
@@ -264,6 +267,10 @@
                 <div class="read-field"><label>Possui Documentos</label><span id="mPossuiDocumentos">---</span></div>
                 <div class="read-field"><label>Documentos Faltam</label><span id="mDocumentosFaltam">---</span></div>
                 <div class="read-field"><label>Carteira de Trabalho</label><span id="mCarteiraTrabalho">---</span></div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: right; border-top: 2px solid #e2e8f0; padding-top: 15px;">
+                <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 20px; font-weight: 600;"><i class="fa-solid fa-check"></i> Fechar Prontuário</button>
             </div>
         </div>
     </div>
