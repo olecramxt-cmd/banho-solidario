@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.1.000                    -->
-<!-- Data de atualização: 17/10/2026 - 02:22                                        -->
-<!-- Descrição: Ficha de impressão cadastral com marca d'água diagonal em destaque  -->
-<!--            sobre o documento, garantindo legibilidade e padrão A4.             -->
+<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.2.000                    -->
+<!-- Data de atualização: 22/10/2026 - 16:05                                        -->
+<!-- Descrição: Ficha de impressão cadastral com suporte a carregamento direto via    -->
+<!--            localStorage (recebimento instantâneo da Galeria da Dignidade).     -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -142,7 +142,7 @@
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
             <div class="side-menu-sublinks">
                 <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
-                <a href="relatorio_atendimentos.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios e Fichas</a>
+                <a href="ficha_impressao.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios e Fichas</a>
             </div>
             
             <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
@@ -151,7 +151,7 @@
     </nav>
 
     <div class="container">
-        <h2>Consulta Cadastral</h2>
+        <h2>Consulta Cadastral e Impressão</h2>
 
         <div class="search-box">
             <input type="text" id="termoBusca" placeholder="Digite a Matrícula, o CPF, o Nome, o Nome Social ou 'TODOS'..." onkeypress="if(event.key === 'Enter') pesquisarCadastrosFicha();">
@@ -243,7 +243,17 @@
         }
 
         function inicializarConsultaFicha() {
-            // Inicialização padrão
+            // Verifica se veio um assistido diretamente da Galeria para impressão instantânea
+            const assistidoSalvo = localStorage.getItem('assistido_imprimir');
+            if (assistidoSalvo) {
+                try {
+                    const reg = JSON.parse(assistidoSalvo);
+                    localStorage.removeItem('assistido_imprimir'); // Limpa após o uso
+                    exibirFichaImpressao(reg); // Exibe direto sem passar por consulta
+                } catch(e) {
+                    console.error("Erro ao processar impressão direta do assistido.");
+                }
+            }
         }
 
         function pesquisarCadastrosFicha() {
