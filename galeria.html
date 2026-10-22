@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.0.000                            -->
-<!-- Data de atualização: 22/10/2026 - 05:00                                        -->
-<!-- Descrição: Galeria da Dignidade independente, com login obrigatório, modal de   -->
-<!--            prontuário completo, histórico individual e impressão direta.       -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.1.000                            -->
+<!-- Data de atualização: 22/10/2026 - 05:15                                        -->
+<!-- Descrição: Galeria da Dignidade independente com login, modal de prontuário,   -->
+<!--            histórico de atendimentos interno nativo e impressão direta.        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -20,8 +20,9 @@
             --primary-color: #0284c7;
             --primary-dark: #0369a1;
             --secondary-color: #7c3aed;
+            --accent-color: #e0f2fe;
             --success-color: #16a34a;
-            --warning-color: #eab308;
+            --warning-color: #d97706;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-color: #334155;
@@ -48,7 +49,7 @@
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
         .menu-overlay.active { display: block; }
 
-        .container { max-width: 1200px; margin: 90px auto 30px auto; padding: 0 20px; }
+        .container { max-width: 1200px; margin: 90px auto 30px auto; padding: 0 20px; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
         h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; }
         .subtitle { text-align: center; color: #64748b; margin-bottom: 15px; font-size: 0.95rem; }
         .stats-banner { text-align: center; color: var(--primary-dark); font-weight: 600; font-size: 1rem; margin-bottom: 25px; background: #e0f2fe; padding: 12px; border-radius: 10px; border: 1px solid #bae6fd; }
@@ -71,7 +72,7 @@
         .btn-acao { border: none; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: opacity 0.2s; text-decoration: none; }
         .btn-acao:hover { opacity: 0.85; }
         .btn-azul { background-color: var(--primary-color); }   /* Prontuário Completo */
-        .btn-amarelo { background-color: #d97706; } /* Histórico de Atendimentos */
+        .btn-amarelo { background-color: var(--warning-color); } /* Histórico de Atendimentos Nativo */
         .btn-roxo { background-color: var(--secondary-color); } /* Impressão Direta */
 
         /* Modal de Prontuário Completo */
@@ -91,6 +92,18 @@
         .read-field label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
         .read-field span { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
         .section-title { grid-column: 1 / -1; font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; }
+
+        /* Estilos da Tela de Histórico de Atendimentos Individual (Ícone Amarelo) */
+        #telaHistoricoIndividual { display: none; text-align: left; }
+        .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
+        @media(min-width: 768px) { .stats-grid-ind { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
+        .stat-card-ind { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; text-align: center; }
+        .stat-number-ind { font-size: 1.6rem; font-weight: 700; color: var(--secondary-color); }
+        .stat-label-ind { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+        .table-responsive-ind { width: 100%; overflow-x: auto; margin-top: 1rem; }
+        table.tabela-ind { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 650px; }
+        table.tabela-ind th, table.tabela-ind td { border: 1px solid #e2e8f0; padding: 10px 12px; text-align: left; vertical-align: middle; }
+        table.tabela-ind th { background-color: #f8fafc; color: var(--secondary-color); font-weight: 600; }
     </style>
 </head>
 <body onload="carregarGaleria()">
@@ -133,7 +146,7 @@
             <div class="side-menu-sublinks">
                 <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
                 <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
-                <a href="galeria.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid id-card-clip"></i> 2.3- Galeria da Dignidade</a>
+                <a href="galeria.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
             </div>
 
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
@@ -147,13 +160,59 @@
         </div>
     </nav>
 
-    <div class="container">
-        <h2>Galeria da Dignidade</h2>
-        <p class="subtitle">Registro visual humanizado e prontuário de leitura rápida dos assistidos cadastrados.</p>
-        <div class="stats-banner" id="statsBanner">A calcular estatísticas da base...</div>
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="container" id="containerPrincipal">
+        <div id="telaPrincipalGaleria">
+            <h2>Galeria da Dignidade</h2>
+            <p class="subtitle">Registro visual humanizado e prontuário de leitura rápida dos assistidos cadastrados.</p>
+            <div class="stats-banner" id="statsBanner">A calcular estatísticas da base...</div>
 
-        <div id="mensagemStatus"></div>
-        <div class="gallery-grid" id="galleryGrid"></div>
+            <div id="mensagemStatus"></div>
+            <div class="gallery-grid" id="galleryGrid"></div>
+        </div>
+
+        <!-- TELA DE HISTÓRICO DE ATENDIMENTOS (ABERTA PELO ÍCONE AMARELO) -->
+        <div id="telaHistoricoIndividual">
+            <button onclick="voltarParaGaleria()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; margin-bottom: 20px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
+            
+            <div id="cabecalhoAssistidoInd" style="display: flex; align-items: center; gap: 15px; background: var(--accent-color); padding: 15px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--secondary-color);"></div>
+
+            <div class="stats-grid-ind">
+                <div class="stat-card-ind">
+                    <div class="stat-number-ind" id="indBanhos">0</div>
+                    <div class="stat-label-ind">Total de Banhos (Histórico)</div>
+                </div>
+                <div class="stat-card-ind">
+                    <div class="stat-number-ind" id="indJantas">0</div>
+                    <div class="stat-label-ind">Total de Jantas (Histórico)</div>
+                </div>
+                <div class="stat-card-ind">
+                    <div class="stat-number-ind" id="indCurativos">0</div>
+                    <div class="stat-label-ind">Total de Curativos (Histórico)</div>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 1rem;"><i class="fa-solid fa-list-check"></i> Movimentação Recente do Assistido</h3>
+            <div class="table-responsive-ind">
+                <table class="tabela-ind">
+                    <thead>
+                        <tr>
+                            <th>Data / Horário</th>
+                            <th>Matrícula</th>
+                            <th>Assistido</th>
+                            <th>Sexo</th>
+                            <th style="text-align: center;">Banho</th>
+                            <th style="text-align: center;">Janta</th>
+                            <th style="text-align: center;">Curativos</th>
+                            <th>Operador</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaHistoricoInd">
+                        <tr><td colspan="8" style="text-align: center; color: #0284c7;">Carregando o histórico de atendimentos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
@@ -259,7 +318,6 @@
 
                     statsBanner.innerHTML = `Total: ${totalRegistros} registros | ${qtdHomens} (${percHomens}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheres} (${percMulheres}%) Mulheres`;
 
-                    // Ordenação alfabética pelo nome completo
                     data.lista.sort((a, b) => {
                         const nomeA = (a.registro.nomeCompleto || "").toLowerCase();
                         const nomeB = (b.registro.nomeCompleto || "").toLowerCase();
@@ -271,6 +329,11 @@
                         const nomeCompleto = reg.nomeCompleto || reg.nomeSocial || "Sem Nome";
                         const matricula = reg.matricula || "---";
                         const fotoFinal = converterLinkDrive(reg.foto);
+
+                        const nomeSeguro = encodeURIComponent(reg.nomeSocial || reg.nomeCompleto || "---");
+                        const matSegura = encodeURIComponent(reg.matricula || "");
+                        const sexoSeguro = encodeURIComponent(reg.sexo || "");
+                        const fotoSegura = encodeURIComponent(reg.foto || "");
 
                         const card = document.createElement('div');
                         card.className = 'gallery-card';
@@ -286,7 +349,7 @@
                             <div class="gallery-matricula">${matricula}</div>
                             <div class="acoes-card">
                                 <button type="button" class="btn-acao btn-azul" title="Prontuário Completo (Leitura)" onclick='abrirProntuario(${JSON.stringify(reg)})'><i class="fa-solid fa-address-card"></i></button>
-                                <button type="button" class="btn-acao btn-amarelo" title="Histórico de Atendimentos" onclick='abrirHistoricoDireto("${matricula}")'><i class="fa-solid fa-list-check"></i></button>
+                                <button type="button" class="btn-acao btn-amarelo" title="Histórico de Atendimentos" onclick="abrirHistoricoAssistido('${matSegura}', '${nomeSeguro}', '${sexoSeguro}', '${fotoSegura}')"><i class="fa-solid fa-list-check"></i></button>
                                 <button type="button" class="btn-acao btn-roxo" title="Impressão Direta da Ficha" onclick='imprimirFichaDireta("${matricula}")'><i class="fa-solid fa-print"></i></button>
                             </div>
                         `;
@@ -307,69 +370,3 @@
         function abrirProntuario(reg) {
             document.getElementById('mMatricula').innerText = "Matrícula: " + (reg.matricula || "---");
             document.getElementById('mDataCadastro').innerText = "Data do Cadastro: " + (reg.dataHora || reg.carimbo || "---");
-
-            document.getElementById('mNomeCompleto').innerText = reg.nomeCompleto || "Não informado";
-            document.getElementById('mNomeSocial').innerText = reg.nomeSocial || "Não informado";
-            document.getElementById('mDataNascimento').innerText = reg.dataNascimento || "Não informado";
-            document.getElementById('mIdade').innerText = reg.idade || "Não informado";
-            document.getElementById('mSexo').innerText = reg.sexo || "Não informado";
-            document.getElementById('mEscolaridade').innerText = reg.escolaridade || "Não informado";
-            document.getElementById('mNaturalidade').innerText = reg.naturalidade || "Não informado";
-            document.getElementById('mRg').innerText = reg.rg || "Não informado";
-            document.getElementById('mCpf').innerText = reg.cpf || "Não informado";
-            document.getElementById('mCorRaca').innerText = reg.corRaca || "Não informado";
-
-            document.getElementById('mFiliacaoMae').innerText = reg.filiacaoMae || "Não informado";
-            document.getElementById('mFiliacaoPai').innerText = reg.filiacaoPai || "Não informado";
-            document.getElementById('mEndereco').innerText = reg.endereco || "Não informado";
-            document.getElementById('mCidade').innerText = reg.cidade || "Não informado";
-            document.getElementById('mTelefone').innerText = reg.telefone || "Não informado";
-            document.getElementById('mResidenciaUnai').innerText = reg.residenciaUnaí || "Não informado";
-
-            document.getElementById('mTipoUsuario').innerText = reg.tipoUsuario || "Não informado";
-            document.getElementById('mTempoRua').innerText = reg.tempoRua || "Não informado";
-            document.getElementById('mTempoUnai').innerText = reg.tempoUnaí || "Não informado";
-            document.getElementById('mMotivosPermanencia').innerText = reg.motivosPermanencia || "Não informado";
-            document.getElementById('mOutrosMotivos').innerText = reg.outrosMotivos || "Não informado";
-
-            document.getElementById('mPassouAtendimento').innerText = reg.passouAtendimento || "Não informado";
-            document.getElementById('mRecebeAuxilio').innerText = reg.recebeAuxilio || "Não informado";
-            document.getElementById('mQualBeneficio').innerText = reg.qualBeneficio || "Não informado";
-            document.getElementById('mPossuiDocumentos').innerText = reg.possuiDocumentos || "Não informado";
-            document.getElementById('mDocumentosFaltam').innerText = reg.documentosFaltam || "Não informado";
-            document.getElementById('mCarteiraTrabalho').innerText = reg.carteiraTrabalho || "Não informado";
-
-            const avatarContainer = document.getElementById('modalAvatarContainer');
-            const fotoFinal = converterLinkDrive(reg.foto);
-            if (fotoFinal) {
-                avatarContainer.innerHTML = `<img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
-            } else {
-                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--primary-color);"></i>`;
-            }
-
-            document.getElementById('modalProntuario').style.display = 'flex';
-        }
-
-        function abrirHistoricoDireto(matricula) {
-            // Redireciona para a tela de atendimentos/relatório filtrando pela matrícula
-            window.location.href = `atendimentos.html?matricula=${matricula}`;
-        }
-
-        function imprimirFichaDireta(matricula) {
-            // Redireciona para a ficha de impressão passando a matrícula
-            window.open(`ficha_impressao.html?termo=${matricula}`, '_blank');
-        }
-
-        function fecharModal() {
-            document.getElementById('modalProntuario').style.display = 'none';
-        }
-
-        function fecharModalFora(event) {
-            if (event.target === document.getElementById('modalProntuario')) {
-                fecharModal();
-            }
-        }
-    </script>
-</body>
-</html>
-<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
