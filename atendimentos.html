@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.7.000                       -->
-<!-- Data de atualização: 21/10/2026 - 03:22                                        -->
-<!-- Descrição: Versão definitiva corrigida: operador, placeholder de busca,       -->
-<!--            exibição de nomes e padronização dos textos de carregamento.        -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.8.000                       -->
+<!-- Data de atualização: 23/10/2026 - 05:55                                        -->
+<!-- Descrição: Adicionado botão harmonioso de atalho para o Cadastro (2.1) ao      -->
+<!--            lado do campo de Sexo no formulário de atendimentos.                -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -75,6 +75,10 @@
 
         .btn-salvar { background: var(--secondary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; height: 48px; width: 100%; margin-top: auto; }
         .btn-salvar:hover { background: #6d28d9; }
+
+        /* Botão harmonioso para Novo Cadastro */
+        .btn-novo-cadastro { background-color: var(--secondary-color); color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: 500; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; text-decoration: none; height: 46px; white-space: nowrap; }
+        .btn-novo-cadastro:hover { background-color: #6d28d9; color: white; }
 
         .section-title { font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--accent-color); padding-bottom: 8px; }
 
@@ -193,10 +197,16 @@
                     <label>Matrícula do Assistido</label>
                     <input type="text" id="matriculaAssistido" class="form-control" placeholder="Automático..." readonly required>
                 </div>
+                
+                <!-- CAMPO SEXO COM BOTÃO DE NOVO CADASTRO AO LADO DE FORMA HARMONIOSA -->
                 <div class="form-group">
                     <label>Sexo</label>
-                    <input type="text" id="sexoAssistido" class="form-control" placeholder="---" readonly>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" id="sexoAssistido" class="form-control" placeholder="---" readonly style="flex: 1;">
+                        <a href="cadastro.html" target="_blank" class="btn-novo-cadastro" title="Novo Cadastro de Assistido (2.1)"><i class="fa-solid fa-user-plus"></i> Novo</a>
+                    </div>
                 </div>
+
                 <div class="form-group full-width" style="text-align: center;">
                     <label style="display: block; text-align: center;">Serviços Prestados na Ação</label>
                     <div class="checkbox-group">
@@ -404,98 +414,4 @@
             .then(res => res.json())
             .then(data => {
                 if (data.status === "sucesso") {
-                    statusDiv.style.color = "green";
-                    statusDiv.innerText = data.message || "Atendimento gravado!";
-                    
-                    const matGravada = document.getElementById('matriculaAssistido').value.trim();
-                    const nomeGravado = document.getElementById('nomeAssistidoBusca').value.trim();
-                    
-                    document.getElementById('formAtendimento').reset();
-                    const hoje = new Date().toISOString().split('T')[0];
-                    document.getElementById('dataAtendimento').value = hoje;
-                    
-                    if (assistidoSelecionadoGlobal) {
-                        document.getElementById('nomeAssistidoBusca').value = nomeGravado;
-                        document.getElementById('matriculaAssistido').value = matGravada;
-                        document.getElementById('sexoAssistido').value = assistidoSelecionadoGlobal.sexo || "";
-                        carregarHistoricoAcumuladoAssistido(matGravada, nomeGravado);
-                        carregarAtendimentosRecentes(matGravada);
-                    } else {
-                        document.getElementById('tituloHistoricoAssistido').innerText = `Histórico Acumulado do Assistido: Selecione um assistido`;
-                        document.getElementById('histBanhos').innerText = 0;
-                        document.getElementById('histJantas').innerText = 0;
-                        document.getElementById('histCurativos').innerText = 0;
-                        carregarAtendimentosRecentes();
-                    }
-
-                    setTimeout(() => { statusDiv.innerText = ""; }, 3000);
-                } else {
-                    statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Erro ao gravar.";
-                }
-            })
-            .catch(() => {
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Erro de conexão com o servidor.";
-            });
-        }
-
-        function carregarAtendimentosRecentes(filtroMatricula = null) {
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarAtendimentos" })
-            })
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.getElementById('tabelaAtendimentos');
-                if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
-                    tbody.innerHTML = "";
-                    
-                    const agora = new Date();
-                    const limiteSeisMeses = new Date();
-                    limiteSeisMeses.setMonth(agora.getMonth() - 6);
-
-                    let listaFiltrada = data.lista.filter(at => {
-                        const dataAt = at.carimbo ? new Date(at.carimbo) : (at.dataAcao ? new Date(at.dataAcao) : null);
-                        if (!dataAt) return true;
-                        return dataAt >= limiteSeisMeses;
-                    });
-
-                    if (filtroMatricula) {
-                        listaFiltrada = listaFiltrada.filter(at => String(at.matricula).trim() === String(filtroMatricula).trim());
-                    }
-
-                    if (listaFiltrada.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Nenhum atendimento registado para este filtro.</td></tr>`;
-                        return;
-                    }
-
-                    const listaInvertida = listaFiltrada.reverse();
-                    listaInvertida.forEach(at => {
-                        const dataFmt = at.carimbo ? new Date(at.carimbo).toLocaleString('pt-BR') : (at.dataAcao || '---');
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${dataFmt}</td>
-                            <td><strong>${at.matricula || '---'}</strong></td>
-                            <td>${at.nomeAssistido || '---'}</td>
-                            <td>${at.sexo || '---'}</td>
-                            <td style="text-align: center;">${String(at.banho).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                            <td style="text-align: center;">${String(at.janta).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                            <td style="text-align: center;">${String(at.curativos).toUpperCase() === 'SIM' ? '<span style="color:green; font-weight:650;">SIM</span>' : '<span style="color:#94a3b8;">NÃO</span>'}</td>
-                            <td>${at.operador || 'Sistema'}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Nenhum atendimento registado.</td></tr>`;
-                }
-            })
-            .catch(() => {
-                document.getElementById('tabelaAtendimentos').innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar atendimentos.</td></tr>`;
-            });
-        }
-    </script>
-</body>
-</html>
-<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
+                    statusDiv.
