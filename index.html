@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: index.html. Versão do Módulo: v.3.0.000                              -->
-<!-- Data de atualização: 24/10/2026 - 07:55                                        -->
-<!-- Descrição: Página inicial do Projeto Banho Solidário com menu lateral atualizado -->
-<!--            para Inscrição (1.1) e Meu Perfil de Voluntário (1.2).              -->
+<!-- Programa: index.html. Versão do Módulo: v.3.1.000                              -->
+<!-- Data de atualização: 24/10/2026 - 08:01                                        -->
+<!-- Descrição: Página inicial completa do Projeto Banho Solidário com todas as      -->
+<!--            seções preservadas e menu lateral de voluntários atualizado.        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -53,6 +53,14 @@
         .section-box { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); margin-bottom: 30px; }
         .section-box h3 { color: var(--secondary-color); margin-bottom: 15px; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
         .section-box p { line-height: 1.6; color: var(--text-color); margin-bottom: 15px; }
+
+        .grid-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .feature-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; text-align: center; }
+        .feature-card i { font-size: 2rem; color: var(--secondary-color); margin-bottom: 10px; }
+        .feature-card h4 { color: var(--dark-color); margin-bottom: 8px; font-size: 1.1rem; }
+        .feature-card p { font-size: 0.9rem; color: #64748b; }
+
+        footer { text-align: center; padding: 30px; color: #64748b; font-size: 0.9rem; border-top: 1px solid #e2e8f0; margin-top: 50px; background: white; }
     </style>
 </head>
 <body>
@@ -118,8 +126,36 @@
         <div class="section-box">
             <h3><i class="fa-solid fa-heart"></i> Nossa Missão</h3>
             <p>O Projeto Banho Solidário nasceu da sensibilidade diante da vulnerabilidade da população em situação de rua. Oferecemos banho quente, vestimenta limpa, escuta ativa, alimentação de qualidade e encaminhamento social.</p>
+            <p>Acreditamos que a verdadeira transformação social começa com a corresponsabilidade entre sociedade civil, poder público e voluntariado.</p>
+        </div>
+
+        <div class="section-box">
+            <h3><i class="fa-solid fa-calendar-days"></i> Como Tudo Começou (Início: 2024)</h3>
+            <p>O projeto foi estruturado com dedicação através de etapas fundamentais de planejamento e mobilização comunitária em Unaí.</p>
+            
+            <div class="grid-features">
+                <div class="feature-card">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <h4>Pesquisas e Visitas</h4>
+                    <p>Análise de iniciativas semelhantes em outras cidades para adaptação local.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fa-solid fa-hands-holding-child"></i>
+                    <h4>Sensibilização</h4>
+                    <p>Envolvimento da sociedade civil, empresários e autoridades locais.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fa-solid fa-diagram-project"></i>
+                    <h4>Elaboração do Projeto</h4>
+                    <p>Desenho técnico e estruturação operacional do ônibus adaptado.</p>
+                </div>
+            </div>
         </div>
     </div>
+
+<footer>
+    <p>© Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC &bull; Projeto Banho Solidário, Unaí-MG</p>
+</footer>
 
 </body>
 </html>
