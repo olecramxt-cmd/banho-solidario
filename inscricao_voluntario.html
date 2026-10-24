@@ -1,1 +1,215 @@
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
+<!-- Programa: inscricao_voluntario.html. Versão do Módulo: v.1.0.000                 -->
+<!-- Data de atualização: 24/10/2026 - 07:11                                        -->
+<!-- Descrição: Módulo de inscrição pública de voluntários (sem exigência de login),  -->
+<!--            com seleção de cargos pleiteados e gravação integrada na nuvem.     -->
+<!-- ============================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMAS iPeC - Inscrição de Voluntários / Banho Solidário</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #7c3aed;
+            --accent-color: #e0f2fe;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --text-color: #4b5563;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--light-color); color: var(--text-color); padding: 1rem; width: 100%; overflow-x: hidden; }
+        
+        .navbar-top { position: fixed; top: 0; left: 0; width: 100%; background-color: #0f172a; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 998; }
+        .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .menu-toggle:hover { background: white; color: var(--secondary-color); }
+        
+        .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
+        .side-menu.active { right: 0; }
+        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .side-menu-header h3 { color: var(--secondary-color); font-size: 1.2rem; margin: 0; }
+        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        .side-menu-links { display: flex; flex-direction: column; gap: 0.8rem; }
+        .menu-link-item { background: var(--light-color); color: var(--secondary-color); padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--secondary-color); transition: all 0.3s; font-size: 0.95rem; }
+        .menu-link-item:hover { background: var(--accent-color); transform: translateX(5px); }
+        .side-menu-sublinks { padding-left: 18px; display: flex; flex-direction: column; gap: 0.4rem; }
+        .menu-sublink-item { font-size: 0.88rem; color: var(--text-color); padding: 7px 10px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; border-left: 3px solid transparent; }
+        .menu-sublink-item:hover { background: var(--accent-color); color: var(--secondary-color); border-left-color: var(--secondary-color); }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
+        .menu-overlay.active { display: block; }
 
+        .container { max-width: 900px; width: 100%; margin: 70px auto 30px auto; background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        h2 { color: var(--secondary-color); font-size: 1.5rem; display: flex; align-items: center; gap: 10px; margin-bottom: 5px; text-align: center; justify-content: center; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 25px; font-size: 0.95rem; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media(min-width: 768px) {
+            .form-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .form-group.full-width { grid-column: span 2; }
+        }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background-color: #fff; color: var(--text-color); }
+        .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
+
+        .cargos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 5px; }
+        .cargos-grid label { font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        .btn-enviar { background: var(--secondary-color); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; width: 100%; margin-top: 20px; }
+        .btn-enviar:hover { background: #6d28d9; }
+        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+
+    <script src="config.js"></script>
+    <script>
+        const API_URL = CONFIG.API_URL;
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+
+    <div class="navbar-top">
+        <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+        <span style="font-weight: bold; font-size: 16px;">SISTEMAS iPeC - Inscrição de Voluntários</span>
+    </div>
+
+    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h3>Menu do Sistema</h3>
+            <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-menu-links">
+            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;"><i class="fa-solid fa-house"></i> Início (Página Inicial)</a>
+            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">1. Voluntários</div>
+            <div class="side-menu-sublinks">
+                <a href="inscricao_voluntario.html" class="menu-sublink-item" style="background: var(--accent-color); color: var(--secondary-color); font-weight: 600;"><i class="fa-solid fa-user-plus"></i> 1.1- Inscrição</a>
+                <a href="perfil_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-id-card"></i> 1.2- Meu Perfil</a>
+            </div>
+            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">2. Assistidos</div>
+            <div class="side-menu-sublinks">
+                <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-users"></i> 2.3- Galeria da Dignidade</a>
+            </div>
+            <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;"><i class="fa-solid fa-book-open"></i> 5. Sobre</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2><i class="fa-solid fa-hands-holding-child"></i> Seja um Voluntário do Banho Solidário</h2>
+        <p class="subtitle">Preencha o formulário abaixo para se inscrever e fazer parte da nossa corrente do bem em Unaí-MG.</p>
+
+        <form id="formInscricaoVoluntario" onsubmit="enviarInscricaoVoluntario(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="volNome" class="form-control" required placeholder="Seu nome completo">
+                </div>
+                <div class="form-group">
+                    <label>Nome Social (se houver)</label>
+                    <input type="text" id="volNomeSocial" class="form-control" placeholder="Como prefere ser chamado">
+                </div>
+                <div class="form-group">
+                    <label>CPF *</label>
+                    <input type="text" id="volCpf" class="form-control" required placeholder="000.000.000-00">
+                </div>
+                <div class="form-group">
+                    <label>Telefone / WhatsApp *</label>
+                    <input type="text" id="volTelefone" class="form-control" required placeholder="(38) 99999-9999">
+                </div>
+                <div class="form-group">
+                    <label>E-mail de Contato</label>
+                    <input type="email" id="volEmail" class="form-control" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Data de Nascimento</label>
+                    <input type="date" id="volNascimento" class="form-control">
+                </div>
+                <div class="form-group full-width">
+                    <label>Endereço Residencial e Bairro *</label>
+                    <input type="text" id="volEndereco" class="form-control" required placeholder="Rua, Número, Bairro - Unaí/MG">
+                </div>
+                <div class="form-group full-width">
+                    <label>Cargos / Funções Pretendidas no Projeto (Selecione um ou mais) *</label>
+                    <div class="cargos-grid">
+                        <label><input type="checkbox" name="cargoVol" value="Higiene e Banho"> Higiene e Banho</label>
+                        <label><input type="checkbox" name="cargoVol" value="Alimentação / Janta"> Alimentação / Janta</label>
+                        <label><input type="checkbox" name="cargoVol" value="Curativos e Saúde"> Curativos e Saúde</label>
+                        <label><input type="checkbox" name="cargoVol" value="Corte de Cabelo"> Corte de Cabelo</label>
+                        <label><input type="checkbox" name="cargoVol" value="Recepção e Triagem"> Recepção e Triagem</label>
+                        <label><input type="checkbox" name="cargoVol" value="Logística e Apoio Geral"> Logística e Apoio Geral</label>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label>Disponibilidade de Dias e Horários</label>
+                    <input type="text" id="volDisponibilidade" class="form-control" placeholder="Ex: Sábados à tarde, Quinzenal, etc.">
+                </div>
+                <div class="form-group full-width">
+                    <button type="submit" class="btn-enviar"><i class="fa-solid fa-paper-plane"></i> Enviar Inscrição de Voluntário</button>
+                </div>
+            </div>
+        </form>
+        <div id="mensagemStatus"></div>
+    </div>
+
+    <script>
+        function enviarInscricaoVoluntario(e) {
+            e.preventDefault();
+            const cargosSelecionados = Array.from(document.querySelectorAll('input[name="cargoVol"]:checked')).map(cb => cb.value);
+            if (cargosSelecionados.length === 0) {
+                alert("Por favor, selecione ao menos um cargo pretendido.");
+                return;
+            }
+
+            const payload = {
+                action: "inserirVoluntario",
+                nome: document.getElementById('volNome').value.trim(),
+                nomeSocial: document.getElementById('volNomeSocial').value.trim(),
+                cpf: document.getElementById('volCpf').value.trim(),
+                telefone: document.getElementById('volTelefone').value.trim(),
+                email: document.getElementById('volEmail').value.trim(),
+                nascimento: document.getElementById('volNascimento').value,
+                endereco: document.getElementById('volEndereco').value.trim(),
+                cargos: cargosSelecionados.join(', '),
+                disponibilidade: document.getElementById('volDisponibilidade').value.trim()
+            };
+
+            const statusDiv = document.getElementById('mensagemStatus');
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "A enviar inscrição para a nuvem...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "sucesso") {
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = "Inscrição realizada com sucesso! Muito obrigado por se voluntariar.";
+                    document.getElementById('formInscricaoVoluntario').reset();
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Erro ao realizar inscrição.";
+                }
+            })
+            .catch(() => {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão com o servidor.";
+            });
+        }
+    </script>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
