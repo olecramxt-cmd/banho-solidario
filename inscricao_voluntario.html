@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: inscricao_voluntario.html. Versão: v.2.2.0                           -->
-<!-- Data de atualização: 25/10/2026 - 15:54                                        -->
+<!-- Programa: inscricao_voluntario.html. Versão: v.2.4.0                           -->
+<!-- Data de atualização: 25/10/2026 - 16:11                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -62,10 +62,6 @@
 
         .btn-enviar { background: var(--secondary-color); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; width: 100%; margin-top: 20px; }
         .btn-enviar:hover { background: #6d28d9; }
-        
-        .whatsapp-box { display: none; margin-top: 20px; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; text-align: center; }
-        .btn-whatsapp { background: #25d366; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; }
-        .btn-whatsapp:hover { background: #22c55e; }
 
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
     </style>
@@ -78,6 +74,30 @@
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function mascaraCPF(input) {
+            let v = input.value.replace(/\D/g, "");
+            if (v.length > 11) v = v.substring(0, 11);
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d)/, "$1.$2");
+            v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            input.value = v;
+        }
+
+        function mascaraTelefone(input) {
+            let v = input.value.replace(/\D/g, "");
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 10) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
+            } else if (v.length > 5) {
+                v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+            } else {
+                v = v.replace(/^(\d*)/, "($1");
+            }
+            input.value = v;
         }
 
         function validarCPF(cpf) {
@@ -157,11 +177,11 @@
                 </div>
                 <div class="form-group">
                     <label>CPF *</label>
-                    <input type="text" id="volCpf" class="form-control" required placeholder="000.000.000-00">
+                    <input type="text" id="volCpf" class="form-control" required placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)">
                 </div>
                 <div class="form-group">
                     <label>Telefone / WhatsApp *</label>
-                    <input type="text" id="volTelefone" class="form-control" required placeholder="(38) 99999-9999">
+                    <input type="text" id="volTelefone" class="form-control" required placeholder="(38) 99999-9999" maxlength="15" oninput="mascaraTelefone(this)">
                 </div>
                 <div class="form-group">
                     <label>E-mail de Contato</label>
@@ -197,20 +217,12 @@
         </form>
 
         <div id="mensagemStatus"></div>
-
-        <!-- AVISO E BOTÃO PARA NOTIFICAR VIA WHATSAPP O PBS -->
-        <div id="whatsappBox" class="whatsapp-box">
-            <p style="color: #166534; font-weight: 600; margin-bottom: 5px;"><i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Inscrição Registrada com Sucesso!</p>
-            <p style="font-size: 0.9rem; color: #15803d;">Clique abaixo para notificar a coordenação do Projeto Banho Solidário via WhatsApp:</p>
-            <a id="btnZapLink" href="#" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Enviar Aviso de Inscrição no WhatsApp</a>
-        </div>
     </div>
 
     <script>
         function enviarInscricaoVoluntario(e) {
             e.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
-            document.getElementById('whatsappBox').style.display = 'none';
             
             const cpfDigitado = document.getElementById('volCpf').value;
             if (!validarCPF(cpfDigitado)) {
@@ -219,15 +231,12 @@
                 return;
             }
 
-            const nomeVol = document.getElementById('volNome').value.trim();
-            const telefoneVol = document.getElementById('volTelefone').value.trim();
-
             const payload = {
                 action: "inserirVoluntario",
-                nome: nomeVol,
+                nome: document.getElementById('volNome').value.trim(),
                 nomeSocial: document.getElementById('volNomeSocial').value.trim(),
                 cpf: cpfDigitado.trim(),
-                telefone: telefoneVol,
+                telefone: document.getElementById('volTelefone').value.trim(),
                 email: document.getElementById('volEmail').value.trim(),
                 nascimento: document.getElementById('volNascimento').value,
                 endereco: document.getElementById('volEndereco').value.trim(),
@@ -252,15 +261,8 @@
             .then(data => {
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
-                    statusDiv.innerText = "Inscrição realizada com sucesso! Muito obrigado por se voluntariar.";
+                    statusDiv.innerText = "Inscrição realizada com sucesso! Um aviso por e-mail foi enviado à coordenação do projeto.";
                     document.getElementById('formInscricaoVoluntario').reset();
-
-                    // Configurar link do WhatsApp institucional (Número de Unaí-MG / PBS)
-                    const mensagemZap = encodeURIComponent(`Olá! Acabei de realizar minha inscrição como voluntário(a) no Projeto Banho Solidário (SISTEMAS iPeC).\n\n*Nome:* ${nomeVol}\n*Telefone:* ${telefoneVol}`);
-                    // Substitua abaixo pelo número oficial do WhatsApp do PBS se necessário
-                    const numeroPBS = "5538999999999"; 
-                    document.getElementById('btnZapLink').href = `https://wa.me/${numeroPBS}?text=${mensagemZap}`;
-                    document.getElementById('whatsappBox').style.display = 'block';
                 } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao realizar inscrição.";
