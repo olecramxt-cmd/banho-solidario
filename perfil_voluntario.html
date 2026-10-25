@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.2.0.0                              -->
-<!-- Data de atualização: 25/10/2026 - 05:50                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.0.0                              -->
+<!-- Data de atualização: 25/10/2026 - 15:54                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -60,16 +60,29 @@
         .cargos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 5px; }
         .cargos-grid label { font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 
-        .btn-atualizar { background: var(--secondary-color); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; width: 100%; margin-top: 20px; }
+        .btn-action-group { display: flex; gap: 15px; margin-top: 20px; }
+        .btn-atualizar { background: var(--secondary-color); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; flex: 1; }
         .btn-atualizar:hover { background: #6d28d9; }
+        
+        .btn-imprimir-termo { background: #0ea5e9; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; text-decoration: none; flex: 1; }
+        .btn-imprimir-termo:hover { background: #0284c7; }
+
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
+
+        /* ESTILOS DE IMPRESSÃO DO TERMO LEGAL (OCULTO NA TELA NORMAL) */
+        #termoImpressaoContainer { display: none; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #termoImpressaoContainer, #termoImpressaoContainer * { visibility: visible; }
+            #termoImpressaoContainer { display: block !important; position: absolute; top: 0; left: 0; width: 100%; padding: 20px; background: white; }
+        }
     </style>
 </head>
 <body onload="inicializarPerfilVoluntario()">
 
     <script src="config.js"></script>
     <script>
-        // Validação estrita de Login / Sessão Ativa
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         let usuarioAtivo = {};
         try {
@@ -95,7 +108,6 @@
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
-    <!-- MENU LATERAL PADRONIZADO (ITENS 1 A 5) -->
     <nav class="side-menu" id="sideMenu">
         <div class="side-menu-header">
             <h3>Menu do Sistema</h3>
@@ -134,7 +146,7 @@
 
     <div class="container">
         <h2><i class="fa-solid fa-id-card-clip"></i> Gestão do Meu Perfil de Voluntário</h2>
-        <p class="subtitle">Área restrita e exclusiva para consulta e atualização dos seus dados cadastrais e funções.</p>
+        <p class="subtitle">Seus dados carregados automaticamente. Atualize suas informações ou imprima seu Termo Legal abaixo.</p>
 
         <form id="formPerfilVoluntario" onsubmit="atualizarPerfilVoluntario(event)">
             <div class="form-grid">
@@ -182,20 +194,76 @@
                     <input type="text" id="volDisponibilidade" class="form-control">
                 </div>
                 <div class="form-group full-width">
-                    <button type="submit" class="btn-atualizar"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações do Meu Perfil</button>
+                    <div class="btn-action-group">
+                        <button type="submit" class="btn-atualizar"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
+                        <button type="button" class="btn-imprimir-termo" onclick="imprimirTermoLegal()"><i class="fa-solid fa-print"></i> Imprimir Termo de Adesão</button>
+                    </div>
                 </div>
             </div>
         </form>
         <div id="mensagemStatus"></div>
     </div>
 
+    <!-- DOCUMENTO OFICIAL PARA IMPRESSÃO COM LOGO E MARCA D'ÁGUA -->
+    <div id="termoImpressaoContainer" style="font-family: 'Poppins', sans-serif; color: #1f2937; line-height: 1.6; position: relative; max-width: 800px; margin: 0 auto; background: white; padding: 30px;">
+        <!-- MARCA D'ÁGUA AO CENTRO -->
+        <img src="Logo1 sem fundo.jpg" alt="Marca d'Água" style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 420px; opacity: 0.05; pointer-events: none; z-index: 0;">
+
+        <div style="position: relative; z-index: 1;">
+            <div style="text-align: center; border-bottom: 2px solid #7c3aed; padding-bottom: 15px; margin-bottom: 20px;">
+                <img src="Logo2_2.png" alt="Logo Projeto Banho Solidário" style="max-height: 75px; margin-bottom: 8px;">
+                <h2 style="color: #7c3aed; font-size: 1.3rem; margin: 0; text-transform: uppercase;">Projeto Banho Solidário</h2>
+                <p style="font-size: 0.85rem; color: #0ea5e9; font-weight: 600; margin-top: 3px;">"Cada gota, um ato de amor!"</p>
+            </div>
+
+            <h3 style="text-align: center; font-size: 1.1rem; color: #0f172a; margin: 15px 0; text-transform: uppercase;">Termo de Adesão ao Serviço Voluntário</h3>
+            <p style="font-size: 0.8rem; text-align: center; color: #64748b; margin-bottom: 15px;">(Em conformidade com a Lei Federal nº 9.608/1998 e os arts. 5º, inciso XXVIII, e 20 da Lei nº 10.406/2002 - Código Civil)</p>
+
+            <p style="text-align: justify; font-size: 0.9rem; margin-bottom: 15px;">Por este instrumento particular, o(a) voluntário(a) qualificado(a) neste ato e a coordenação do <strong>Projeto Banho Solidário</strong>, desenvolvido no município de Unaí-Minas Gerais, celebram o presente Termo de Adesão ao Serviço Voluntário, regido pelas cláusulas e condições seguintes:</p>
+
+            <div style="background: #f8fafc; border-left: 4px solid #7c3aed; padding: 12px; margin: 15px 0; font-size: 0.88rem;">
+                <p style="margin: 4px 0;"><strong>Nome Completo:</strong> <span id="printNome">---</span></p>
+                <p style="margin: 4px 0;"><strong>Nome Social:</strong> <span id="printNomeSocial">---</span></p>
+                <p style="margin: 4px 0;"><strong>CPF:</strong> <span id="printCpf">---</span> | <strong>Data de Nascimento:</strong> <span id="printNascimento">---</span></p>
+                <p style="margin: 4px 0;"><strong>Telefone / WhatsApp:</strong> <span id="printTelefone">---</span> | <strong>E-mail:</strong> <span id="printEmail">---</span></p>
+                <p style="margin: 4px 0;"><strong>Endereço Residencial:</strong> <span id="printEndereco">---</span></p>
+                <p style="margin: 4px 0;"><strong>Cargos / Funções Pretendidas:</strong> <span id="printCargos">---</span></p>
+                <p style="margin: 4px 0;"><strong>Disponibilidade:</strong> <span id="printDisponibilidade">---</span></p>
+            </div>
+
+            <div style="font-size: 0.86rem; margin-top: 10px;">
+                <h4 style="color: #7c3aed; margin-top: 10px; margin-bottom: 3px; font-size: 0.9rem;">1.- CLÁUSULA PRIMEIRA - DA NATUREZA DO SERVIÇO</h4>
+                <p style="text-align: justify; margin-bottom: 8px;">O serviço voluntário é atividade não remunerada, sem vínculo empregatício, funcional ou encargo trabalhista, previdenciário ou afim, conforme disposto na Lei Federal nº 9.608, de 18 de fevereiro de 1998.</p>
+
+                <h4 style="color: #7c3aed; margin-top: 10px; margin-bottom: 3px; font-size: 0.9rem;">2.- CLÁUSULA SEGUNDA - DOS OBJETIVOS</h4>
+                <p style="text-align: justify; margin-bottom: 8px;">O(A) voluntário(a) atuará nas ações humanitárias promovidas pelo Projeto Banho Solidário em Unaí-MG, colaborando nas áreas de higiene, acolhimento, saúde, alimentação e suporte logístico conforme sua disponibilidade e escolha.</p>
+
+                <h4 style="color: #7c3aed; margin-top: 10px; margin-bottom: 3px; font-size: 0.9rem;">3.- CLÁUSULA TERCEIRA - DA ÉTICA E CONDUTA</h4>
+                <p style="text-align: justify; margin-bottom: 8px;">O(A) voluntário(a) compromete-se a zelar pelo sigilo das informações dos assistidos, primando pelo respeito, empatia, ética e respeito aos direitos humanos durante a prestação das atividades.</p>
+
+                <h4 style="color: #7c3aed; margin-top: 10px; margin-bottom: 3px; font-size: 0.9rem;">4.- CLÁUSULA QUARTA - DA CESSÃO DE DIREITOS DE IMAGEM E VOZ</h4>
+                <p style="text-align: justify; margin-bottom: 8px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias. A presente cessão abrange a veiculação em quaisquer meios de comunicação físicos, digitais, televisivos, radiofônicos, mídias sociais oficiais, sítios eletrônicos e materiais institucionais, sem limitação de tempo ou território, resguardando sempre a moralidade e a dignidade institucional.</p>
+            </div>
+
+            <p style="margin-top: 25px; text-align: center; font-size: 0.9rem;">Unaí - MG, <span id="dataAtualExtenso">25 de outubro de 2026</span>.</p>
+
+            <div style="margin-top: 45px; display: flex; justify-content: space-between; text-align: center; font-size: 0.88rem;">
+                <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 6px;">
+                    Assinatura do(a) Voluntário(a)
+                </div>
+                <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 6px;">
+                    Coordenação - Projeto Banho Solidário
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function inicializarPerfilVoluntario() {
             const identificador = usuarioAtivo.username || usuarioAtivo.email || usuarioAtivo.cpf || usuarioAtivo.usuario || "";
             if (!identificador) {
-                // Caso não encontre identificador direto, tenta pelo CPF armazenado ou redireciona
                 document.getElementById('mensagemStatus').style.color = "red";
-                document.getElementById('mensagemStatus').innerText = "Identificação de login não encontrada. Por favor, faça login novamente.";
+                document.getElementById('mensagemStatus').innerText = "Identificação de login não encontrada. Faça login novamente.";
                 return;
             }
 
@@ -228,15 +296,37 @@
                     if (reg.corteCabelo) document.getElementById('cargoCabelo').checked = true;
                     if (reg.recepcaoTriagem) document.getElementById('cargoRecepcao').checked = true;
                     if (reg.logisticaApoio) document.getElementById('cargoLogistica').checked = true;
+
+                    atualizarCamposImpressao(reg);
                 } else {
                     statusDiv.style.color = "orange";
-                    statusDiv.innerText = "Nenhum cadastro de voluntário localizado para este usuário. Preencha os campos para salvar.";
+                    statusDiv.innerText = "Nenhum cadastro de voluntário localizado. Preencha os campos para salvar.";
                 }
             })
             .catch(() => {
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro ao carregar dados do perfil.";
             });
+        }
+
+        function atualizarCamposImpressao(reg) {
+            document.getElementById('printNome').innerText = reg.nome || "---";
+            document.getElementById('printNomeSocial').innerText = reg.nomeSocial || "Nenhum";
+            document.getElementById('printCpf').innerText = reg.cpf || "---";
+            document.getElementById('printNascimento').innerText = reg.nascimento || "---";
+            document.getElementById('printTelefone').innerText = reg.telefone || "---";
+            document.getElementById('printEmail').innerText = reg.email || "---";
+            document.getElementById('printEndereco').innerText = reg.endereco || "---";
+            document.getElementById('printDisponibilidade').innerText = reg.disponibilidade || "---";
+
+            let cargosArr = [];
+            if (reg.higieneBanho) cargosArr.push("Higiene e Banho");
+            if (reg.alimentacaoJanta) cargosArr.push("Alimentação / Janta");
+            if (reg.curativosSaude) cargosArr.push("Curativos e Saúde");
+            if (reg.corteCabelo) cargosArr.push("Corte de Cabelo");
+            if (reg.recepcaoTriagem) cargosArr.push("Recepção e Triagem");
+            if (reg.logisticaApoio) cargosArr.push("Logística e Apoio Geral");
+            document.getElementById('printCargos').innerText = cargosArr.length > 0 ? cargosArr.join(", ") : "Nenhum cargo selecionado";
         }
 
         function atualizarPerfilVoluntario(e) {
@@ -274,6 +364,7 @@
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
                     statusDiv.innerText = "Perfil atualizado com sucesso!";
+                    atualizarCamposImpressao(payload);
                     setTimeout(() => { statusDiv.innerText = ""; }, 3000);
                 } else {
                     statusDiv.style.color = "red";
@@ -284,6 +375,10 @@
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão com o servidor.";
             });
+        }
+
+        function imprimirTermoLegal() {
+            window.print();
         }
     </script>
 </body>
