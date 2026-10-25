@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: inscricao_voluntario.html. Versão: v.2.1.0                           -->
-<!-- Data de atualização: 25/10/2026 - 06:18                                        -->
+<!-- Programa: inscricao_voluntario.html. Versão: v.2.2.0                           -->
+<!-- Data de atualização: 25/10/2026 - 15:54                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -62,6 +62,11 @@
 
         .btn-enviar { background: var(--secondary-color); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; width: 100%; margin-top: 20px; }
         .btn-enviar:hover { background: #6d28d9; }
+        
+        .whatsapp-box { display: none; margin-top: 20px; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; text-align: center; }
+        .btn-whatsapp { background: #25d366; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; }
+        .btn-whatsapp:hover { background: #22c55e; }
+
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
     </style>
 </head>
@@ -75,7 +80,6 @@
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        // Função de Validação Matemática de CPF
         function validarCPF(cpf) {
             cpf = cpf.replace(/[^\d]+/g, '');
             if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
@@ -101,7 +105,6 @@
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
-    <!-- MENU LATERAL PADRONIZADO (ITENS 1 A 5) -->
     <nav class="side-menu" id="sideMenu">
         <div class="side-menu-header">
             <h3>Menu do Sistema</h3>
@@ -192,13 +195,22 @@
                 </div>
             </div>
         </form>
+
         <div id="mensagemStatus"></div>
+
+        <!-- AVISO E BOTÃO PARA NOTIFICAR VIA WHATSAPP O PBS -->
+        <div id="whatsappBox" class="whatsapp-box">
+            <p style="color: #166534; font-weight: 600; margin-bottom: 5px;"><i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> Inscrição Registrada com Sucesso!</p>
+            <p style="font-size: 0.9rem; color: #15803d;">Clique abaixo para notificar a coordenação do Projeto Banho Solidário via WhatsApp:</p>
+            <a id="btnZapLink" href="#" target="_blank" class="btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Enviar Aviso de Inscrição no WhatsApp</a>
+        </div>
     </div>
 
     <script>
         function enviarInscricaoVoluntario(e) {
             e.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
+            document.getElementById('whatsappBox').style.display = 'none';
             
             const cpfDigitado = document.getElementById('volCpf').value;
             if (!validarCPF(cpfDigitado)) {
@@ -207,12 +219,15 @@
                 return;
             }
 
+            const nomeVol = document.getElementById('volNome').value.trim();
+            const telefoneVol = document.getElementById('volTelefone').value.trim();
+
             const payload = {
                 action: "inserirVoluntario",
-                nome: document.getElementById('volNome').value.trim(),
+                nome: nomeVol,
                 nomeSocial: document.getElementById('volNomeSocial').value.trim(),
                 cpf: cpfDigitado.trim(),
-                telefone: document.getElementById('volTelefone').value.trim(),
+                telefone: telefoneVol,
                 email: document.getElementById('volEmail').value.trim(),
                 nascimento: document.getElementById('volNascimento').value,
                 endereco: document.getElementById('volEndereco').value.trim(),
@@ -239,6 +254,13 @@
                     statusDiv.style.color = "green";
                     statusDiv.innerText = "Inscrição realizada com sucesso! Muito obrigado por se voluntariar.";
                     document.getElementById('formInscricaoVoluntario').reset();
+
+                    // Configurar link do WhatsApp institucional (Número de Unaí-MG / PBS)
+                    const mensagemZap = encodeURIComponent(`Olá! Acabei de realizar minha inscrição como voluntário(a) no Projeto Banho Solidário (SISTEMAS iPeC).\n\n*Nome:* ${nomeVol}\n*Telefone:* ${telefoneVol}`);
+                    // Substitua abaixo pelo número oficial do WhatsApp do PBS se necessário
+                    const numeroPBS = "5538999999999"; 
+                    document.getElementById('btnZapLink').href = `https://wa.me/${numeroPBS}?text=${mensagemZap}`;
+                    document.getElementById('whatsappBox').style.display = 'block';
                 } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao realizar inscrição.";
