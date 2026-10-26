@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.2.0                              -->
-<!-- Data de atualização: 25/10/2026 - 16:47                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.3.0                              -->
+<!-- Data de atualização: 26/10/2026 - 05:48                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -13,7 +13,6 @@
     <title>SISTEMAS iPeC - Meu Perfil de Voluntário / Banho Solidário</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Biblioteca html2pdf para exportação profissional em PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
@@ -71,8 +70,8 @@
 
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
 
-        /* ESTILOS DE IMPRESSÃO DO TERMO LEGAL (OCULTO NA TELA NORMAL, FORMATADO PARA PDF) */
-        #termoImpressaoContainer { display: none; }
+        /* ESTILOS DO TERMO LEGAL AJUSTADOS PARA NÃO CORTAR NAS BORDAS DO PDF */
+        #termoImpressaoContainer { display: none; width: 720px; margin: 0 auto; background: white; padding: 15px; box-sizing: border-box; position: relative; }
     </style>
 </head>
 <body onload="inicializarPerfilVoluntario()">
@@ -147,7 +146,7 @@
         <form id="formPerfilVoluntario" onsubmit="atualizarPerfilVoluntario(event)">
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Nome Completo</label>
+                    <label>Nome Completo *</label>
                     <input type="text" id="volNome" class="form-control" required>
                 </div>
                 <div class="form-group">
@@ -167,15 +166,15 @@
                     <input type="email" id="volEmail" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label>Data de Nascimento</label>
-                    <input type="date" id="volNascimento" class="form-control">
+                    <label>Data de Nascimento *</label>
+                    <input type="date" id="volNascimento" class="form-control" required>
                 </div>
                 <div class="form-group full-width">
                     <label>Endereço Residencial e Bairro *</label>
                     <input type="text" id="volEndereco" class="form-control" required>
                 </div>
                 <div class="form-group full-width">
-                    <label>Cargos / Funções Pretendidas no Projeto</label>
+                    <label>Cargos / Funções Pretendidas no Projeto * (Selecione ao menos um)</label>
                     <div class="cargos-grid">
                         <label><input type="checkbox" id="cargoBanho" value="Higiene e Banho"> Higiene e Banho</label>
                         <label><input type="checkbox" id="cargoJanta" value="Alimentação / Janta"> Alimentação / Janta</label>
@@ -200,57 +199,52 @@
         <div id="mensagemStatus"></div>
     </div>
 
-    <!-- DOCUMENTO FORMATADO PARA GERAR O PDF EM FORMATO EXATO (PBS-<nome>.pdf) -->
-    <div id="termoImpressaoContainer" style="font-family: 'Poppins', sans-serif; color: #1f2937; line-height: 1.45; background: white; padding: 25px; width: 794px; box-sizing: border-box; position: relative;">
-        <!-- MARCA D'ÁGUA CENTRALIZADA -->
-        <img src="Logo1 sem fundo.jpg" alt="Marca d'Água" style="position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 380px; opacity: 0.04; pointer-events: none; z-index: 0;">
+    <!-- DOCUMENTO FORMATADO PARA GERAR O PDF (SEM CORTES LATERAIS) -->
+    <div id="termoImpressaoContainer" style="font-family: 'Poppins', sans-serif; color: #1f2937; line-height: 1.4; background: white; padding: 10px;">
+        <div style="text-align: center; border-bottom: 2px solid #7c3aed; padding-bottom: 8px; margin-bottom: 10px;">
+            <img src="Logo2_2.png" alt="Logo Projeto Banho Solidário" style="max-height: 50px; margin-bottom: 3px;">
+            <h2 style="color: #7c3aed; font-size: 1.1rem; margin: 0; text-transform: uppercase;">Projeto Banho Solidário</h2>
+            <p style="font-size: 0.75rem; color: #0ea5e9; font-weight: 600; margin-top: 2px;">"Cada gota, um ato de amor!"</p>
+        </div>
 
-        <div style="position: relative; z-index: 1;">
-            <div style="text-align: center; border-bottom: 2px solid #7c3aed; padding-bottom: 10px; margin-bottom: 15px;">
-                <img src="Logo2_2.png" alt="Logo Projeto Banho Solidário" style="max-height: 60px; margin-bottom: 5px;">
-                <h2 style="color: #7c3aed; font-size: 1.2rem; margin: 0; text-transform: uppercase;">Projeto Banho Solidário</h2>
-                <p style="font-size: 0.8rem; color: #0ea5e9; font-weight: 600; margin-top: 2px;">"Cada gota, um ato de amor!"</p>
+        <h3 style="text-align: center; font-size: 0.95rem; color: #0f172a; margin: 8px 0; text-transform: uppercase;">Termo de Adesão ao Serviço Voluntário</h3>
+        <p style="font-size: 0.7rem; text-align: center; color: #64748b; margin-bottom: 10px;">(Em conformidade com a Lei Federal nº 9.608/1998 e os arts. 5º, inciso XXVIII, e 20 da Lei nº 10.406/2002 - Código Civil)</p>
+
+        <p style="text-align: justify; font-size: 0.78rem; margin-bottom: 10px;">Por este instrumento particular, o(a) voluntário(a) qualificado(a) neste ato e a coordenação do <strong>Projeto Banho Solidário</strong>, desenvolvido no município de Unaí-Minas Gerais, celebram o presente Termo de Adesão ao Serviço Voluntário, regido pelas cláusulas e condições seguintes:</p>
+
+        <div style="background: #f8fafc; border-left: 4px solid #7c3aed; padding: 8px; margin: 8px 0; font-size: 0.75rem;">
+            <p style="margin: 2px 0;"><strong>1. DADOS CADASTRAIS DO(A) VOLUNTÁRIO(A):</strong></p>
+            <p style="margin: 2px 0;"><strong>Nome Completo:</strong> <span id="printNome">---</span></p>
+            <p style="margin: 2px 0;"><strong>Nome Social:</strong> <span id="printNomeSocial">---</span></p>
+            <p style="margin: 2px 0;"><strong>CPF:</strong> <span id="printCpf">---</span> | <strong>Data de Nascimento:</strong> <span id="printNascimento">---</span></p>
+            <p style="margin: 2px 0;"><strong>Telefone / WhatsApp:</strong> <span id="printTelefone">---</span> | <strong>E-mail:</strong> <span id="printEmail">---</span></p>
+            <p style="margin: 2px 0;"><strong>Endereço Residencial:</strong> <span id="printEndereco">---</span></p>
+            <p style="margin: 2px 0;"><strong>Cargos / Funções Pretendidas:</strong> <span id="printCargos">---</span></p>
+            <p style="margin: 2px 0;"><strong>Disponibilidade:</strong> <span id="printDisponibilidade">---</span></p>
+        </div>
+
+        <div style="font-size: 0.72rem; margin-top: 6px;">
+            <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">2. CLÁUSULA PRIMEIRA - DA NATUREZA DO SERVIÇO</h4>
+            <p style="text-align: justify; margin-bottom: 4px;">O serviço voluntário é atividade não remunerada, sem vínculo empregatício, funcional ou encargo trabalhista, previdenciário ou afim, conforme disposto na Lei Federal nº 9.608, de 18 de fevereiro de 1998.</p>
+
+            <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">3. CLÁUSULA SEGUNDA - DOS OBJETIVOS</h4>
+            <p style="text-align: justify; margin-bottom: 4px;">O(A) voluntário(a) atuará nas ações humanitárias promovidas pelo Projeto Banho Solidário em Unaí-MG, colaborando nas áreas de higiene, acolhimento, saúde, alimentação e suporte logístico conforme sua disponibilidade e escolha.</p>
+
+            <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">4. CLÁUSULA TERCEIRA - DA ÉTICA E CONDUTA</h4>
+            <p style="text-align: justify; margin-bottom: 4px;">O(A) voluntário(a) compromete-se a zelar pelo sigilo das informações dos assistidos, primando pelo respeito, empatia, ética e respeito aos direitos humanos durante a prestação das atividades.</p>
+
+            <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">5. CLÁUSULA QUARTA - DA CESSÃO DE DIREITOS DE IMAGEM E VOZ</h4>
+            <p style="text-align: justify; margin-bottom: 4px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
+        </div>
+
+        <p style="margin-top: 12px; text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">26 de outubro de 2026</span>.</p>
+
+        <div style="margin-top: 25px; display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
+            <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 4px;">
+                Assinatura do(a) Voluntário(a)
             </div>
-
-            <h3 style="text-align: center; font-size: 1rem; color: #0f172a; margin: 10px 0; text-transform: uppercase;">Termo de Adesão ao Serviço Voluntário</h3>
-            <p style="font-size: 0.75rem; text-align: center; color: #64748b; margin-bottom: 12px;">(Em conformidade com a Lei Federal nº 9.608/1998 e os arts. 5º, inciso XXVIII, e 20 da Lei nº 10.406/2002 - Código Civil)</p>
-
-            <p style="text-align: justify; font-size: 0.82rem; margin-bottom: 12px;">Por este instrumento particular, o(a) voluntário(a) qualificado(a) neste ato e a coordenação do <strong>Projeto Banho Solidário</strong>, desenvolvido no município de Unaí-Minas Gerais, celebram o presente Termo de Adesão ao Serviço Voluntário, regido pelas cláusulas e condições seguintes:</p>
-
-            <div style="background: #f8fafc; border-left: 4px solid #7c3aed; padding: 10px; margin: 10px 0; font-size: 0.8rem;">
-                <p style="margin: 3px 0;"><strong>1. DADOS CADASTRAIS DO(A) VOLUNTÁRIO(A):</strong></p>
-                <p style="margin: 3px 0;"><strong>Nome Completo:</strong> <span id="printNome">---</span></p>
-                <p style="margin: 3px 0;"><strong>Nome Social:</strong> <span id="printNomeSocial">---</span></p>
-                <p style="margin: 3px 0;"><strong>CPF:</strong> <span id="printCpf">---</span> | <strong>Data de Nascimento:</strong> <span id="printNascimento">---</span></p>
-                <p style="margin: 3px 0;"><strong>Telefone / WhatsApp:</strong> <span id="printTelefone">---</span> | <strong>E-mail:</strong> <span id="printEmail">---</span></p>
-                <p style="margin: 3px 0;"><strong>Endereço Residencial:</strong> <span id="printEndereco">---</span></p>
-                <p style="margin: 3px 0;"><strong>Cargos / Funções Pretendidas:</strong> <span id="printCargos">---</span></p>
-                <p style="margin: 3px 0;"><strong>Disponibilidade:</strong> <span id="printDisponibilidade">---</span></p>
-            </div>
-
-            <div style="font-size: 0.78rem; margin-top: 8px;">
-                <h4 style="color: #7c3aed; margin-top: 8px; margin-bottom: 2px; font-size: 0.82rem;">2. CLÁUSULA PRIMEIRA - DA NATUREZA DO SERVIÇO</h4>
-                <p style="text-align: justify; margin-bottom: 6px;">O serviço voluntário é atividade não remunerada, sem vínculo empregatício, funcional ou encargo trabalhista, previdenciário ou afim, conforme disposto na Lei Federal nº 9.608, de 18 de fevereiro de 1998.</p>
-
-                <h4 style="color: #7c3aed; margin-top: 8px; margin-bottom: 2px; font-size: 0.82rem;">3. CLÁUSULA SEGUNDA - DOS OBJETIVOS</h4>
-                <p style="text-align: justify; margin-bottom: 6px;">O(A) voluntário(a) atuará nas ações humanitárias promovidas pelo Projeto Banho Solidário em Unaí-MG, colaborando nas áreas de higiene, acolhimento, saúde, alimentação e suporte logístico conforme sua disponibilidade e escolha.</p>
-
-                <h4 style="color: #7c3aed; margin-top: 8px; margin-bottom: 2px; font-size: 0.82rem;">4. CLÁUSULA TERCEIRA - DA ÉTICA E CONDUTA</h4>
-                <p style="text-align: justify; margin-bottom: 6px;">O(A) voluntário(a) compromete-se a zelar pelo sigilo das informações dos assistidos, primando pelo respeito, empatia, ética e respeito aos direitos humanos durante a prestação das atividades.</p>
-
-                <h4 style="color: #7c3aed; margin-top: 8px; margin-bottom: 2px; font-size: 0.82rem;">5. CLÁUSULA QUARTA - DA CESSÃO DE DIREITOS DE IMAGEM E VOZ</h4>
-                <p style="text-align: justify; margin-bottom: 6px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
-            </div>
-
-            <p style="margin-top: 18px; text-align: center; font-size: 0.82rem;">Unaí - MG, <span id="dataAtualExtenso">25 de outubro de 2026</span>.</p>
-
-            <div style="margin-top: 35px; display: flex; justify-content: space-between; text-align: center; font-size: 0.8rem;">
-                <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 5px;">
-                    Assinatura do(a) Voluntário(a)
-                </div>
-                <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 5px;">
-                    Coordenação - Projeto Banho Solidário
-                </div>
+            <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 4px;">
+                Coordenação - Projeto Banho Solidário
             </div>
         </div>
     </div>
@@ -333,6 +327,23 @@
 
         function atualizarPerfilVoluntario(e) {
             e.preventDefault();
+            const statusDiv = document.getElementById('mensagemStatus');
+
+            // Validação dos campos obrigatórios
+            const endereco = document.getElementById('volEndereco').value.trim();
+            const nascimento = document.getElementById('volNascimento').value;
+            const cargoBanho = document.getElementById('cargoBanho').checked;
+            const cargoJanta = document.getElementById('cargoJanta').checked;
+            const cargoCurativos = document.getElementById('cargoCurativos').checked;
+            const cargoCabelo = document.getElementById('cargoCabelo').checked;
+            const cargoRecepcao = document.getElementById('cargoRecepcao').checked;
+            const cargoLogistica = document.getElementById('cargoLogistica').checked;
+
+            if (!endereco || !nascimento || (!cargoBanho && !cargoJanta && !cargoCurativos && !cargoCabelo && !cargoRecepcao && !cargoLogistica)) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Atenção: Os campos Endereço, Data de Nascimento e ao menos um Cargo são de preenchimento obrigatório!";
+                return;
+            }
 
             const payload = {
                 action: "atualizarVoluntario",
@@ -341,18 +352,17 @@
                 cpf: document.getElementById('volCpf').value.trim(),
                 telefone: document.getElementById('volTelefone').value.trim(),
                 email: document.getElementById('volEmail').value.trim(),
-                nascimento: document.getElementById('volNascimento').value,
-                endereco: document.getElementById('volEndereco').value.trim(),
-                higieneBanho: document.getElementById('cargoBanho').checked,
-                alimentacaoJanta: document.getElementById('cargoJanta').checked,
-                curativosSaude: document.getElementById('cargoCurativos').checked,
-                corteCabelo: document.getElementById('cargoCabelo').checked,
-                recepcaoTriagem: document.getElementById('cargoRecepcao').checked,
-                logisticaApoio: document.getElementById('cargoLogistica').checked,
+                nascimento: nascimento,
+                endereco: endereco,
+                higieneBanho: cargoBanho,
+                alimentacaoJanta: cargoJanta,
+                curativosSaude: cargoCurativos,
+                corteCabelo: cargoCabelo,
+                recepcaoTriagem: cargoRecepcao,
+                logisticaApoio: cargoLogistica,
                 disponibilidade: document.getElementById('volDisponibilidade').value.trim()
             };
 
-            const statusDiv = document.getElementById('mensagemStatus');
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "Atualizando dados na nuvem...";
 
@@ -383,12 +393,11 @@
             const elemento = document.getElementById('termoImpressaoContainer');
             elemento.style.display = 'block';
 
-            // Nome formatado para arquivo seguro
             const nomeSeguro = nomeVoluntarioAtual.replace(/[^a-zA-ZÀ-ÿ0-9]/g, "_");
             const nomeArquivo = `PBS-${nomeSeguro}.pdf`;
 
             const opt = {
-                margin:       10,
+                margin:       [5, 5, 5, 5],
                 filename:     nomeArquivo,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
