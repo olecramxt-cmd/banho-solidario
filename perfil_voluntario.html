@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.4.0                              -->
-<!-- Data de atualização: 26/10/2026 - 05:51                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.5.0                              -->
+<!-- Data de atualização: 26/10/2026 - 06:01                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -236,10 +236,10 @@
             <p style="text-align: justify; margin-bottom: 4px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
         </div>
 
-        <!-- DATA DINÂMICA ATUALIZADA AUTOMATICAMENTE -->
-        <p style="margin-top: 12px; text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
+        <!-- DATA DINÂMICA COM MARGEM INFERIOR DE 35px PARA AFASTAR AS ASSINATURAS -->
+        <p style="margin-top: 15px; margin-bottom: 35px; text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
 
-        <div style="margin-top: 45px; display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
+        <div style="margin-top: 15px; display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
             <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 4px;">
                 Assinatura do(a) Voluntário(a)
             </div>
@@ -389,7 +389,6 @@
         }
 
         function gerarPdfTermoLegal() {
-            // Insere a data atual formatada por extenso automaticamente no PDF
             const hoje = new Date();
             const opcoes = { day: 'numeric', month: 'long', year: 'numeric' };
             document.getElementById('dataAtualExtenso').innerText = hoje.toLocaleDateString('pt-BR', opcoes);
