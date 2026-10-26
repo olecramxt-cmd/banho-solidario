@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.8.000                       -->
-<!-- Data de atualização: 23/10/2026 - 05:55                                        -->
-<!-- Descrição: Adicionado botão harmonioso de atalho para o Cadastro (2.1) ao      -->
-<!--            lado do campo de Sexo no formulário de atendimentos.                -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.9.000                       -->
+<!-- Data de atualização: 26/10/2026 - 07:42                                        -->
+<!-- Descrição: Correção do nome do operador ativo, inclusão da foto ao lado do     -->
+<!--            campo sexo, e expansão da movimentação recente para 12 meses.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -76,7 +76,6 @@
         .btn-salvar { background: var(--secondary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; height: 48px; width: 100%; margin-top: auto; }
         .btn-salvar:hover { background: #6d28d9; }
 
-        /* Botão harmonioso para Novo Cadastro */
         .btn-novo-cadastro { background-color: var(--secondary-color); color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: 500; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; text-decoration: none; height: 46px; white-space: nowrap; }
         .btn-novo-cadastro:hover { background-color: #6d28d9; color: white; }
 
@@ -91,6 +90,11 @@
         .assistido-selecionado-box { display: flex; align-items: center; gap: 15px; background: var(--accent-color); padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--secondary-color); }
         .avatar-mini-mov { width: 55px; height: 55px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .avatar-mini-mov img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        /* Estilo para a foto do assistido ao lado do campo Sexo */
+        .sexo-foto-container { display: flex; gap: 10px; align-items: center; width: 100%; }
+        .avatar-campo-sexo { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .avatar-campo-sexo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
         .table-responsive { width: 100%; overflow-x: auto; margin-top: 1rem; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 650px; }
@@ -111,7 +115,7 @@
             operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
         } catch (e) { operadorAtivo = {}; }
 
-        if (!autorizado || (!operadorAtivo.nome && !operadorAtivo.username)) {
+        if (!autorizado || (!operadorAtivo.nome && !operadorAtivo.name && !operadorAtivo.username)) {
             sessionStorage.setItem('pbs_destino', 'atendimentos.html');
             window.location.href = 'login.html';
         }
@@ -198,17 +202,20 @@
                     <input type="text" id="matriculaAssistido" class="form-control" placeholder="Automático..." readonly required>
                 </div>
                 
-                <!-- CAMPO SEXO COM BOTÃO DE NOVO CADASTRO AO LADO DE FORMA HARMONIOSA -->
+                <!-- CAMPO SEXO COM FOTO DO ASSISTIDO E BOTÃO NOVO AO LADO -->
                 <div class="form-group">
                     <label>Sexo</label>
-                    <div style="display: flex; gap: 8px; align-items: center;">
+                    <div class="sexo-foto-container">
+                        <div id="avatarSexoContainer" class="avatar-campo-sexo" title="Foto do Assistido">
+                            <i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>
+                        </div>
                         <input type="text" id="sexoAssistido" class="form-control" placeholder="---" readonly style="flex: 1;">
                         <a href="cadastro.html" target="_blank" class="btn-novo-cadastro" title="Novo Cadastro de Assistido (2.1)"><i class="fa-solid fa-user-plus"></i> Novo</a>
                     </div>
                 </div>
 
                 <div class="form-group full-width" style="text-align: center;">
-                    <label style="display: block; text-align: center;">Serviços Prestados na Ação</label>
+                    <label style="display: block; text-align: center;">Serviços Prestados na A ação</label>
                     <div class="checkbox-group">
                         <label><input type="checkbox" id="checkBanho" style="width: 18px; height: 18px;"> Banho</label>
                         <label><input type="checkbox" id="checkJanta" style="width: 18px; height: 18px;"> Janta / Alimentação</label>
@@ -240,7 +247,7 @@
 
         <div id="painelAssistidoSelecionado"></div>
 
-        <h3 class="section-title" style="margin-top: 30px;"><i class="fa-solid fa-list-check"></i> Movimentação Recente (Últimos 6 Meses)</h3>
+        <h3 class="section-title" style="margin-top: 30px;"><i class="fa-solid fa-list-check"></i> Movimentação Recente (Últimos 12 Meses)</h3>
 
         <div class="table-responsive">
             <table>
@@ -265,6 +272,7 @@
 
     <script>
         function inicializarAtendimentos() {
+            // Correção robusta para capturar o nome do operador de qualquer propriedade válida
             const nomeOp = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Operador";
             document.getElementById('operadorLogadoBadge').innerText = `Operador: ${nomeOp}`;
 
@@ -297,6 +305,9 @@
                 container.style.display = "none";
                 assistidoSelecionadoGlobal = null;
                 document.getElementById('painelAssistidoSelecionado').innerHTML = "";
+                document.getElementById('sexoAssistido').value = "";
+                document.getElementById('matriculaAssistido').value = "";
+                document.getElementById('avatarSexoContainer').innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
                 carregarAtendimentosRecentes(); 
                 return;
             }
@@ -330,6 +341,15 @@
             document.getElementById('matriculaAssistido').value = reg.matricula || "";
             document.getElementById('sexoAssistido').value = reg.sexo || "";
             document.getElementById('listaAutocomplete').style.display = "none";
+
+            // Atualiza a foto do assistido ao lado do campo Sexo
+            const avatarContainer = document.getElementById('avatarSexoContainer');
+            const fotoFinal = converterLinkDrive(reg.foto);
+            if (fotoFinal) {
+                avatarContainer.innerHTML = `<img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.2rem; color: var(--secondary-color);\'></i>';">`;
+            } else {
+                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
+            }
 
             renderizarCardAssistidoSelecionado(reg);
             carregarHistoricoAcumuladoAssistido(reg.matricula, nomeExibicao);
@@ -387,6 +407,63 @@
             });
         }
 
+        function carregarAtendimentosRecentes(filtroMatricula = null) {
+            const tbody = document.getElementById('tabelaAtendimentos');
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #0284c7;">Carregando histórico de 12 meses...</td></tr>`;
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarAtendimentos" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                tbody.innerHTML = "";
+                if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
+                    // Filtra últimos 12 meses
+                    const dataLimite = new Date();
+                    dataLimite.setMonth(dataLimite.getMonth() - 12);
+
+                    let filtrados = data.lista.filter(at => {
+                        let dataAt = new Date(at.dataHora || at.dataAcao);
+                        let dentroPeriodo = dataAt >= dataLimite || isNaN(dataAt);
+                        if (filtroMatricula) {
+                            return dentroPeriodo && String(at.matricula).trim() === String(filtroMatricula).trim();
+                        }
+                        return dentroPeriodo;
+                    });
+
+                    if (filtrados.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum atendimento registrado nos últimos 12 meses.</td></tr>`;
+                        return;
+                    }
+
+                    // Ordena decrescente por data/hora
+                    filtrados.sort((a, b) => new Date(b.dataHora || b.dataAcao) - new Date(a.dataHora || a.dataAcao));
+
+                    filtrados.forEach(at => {
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${at.dataHora || at.dataAcao || '---'}</td>
+                            <td><strong>${at.matricula || '---'}</strong></td>
+                            <td>${at.nomeAssistido || '---'}</td>
+                            <td>${at.sexo || '---'}</td>
+                            <td style="text-align: center;">${String(at.banho).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
+                            <td style="text-align: center;">${String(at.janta).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
+                            <td style="text-align: center;">${String(at.curativos).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
+                            <td>${at.operador || '---'}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum atendimento registrado no sistema.</td></tr>`;
+                }
+            })
+            .catch(() => {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar atendimentos.</td></tr>`;
+            });
+        }
+
         function salvarAtendimento(e) {
             e.preventDefault();
             const nomeOpGravacao = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Sistema";
@@ -414,4 +491,24 @@
             .then(res => res.json())
             .then(data => {
                 if (data.status === "sucesso") {
-                    statusDiv.
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = "Atendimento gravado com sucesso!";
+                    document.getElementById('formAtendimento').reset();
+                    document.getElementById('painelAssistidoSelecionado').innerHTML = "";
+                    document.getElementById('avatarSexoContainer').innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
+                    inicializarAtendimentos();
+                    setTimeout(() => { statusDiv.innerText = ""; }, 4000);
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Erro ao gravar atendimento.";
+                }
+            })
+            .catch(() => {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão com o servidor.";
+            });
+        }
+    </script>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
