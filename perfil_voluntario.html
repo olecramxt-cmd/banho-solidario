@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.3.0                              -->
-<!-- Data de atualização: 26/10/2026 - 05:48                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.4.0                              -->
+<!-- Data de atualização: 26/10/2026 - 05:51                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -70,8 +70,7 @@
 
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
 
-        /* ESTILOS DO TERMO LEGAL AJUSTADOS PARA NÃO CORTAR NAS BORDAS DO PDF */
-        #termoImpressaoContainer { display: none; width: 720px; margin: 0 auto; background: white; padding: 15px; box-sizing: border-box; position: relative; }
+        #termoImpressaoContainer { display: none; width: 720px; margin: 0 auto; background: white; padding: 10px; box-sizing: border-box; position: relative; }
     </style>
 </head>
 <body onload="inicializarPerfilVoluntario()">
@@ -199,7 +198,7 @@
         <div id="mensagemStatus"></div>
     </div>
 
-    <!-- DOCUMENTO FORMATADO PARA GERAR O PDF (SEM CORTES LATERAIS) -->
+    <!-- DOCUMENTO FORMATADO PARA GERAR O PDF -->
     <div id="termoImpressaoContainer" style="font-family: 'Poppins', sans-serif; color: #1f2937; line-height: 1.4; background: white; padding: 10px;">
         <div style="text-align: center; border-bottom: 2px solid #7c3aed; padding-bottom: 8px; margin-bottom: 10px;">
             <img src="Logo2_2.png" alt="Logo Projeto Banho Solidário" style="max-height: 50px; margin-bottom: 3px;">
@@ -237,7 +236,8 @@
             <p style="text-align: justify; margin-bottom: 4px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
         </div>
 
-        <p style="margin-top: 12px; text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">26 de outubro de 2026</span>.</p>
+        <!-- DATA DINÂMICA ATUALIZADA AUTOMATICAMENTE -->
+        <p style="margin-top: 12px; text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
 
         <div style="margin-top: 25px; display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
             <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 4px;">
@@ -329,7 +329,6 @@
             e.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
 
-            // Validação dos campos obrigatórios
             const endereco = document.getElementById('volEndereco').value.trim();
             const nascimento = document.getElementById('volNascimento').value;
             const cargoBanho = document.getElementById('cargoBanho').checked;
@@ -390,6 +389,11 @@
         }
 
         function gerarPdfTermoLegal() {
+            // Insere a data atual formatada por extenso automaticamente no PDF
+            const hoje = new Date();
+            const opcoes = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('dataAtualExtenso').innerText = hoje.toLocaleDateString('pt-BR', opcoes);
+
             const elemento = document.getElementById('termoImpressaoContainer');
             elemento.style.display = 'block';
 
