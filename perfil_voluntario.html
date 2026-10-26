@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.5.0                              -->
-<!-- Data de atualização: 26/10/2026 - 06:01                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.6.0                              -->
+<!-- Data de atualização: 26/10/2026 - 06:12                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -236,10 +236,12 @@
             <p style="text-align: justify; margin-bottom: 4px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
         </div>
 
-        <!-- DATA DINÂMICA COM MARGEM INFERIOR DE 35px PARA AFASTAR AS ASSINATURAS -->
-        <p style="margin-top: 50px; margin-bottom: 20px; text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
+        <!-- ESPAÇADOR FÍSICO E DATA DINÂMICA -->
+        <div style="height: 35px;"></div>
+        <p style="text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
 
-        <div style="margin-top: 15px; display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
+        <!-- BLOCO DE ASSINATURAS COM ESPAÇAMENTO ADEQUADO -->
+        <div style="margin-top: 35px; display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
             <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 4px;">
                 Assinatura do(a) Voluntário(a)
             </div>
@@ -251,6 +253,17 @@
 
     <script>
         let nomeVoluntarioAtual = "Voluntario";
+
+        // Função auxiliar para formatar a data ISO (AAAA-MM-DD) para o padrão brasileiro (DD/MM/AAAA)
+        function formatarDataBR(dataStr) {
+            if (!dataStr) return "---";
+            // Se vier com formato ISO completo (ex: 2026-10-22T07:00:00.000Z) ou AAAA-MM-DD
+            let partes = dataStr.split('T')[0].split('-');
+            if (partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return dataStr;
+        }
 
         function inicializarPerfilVoluntario() {
             const identificador = usuarioAtivo.username || usuarioAtivo.email || usuarioAtivo.cpf || usuarioAtivo.usuario || "";
@@ -281,7 +294,7 @@
                     document.getElementById('volCpf').value = reg.cpf || "";
                     document.getElementById('volTelefone').value = reg.telefone || "";
                     document.getElementById('volEmail').value = reg.email || "";
-                    document.getElementById('volNascimento').value = reg.nascimento || "";
+                    document.getElementById('volNascimento').value = reg.nascimento ? reg.nascimento.split('T')[0] : "";
                     document.getElementById('volEndereco').value = reg.endereco || "";
                     document.getElementById('volDisponibilidade').value = reg.disponibilidade || "";
 
@@ -309,7 +322,8 @@
             document.getElementById('printNome').innerText = reg.nome || "---";
             document.getElementById('printNomeSocial').innerText = reg.nomeSocial || "Nenhum";
             document.getElementById('printCpf').innerText = reg.cpf || "---";
-            document.getElementById('printNascimento').innerText = reg.nascimento || "---";
+            // Aplica a formatação limpa da data de nascimento em DD/MM/AAAA
+            document.getElementById('printNascimento').innerText = formatarDataBR(reg.nascimento);
             document.getElementById('printTelefone').innerText = reg.telefone || "---";
             document.getElementById('printEmail').innerText = reg.email || "---";
             document.getElementById('printEndereco').innerText = reg.endereco || "---";
