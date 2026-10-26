@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.6.0                              -->
-<!-- Data de atualização: 26/10/2026 - 06:12                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.7.0                              -->
+<!-- Data de atualização: 26/10/2026 - 06:58                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -236,25 +236,11 @@
             <p style="text-align: justify; margin-bottom: 4px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
         </div>
 
-        <!-- ESPAÇADOR FÍSICO E DATA DINÂMICA -->
-        <div style="height: 35px;"></div>
-        <p style="text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
+        <!-- DATA DINÂMICA COM ESPAÇAMENTO CONTROLADO E LIMPO -->
+        <p style="text-align: center; font-size: 0.78rem; margin-top: 25px; margin-bottom: 45px;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
 
-<!-- QUEBRAS DE LINHA FÍSICAS PARA FORÇAR O ESPAÇO -->
-        <br><br>
-
-        <!-- BLOCO DE ASSINATURAS -->
+        <!-- ÚNICO BLOCO DE ASSINATURAS CORRETO -->
         <div style="display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
-            <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 4px;">
-                Assinatura do(a) Voluntário(a)
-            </div>
-            <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 4px;">
-                Coordenação - Projeto Banho Solidário
-            </div>
-        </div>        
-                 
-        <!-- BLOCO DE ASSINATURAS COM ESPAÇAMENTO ADEQUADO -->
-        <div style="margin-top: 35px; display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
             <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 4px;">
                 Assinatura do(a) Voluntário(a)
             </div>
@@ -267,10 +253,8 @@
     <script>
         let nomeVoluntarioAtual = "Voluntario";
 
-        // Função auxiliar para formatar a data ISO (AAAA-MM-DD) para o padrão brasileiro (DD/MM/AAAA)
         function formatarDataBR(dataStr) {
             if (!dataStr) return "---";
-            // Se vier com formato ISO completo (ex: 2026-10-22T07:00:00.000Z) ou AAAA-MM-DD
             let partes = dataStr.split('T')[0].split('-');
             if (partes.length === 3) {
                 return `${partes[2]}/${partes[1]}/${partes[0]}`;
@@ -335,7 +319,6 @@
             document.getElementById('printNome').innerText = reg.nome || "---";
             document.getElementById('printNomeSocial').innerText = reg.nomeSocial || "Nenhum";
             document.getElementById('printCpf').innerText = reg.cpf || "---";
-            // Aplica a formatação limpa da data de nascimento em DD/MM/AAAA
             document.getElementById('printNascimento').innerText = formatarDataBR(reg.nascimento);
             document.getElementById('printTelefone').innerText = reg.telefone || "---";
             document.getElementById('printEmail').innerText = reg.email || "---";
