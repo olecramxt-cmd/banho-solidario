@@ -141,7 +141,7 @@ function formatarDataHoraBR(dataStr) {
                 let partesIso = dataStr.split('T');
                 let dataPartes = partesIso[0].split('-');
                 if (dataPartes.length === 3) {
-                    let horaPartes = partesIso[1].split('.')[0]; // Pega HH:MM:SS
+                    let horaPartes = partesIso[1].split('.')[0];
                     return `${dataPartes[2]}/${dataPartes[1]}/${dataPartes[0]} ${horaPartes}`;
                 }
             }
@@ -452,7 +452,7 @@ function formatarDataHoraBR(dataStr) {
                     filtrados.forEach(at => {
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${formatarDataHoraBR(at.dataHora || at.dataAcao)}</td>
+                            <td>${formatarDataHoraBR(at.carimbo || at.dataAcao)}</td>
                             <td><strong>${at.matricula || '---'}</strong></td>
                             <td>${at.nomeAssistido || '---'}</td>
                             <td>${at.sexo || '---'}</td>
