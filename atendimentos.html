@@ -135,7 +135,18 @@
             return url;
         }
     </script>
-
+function formatarDataHoraBR(dataStr) {
+            if (!dataStr) return "---";
+            if (dataStr.includes('T')) {
+                let partesIso = dataStr.split('T');
+                let dataPartes = partesIso[0].split('-');
+                if (dataPartes.length === 3) {
+                    let horaPartes = partesIso[1].split('.')[0]; // Pega HH:MM:SS
+                    return `${dataPartes[2]}/${dataPartes[1]}/${dataPartes[0]} ${horaPartes}`;
+                }
+            }
+            return dataStr;
+        }
     <div class="navbar-top">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
         <span style="font-weight: bold; font-size: 16px;">SISTEMAS iPeC - Atendimentos</span>
@@ -441,7 +452,7 @@
                     filtrados.forEach(at => {
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${at.dataHora || at.dataAcao || '---'}</td>
+                            <td>${formatarDataHoraBR(at.dataHora || at.dataAcao)}</td>
                             <td><strong>${at.matricula || '---'}</strong></td>
                             <td>${at.nomeAssistido || '---'}</td>
                             <td>${at.sexo || '---'}</td>
