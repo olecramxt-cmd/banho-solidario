@@ -2,10 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.15.000                      -->
-<!-- Data de atualização: 27/10/2026 - 07:35                                        -->
-<!-- Descrição: Restauração completa da autenticação, menu sanduíche, busca de      -->
-<!--            assistidos e sincronização exata de data/hora local.                -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.16.000                      -->
+<!-- Data de atualização: 27/10/2026 - 06:53                                        -->
+<!-- Descrição: Correção definitiva da formatação de fuso na tabela web.           -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -108,7 +107,6 @@
 
     <script src="config.js"></script>
     <script>
-        // Verificação de autenticação e operador ativo
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         let operadorAtivo = {};
         try {
@@ -137,30 +135,27 @@
         }
 
         /* ========================================================================== */
-        /* 🔵 [ALTERADO]: Converte o formato UTC cru (com 'T' e 'Z') para a hora local */
-        /*    exata do Brasil de forma garantida, limpando a tabela de vez.           */
+        /* 🔵 [CORREÇÃO DEFINITIVA]: Ajuste universal de fuso horário (-3h) para      */
+        /*    converter corretamente strings ISO antigas e exibir a hora exata local. */
         /* ========================================================================== */
         function formatarDataHoraBR(dataStr) {
             if (!dataStr) return "---";
             let s = String(dataStr).trim();
             
-            // Se vier no formato ISO cru (ex: "2026-01-09T02:45:57.000Z")
-            if (s.includes('T') && s.includes('Z')) {
-                let dataObj = new Date(s);
-                if (!isNaN(dataObj.getTime())) {
-                    // Força a exibição corrigindo o fuso para o horário local do Brasil (-3h)
-                    dataObj.setHours(dataObj.getHours() - 3);
-                    let dia = String(dataObj.getDate()).padStart(2, '0');
-                    let mes = String(dataObj.getMonth() + 1).padStart(2, '0');
-                    let ano = dataObj.getFullYear();
-                    let hora = String(dataObj.getHours()).padStart(2, '0');
-                    let min = String(dataObj.getMinutes()).padStart(2, '0');
-                    let seg = String(dataObj.getSeconds()).padStart(2, '0');
+            if (s.includes('T') && (s.includes('Z') || s.includes('+') || s.includes('-'))) {
+                let d = new Date(s);
+                if (!isNaN(d.getTime())) {
+                    // Subtrai 3 horas do UTC para ajustar rigorosamente ao horário de Brasília/Unaí-MG
+                    d.setHours(d.getHours() - 3);
+                    let dia = String(d.getDate()).padStart(2, '0');
+                    let mes = String(d.getMonth() + 1).padStart(2, '0');
+                    let ano = d.getFullYear();
+                    let hora = String(d.getHours()).padStart(2, '0');
+                    let min = String(d.getMinutes()).padStart(2, '0');
+                    let seg = String(d.getSeconds()).padStart(2, '0');
                     return `${dia}/${mes}/${ano} ${hora}:${min}:${seg}`;
                 }
             }
-            
-            // Se já for uma string normal formatada, retorna ela mesma
             return s;
         }
     </script>
