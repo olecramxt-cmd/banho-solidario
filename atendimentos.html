@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.13.000                      -->
-<!-- Data de atualização: 27/10/2026 - 06:44                                        -->
-<!-- Descrição: Ajuste definitivo na função de formatação para sincronizar a hora    -->
-<!--            local do Brasil exibida na tabela com a planilha e o Windows.       -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.14.000                      -->
+<!-- Data de atualização: 27/10/2026 - 06:53                                        -->
+<!-- Descrição: Correção definitiva da leitura de data/hora no frontend para        -->
+<!--            exibir exatamente a hora exata local sem conversão UTC do navegador.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -135,26 +135,25 @@
             return url;
         }
 
-/* ========================================================================== */
-        /* 🔵 [ALTERADO]: Função formatarDataHoraBR forçada a ignorar conversão UTC   */
-        /*    do navegador, exibindo exatamente a string exata salva na planilha.     */
+        /* ========================================================================== */
+        /* 🔵 [ALTERADO]: Função formatarDataHoraBR otimizada para ler string ISO    */
+        /*    ou string local bruta sem conversão automática de fuso do navegador.    */
         /* ========================================================================== */
         function formatarDataHoraBR(dataStr) {
             if (!dataStr) return "---";
             let s = String(dataStr).trim();
             
-            // Se vier no formato ISO do Google Sheets (ex: "2026-10-27T09:50:11.000Z"), 
-            // extraímos os componentes de data e hora UTC e exibimos como hora LOCAL pura (sem somar fuso)
+            // Se vier no formato ISO do servidor (ex: "2026-10-27T06:50:11.000Z"), extrai direto a data/hora exata
             if (s.includes('T') && s.includes('Z')) {
                 let partes = s.split('T');
                 let dataPartes = partes[0].split('-');
-                let horaPartes = partes[1].split('.')[0]; // HH:mm:ss no formato do servidor
+                let horaPartes = partes[1].split('.')[0];
                 if (dataPartes.length === 3) {
                     return `${dataPartes[2]}/${dataPartes[1]}/${dataPartes[0]} ${horaPartes}`;
                 }
             }
             
-            // Se já vier no formato brasileiro correto da planilha, retorna ele exatamente como está
+            // Retorna o texto bruto exato gravado na planilha
             return s;
         }
     </script>
@@ -464,7 +463,7 @@
                     filtrados.forEach(at => {
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
-                            /* 🔵 [ALTERADO]: Utiliza a função formatarDataHoraBR otimizada */
+                            /* 🔵 [ALTERADO]: Exibe a data/hora tratada sem conversão de fuso do navegador */
                             <td style="color: #7c3aed; font-weight: 600;">${formatarDataHoraBR(at.carimbo || at.dataAcao)}</td>
                             <td><strong>${at.matricula || '---'}</strong></td>
                             <td>${at.nomeAssistido || '---'}</td>
@@ -523,7 +522,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data.status === "sucesso") {
-                    statusDiv.style.color = "green";
+                    statusDiv.style.color="green";
                     statusDiv.innerText = "Atendimento gravado com sucesso!";
                     
                     document.getElementById('formAtendimento').reset();
