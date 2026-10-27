@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.9.000                       -->
-<!-- Data de atualização: 26/10/2026 - 07:42                                        -->
-<!-- Descrição: Correção do nome do operador ativo, inclusão da foto ao lado do     -->
-<!--            campo sexo, e expansão da movimentação recente para 12 meses.       -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.10.000                      -->
+<!-- Data de atualização: 27/10/2026 - 05:25                                        -->
+<!-- Descrição: Correção do título e inclusão de validação obrigatória nos serviços  -->
+<!--            prestados, além da limpeza completa da tela após o salvamento.      -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -214,8 +214,9 @@
                     </div>
                 </div>
 
+                <!-- TÍTULO CORRIGIDO COM ASTERISCO E OBRIGATORIEDADE -->
                 <div class="form-group full-width" style="text-align: center;">
-                    <label style="display: block; text-align: center;">Serviços Prestados na A ação</label>
+                    <label style="display: block; text-align: center; font-weight: 600; color: var(--dark-color);">Serviços Prestados na Ação *</label>
                     <div class="checkbox-group">
                         <label><input type="checkbox" id="checkBanho" style="width: 18px; height: 18px;"> Banho</label>
                         <label><input type="checkbox" id="checkJanta" style="width: 18px; height: 18px;"> Janta / Alimentação</label>
@@ -272,7 +273,6 @@
 
     <script>
         function inicializarAtendimentos() {
-            // Correção robusta para capturar o nome do operador de qualquer propriedade válida
             const nomeOp = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Operador";
             document.getElementById('operadorLogadoBadge').innerText = `Operador: ${nomeOp}`;
 
@@ -342,7 +342,6 @@
             document.getElementById('sexoAssistido').value = reg.sexo || "";
             document.getElementById('listaAutocomplete').style.display = "none";
 
-            // Atualiza a foto do assistido ao lado do campo Sexo
             const avatarContainer = document.getElementById('avatarSexoContainer');
             const fotoFinal = converterLinkDrive(reg.foto);
             if (fotoFinal) {
@@ -420,7 +419,6 @@
             .then(data => {
                 tbody.innerHTML = "";
                 if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
-                    // Filtra últimos 12 meses
                     const dataLimite = new Date();
                     dataLimite.setMonth(dataLimite.getMonth() - 12);
 
@@ -438,7 +436,6 @@
                         return;
                     }
 
-                    // Ordena decrescente por data/hora
                     filtrados.sort((a, b) => new Date(b.dataHora || b.dataAcao) - new Date(a.dataHora || a.dataAcao));
 
                     filtrados.forEach(at => {
@@ -466,20 +463,32 @@
 
         function salvarAtendimento(e) {
             e.preventDefault();
+            const statusDiv = document.getElementById('mensagemStatus');
+
+            // Validação obrigatória: Ao menos um serviço deve estar marcado
+            const banho = document.getElementById('checkBanho').checked;
+            const janta = document.getElementById('checkJanta').checked;
+            const curativos = document.getElementById('checkCurativos').checked;
+
+            if (!banho && !janta && !curativos) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Atenção: Selecione ao menos um serviço prestado na ação!";
+                return;
+            }
+
             const nomeOpGravacao = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Sistema";
             const payload = {
                 action: "inserirAtendimento",
                 matricula: document.getElementById('matriculaAssistido').value.trim(),
                 nomeAssistido: document.getElementById('nomeAssistidoBusca').value.trim(),
                 sexo: document.getElementById('sexoAssistido').value.trim(),
-                banho: document.getElementById('checkBanho').checked,
-                janta: document.getElementById('checkJanta').checked,
-                curativos: document.getElementById('checkCurativos').checked,
+                banho: banho,
+                janta: janta,
+                curativos: curativos,
                 dataAcao: document.getElementById('dataAtendimento').value,
                 operador: nomeOpGravacao
             };
 
-            const statusDiv = document.getElementById('mensagemStatus');
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "Gravando atendimento na nuvem...";
 
@@ -493,9 +502,16 @@
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
                     statusDiv.innerText = "Atendimento gravado com sucesso!";
+                    
+                    // Limpeza completa da tela após o salvamento
                     document.getElementById('formAtendimento').reset();
                     document.getElementById('painelAssistidoSelecionado').innerHTML = "";
                     document.getElementById('avatarSexoContainer').innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
+                    document.getElementById('tituloHistoricoAssistido').innerText = "Histórico Acumulado do Assistido: Selecione um assistido";
+                    document.getElementById('histBanhos').innerText = "0";
+                    document.getElementById('histJantas').innerText = "0";
+                    document.getElementById('histCurativos').innerText = "0";
+
                     inicializarAtendimentos();
                     setTimeout(() => { statusDiv.innerText = ""; }, 4000);
                 } else {
