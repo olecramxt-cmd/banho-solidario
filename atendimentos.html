@@ -145,8 +145,8 @@
             if (s.includes('T') && (s.includes('Z') || s.includes('+') || s.includes('-'))) {
                 let d = new Date(s);
                 if (!isNaN(d.getTime())) {
-                    // Subtrai 3 horas do UTC para ajustar rigorosamente ao horário de Brasília/Unaí-MG
-                    d.setHours(d.getHours() - 3);
+                    // Ajuste exato de 5 horas para alinhar com o horário correto
+                    d.setHours(d.getHours() - 5);
                     let dia = String(d.getDate()).padStart(2, '0');
                     let mes = String(d.getMonth() + 1).padStart(2, '0');
                     let ano = d.getFullYear();
