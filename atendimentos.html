@@ -135,24 +135,26 @@
             return url;
         }
 
-        /* ========================================================================== */
-        /* 🔵 [ALTERADO/ACRESCENTADO]: Função formatarDataHoraBR otimizada para     */
-        /*    exibir perfeitamente a string de carimbo local sem distorções de fuso.  */
+/* ========================================================================== */
+        /* 🔵 [ALTERADO]: Função formatarDataHoraBR forçada a ignorar conversão UTC   */
+        /*    do navegador, exibindo exatamente a string exata salva na planilha.     */
         /* ========================================================================== */
         function formatarDataHoraBR(dataStr) {
             if (!dataStr) return "---";
             let s = String(dataStr).trim();
-            // Se já vier formatado da planilha no padrão brasileiro (ex: "29/01/2026 01:19:05"), retorna direto
-            if (s.includes('/') && s.includes(':')) return s;
-            // Caso venha no padrão ISO antigo com 'T', converte limpo
-            if (s.includes('T')) {
-                let partesIso = s.split('T');
-                let dataPartes = partesIso[0].split('-');
+            
+            // Se vier no formato ISO do Google Sheets (ex: "2026-10-27T09:50:11.000Z"), 
+            // extraímos os componentes de data e hora UTC e exibimos como hora LOCAL pura (sem somar fuso)
+            if (s.includes('T') && s.includes('Z')) {
+                let partes = s.split('T');
+                let dataPartes = partes[0].split('-');
+                let horaPartes = partes[1].split('.')[0]; // HH:mm:ss no formato do servidor
                 if (dataPartes.length === 3) {
-                    let horaPartes = partesIso[1].split('.')[0];
                     return `${dataPartes[2]}/${dataPartes[1]}/${dataPartes[0]} ${horaPartes}`;
                 }
             }
+            
+            // Se já vier no formato brasileiro correto da planilha, retorna ele exatamente como está
             return s;
         }
     </script>
