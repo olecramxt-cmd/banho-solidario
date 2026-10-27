@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.11.000                      -->
-<!-- Data de atualização: 27/10/2026 - 06:11                                        -->
-<!-- Descrição: Correção definitiva da formatação da data/hora na tabela de         -->
-<!--            movimentação recente, removendo os caracteres de fuso horário.      -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.12.000                      -->
+<!-- Data de atualização: 27/10/2026 - 06:14                                        -->
+<!-- Descrição: Correção completa e íntegra do arquivo de atendimentos, com os      -->
+<!--            checkboxes restaurados e formatação limpa de data/hora na tabela.   -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -228,8 +228,315 @@
                     </div>
                 </div>
 
-                <!-- TÍTULO CORRIGIDO COM ASTERISCO E OBRIGATORIEDADE -->
+                <!-- TÍTULO COM ASTERISCO E CHECKBOXES DE SERVIÇOS RESTAURADOS -->
                 <div class="form-group full-width" style="text-align: center;">
                     <label style="display: block; text-align: center; font-weight: 600; color: var(--dark-color);">Serviços Prestados na Ação *</label>
                     <div class="checkbox-group">
-                        <label><input type="checkbox" id="checkBanho" style="width: 18px; height: 18px
+                        <label><input type="checkbox" id="checkBanho" style="width: 18px; height: 18px;"> Banho</label>
+                        <label><input type="checkbox" id="checkJanta" style="width: 18px; height: 18px;"> Janta / Alimentação</label>
+                        <label><input type="checkbox" id="checkCurativos" style="width: 18px; height: 18px;"> Curativos / Saúde</label>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <button type="submit" class="btn-salvar"><i class="fa-solid fa-floppy-disk"></i> Gravar Atendimento no Sistema</button>
+                </div>
+            </div>
+        </form>
+        <div id="mensagemStatus"></div>
+
+        <div style="margin-top: 15px; font-weight: 600; color: var(--secondary-color); font-size: 0.95rem;" id="tituloHistoricoAssistido">Histórico Acumulado do Assistido: Selecione um assistido</div>
+        <div class="stats-grid" style="margin-top: 10px;">
+            <div class="stat-card">
+                <div class="stat-number" id="histBanhos">0</div>
+                <div class="stat-label">Total de Banhos (Histórico)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="histJantas">0</div>
+                <div class="stat-label">Total de Jantas (Histórico)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="histCurativos">0</div>
+                <div class="stat-label">Total de Curativos (Histórico)</div>
+            </div>
+        </div>
+
+        <div id="painelAssistidoSelecionado"></div>
+
+        <h3 class="section-title" style="margin-top: 30px;"><i class="fa-solid fa-list-check"></i> Movimentação Recente (Últimos 12 Meses)</h3>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data / Hora</th>
+                        <th>Matrícula</th>
+                        <th>Assistido</th>
+                        <th>Sexo</th>
+                        <th style="text-align: center;">Banho</th>
+                        <th style="text-align: center;">Janta</th>
+                        <th style="text-align: center;">Curativos</th>
+                        <th>Operador</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaAtendimentos">
+                    <tr><td colspan="8" style="text-align: center; color: #0284c7;">Carregando o histórico de atendimentos...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function inicializarAtendimentos() {
+            const nomeOp = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Operador";
+            document.getElementById('operadorLogadoBadge').innerText = `Operador: ${nomeOp}`;
+
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('dataAtendimento').value = hoje;
+
+            carregarListaAssistidosParaBusca();
+            carregarAtendimentosRecentes();
+        }
+
+        function carregarListaAssistidosParaBusca() {
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarTriagem", termo: "todos" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "encontrado" && data.lista) {
+                    listaGeralAssistidos = data.lista.map(item => item.registro);
+                }
+            })
+            .catch(() => console.error("Erro ao carregar assistidos."));
+        }
+
+        function filtrarAssistidos(termo) {
+            const container = document.getElementById('listaAutocomplete');
+            container.innerHTML = "";
+            if (!termo || termo.trim().length === 0) {
+                container.style.display = "none";
+                assistidoSelecionadoGlobal = null;
+                document.getElementById('painelAssistidoSelecionado').innerHTML = "";
+                document.getElementById('sexoAssistido').value = "";
+                document.getElementById('matriculaAssistido').value = "";
+                document.getElementById('avatarSexoContainer').innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
+                carregarAtendimentosRecentes(); 
+                return;
+            }
+
+            const termoFiltro = termo.toLowerCase();
+            const filtrados = listaGeralAssistidos.filter(reg => {
+                const nome = (reg.nomeSocial || reg.nomeCompleto || "").toLowerCase();
+                const mat = (reg.matricula || "").toLowerCase();
+                return nome.includes(termoFiltro) || mat.includes(termoFiltro);
+            });
+
+            if (filtrados.length > 0) {
+                container.style.display = "block";
+                filtrados.forEach(reg => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || "---";
+                    div.innerHTML = `<strong>${nomeExibicao}</strong> (${reg.matricula || 'Sem Matrícula'})`;
+                    div.onclick = () => selecionarAssistido(reg);
+                    container.appendChild(div);
+                });
+            } else {
+                container.style.display = "none";
+            }
+        }
+
+        function selecionarAssistido(reg) {
+            assistidoSelecionadoGlobal = reg;
+            const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || "";
+            document.getElementById('nomeAssistidoBusca').value = nomeExibicao;
+            document.getElementById('matriculaAssistido').value = reg.matricula || "";
+            document.getElementById('sexoAssistido').value = reg.sexo || "";
+            document.getElementById('listaAutocomplete').style.display = "none";
+
+            const avatarContainer = document.getElementById('avatarSexoContainer');
+            const fotoFinal = converterLinkDrive(reg.foto);
+            if (fotoFinal) {
+                avatarContainer.innerHTML = `<img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.2rem; color: var(--secondary-color);\'></i>';">`;
+            } else {
+                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
+            }
+
+            renderizarCardAssistidoSelecionado(reg);
+            carregarHistoricoAcumuladoAssistido(reg.matricula, nomeExibicao);
+            carregarAtendimentosRecentes(reg.matricula);
+        }
+
+        function renderizarCardAssistidoSelecionado(reg) {
+            const box = document.getElementById('painelAssistidoSelecionado');
+            const fotoFinal = converterLinkDrive(reg.foto);
+            let avatarHtml = `<div class="avatar-mini-mov"><i class="fa-solid fa-user" style="font-size: 1.5rem; color: var(--secondary-color);"></i></div>`;
+            if (fotoFinal) {
+                avatarHtml = `<div class="avatar-mini-mov"><img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.5rem; color: var(--secondary-color);\'></i>';"></div>`;
+            }
+
+            const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || "---";
+            box.innerHTML = `
+                <div class="assistido-selecionado-box">
+                    ${avatarHtml}
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.05rem; color: var(--secondary-color);">${nomeExibicao}</div>
+                        <div style="font-size: 0.88rem; color: #64748b;">Matrícula: <strong>${reg.matricula || '---'}</strong> | Sexo: ${reg.sexo || '---'}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function carregarHistoricoAcumuladoAssistido(matricula, nome) {
+            document.getElementById('tituloHistoricoAssistido').innerText = `Histórico Acumulado de: ${nome} (${matricula})`;
+            
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarAtendimentos" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                let b = 0, j = 0, c = 0;
+                if (data.status === "encontrado" && data.lista) {
+                    data.lista.forEach(at => {
+                        if (String(at.matricula).trim() === String(matricula).trim()) {
+                            if (String(at.banho).toUpperCase() === "SIM") b++;
+                            if (String(at.janta).toUpperCase() === "SIM") j++;
+                            if (String(at.curativos).toUpperCase() === "SIM") c++;
+                        }
+                    });
+                }
+                document.getElementById('histBanhos').innerText = b;
+                document.getElementById('histJantas').innerText = j;
+                document.getElementById('histCurativos').innerText = c;
+            })
+            .catch(() => {
+                document.getElementById('histBanhos').innerText = 0;
+                document.getElementById('histJantas').innerText = 0;
+                document.getElementById('histCurativos').innerText = 0;
+            });
+        }
+
+        function carregarAtendimentosRecentes(filtroMatricula = null) {
+            const tbody = document.getElementById('tabelaAtendimentos');
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #0284c7;">Carregando histórico de 12 meses...</td></tr>`;
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarAtendimentos" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                tbody.innerHTML = "";
+                if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
+                    const dataLimite = new Date();
+                    dataLimite.setMonth(dataLimite.getMonth() - 12);
+
+                    let filtrados = data.lista.filter(at => {
+                        let dataAt = new Date(at.carimbo || at.dataAcao);
+                        let dentroPeriodo = dataAt >= dataLimite || isNaN(dataAt);
+                        if (filtroMatricula) {
+                            return dentroPeriodo && String(at.matricula).trim() === String(filtroMatricula).trim();
+                        }
+                        return dentroPeriodo;
+                    });
+
+                    if (filtrados.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum atendimento registrado nos últimos 12 meses.</td></tr>`;
+                        return;
+                    }
+
+                    filtrados.sort((a, b) => new Date(b.carimbo || b.dataAcao) - new Date(a.carimbo || a.dataAcao));
+
+                    filtrados.forEach(at => {
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${formatarDataHoraBR(at.carimbo || at.dataAcao)}</td>
+                            <td><strong>${at.matricula || '---'}</strong></td>
+                            <td>${at.nomeAssistido || '---'}</td>
+                            <td>${at.sexo || '---'}</td>
+                            <td style="text-align: center;">${String(at.banho).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
+                            <td style="text-align: center;">${String(at.janta).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
+                            <td style="text-align: center;">${String(at.curativos).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
+                            <td>${at.operador || '---'}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum atendimento registrado no sistema.</td></tr>`;
+                }
+            })
+            .catch(() => {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar atendimentos.</td></tr>`;
+            });
+        }
+
+        function salvarAtendimento(e) {
+            e.preventDefault();
+            const statusDiv = document.getElementById('mensagemStatus');
+
+            const banho = document.getElementById('checkBanho').checked;
+            const janta = document.getElementById('checkJanta').checked;
+            const curativos = document.getElementById('checkCurativos').checked;
+
+            if (!banho && !janta && !curativos) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Atenção: Selecione ao menos um serviço prestado na ação!";
+                return;
+            }
+
+            const nomeOpGravacao = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Sistema";
+            const payload = {
+                action: "inserirAtendimento",
+                matricula: document.getElementById('matriculaAssistido').value.trim(),
+                nomeAssistido: document.getElementById('nomeAssistidoBusca').value.trim(),
+                sexo: document.getElementById('sexoAssistido').value.trim(),
+                banho: banho,
+                janta: janta,
+                curativos: curativos,
+                dataAcao: document.getElementById('dataAtendimento').value,
+                operador: nomeOpGravacao
+            };
+
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "Gravando atendimento na nuvem...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "sucesso") {
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = "Atendimento gravado com sucesso!";
+                    
+                    document.getElementById('formAtendimento').reset();
+                    document.getElementById('painelAssistidoSelecionado').innerHTML = "";
+                    document.getElementById('avatarSexoContainer').innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
+                    document.getElementById('tituloHistoricoAssistido').innerText = "Histórico Acumulado do Assistido: Selecione um assistido";
+                    document.getElementById('histBanhos').innerText = "0";
+                    document.getElementById('histJantas').innerText = "0";
+                    document.getElementById('histCurativos').innerText = "0";
+
+                    inicializarAtendimentos();
+                    setTimeout(() => { statusDiv.innerText = ""; }, 4000);
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Erro ao gravar atendimento.";
+                }
+            })
+            .catch(() => {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão com o servidor.";
+            });
+        }
+    </script>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
