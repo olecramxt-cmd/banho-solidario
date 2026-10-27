@@ -137,13 +137,31 @@
         }
 
         /* ========================================================================== */
-        /* 🔵 [ALTERADO]: Força a exibição exata da string vinda da planilha sem     */
-        /*    qualquer conversão ou alteração de fuso horário pelo navegador.         */
+        /* 🔵 [ALTERADO]: Converte o formato UTC cru (com 'T' e 'Z') para a hora local */
+        /*    exata do Brasil de forma garantida, limpando a tabela de vez.           */
         /* ========================================================================== */
         function formatarDataHoraBR(dataStr) {
             if (!dataStr) return "---";
-            // Retorna o texto bruto exato que veio da planilha (ex: "01/01/2026 18:42:17")
-            return String(dataStr).trim();
+            let s = String(dataStr).trim();
+            
+            // Se vier no formato ISO cru (ex: "2026-01-09T02:45:57.000Z")
+            if (s.includes('T') && s.includes('Z')) {
+                let dataObj = new Date(s);
+                if (!isNaN(dataObj.getTime())) {
+                    // Força a exibição corrigindo o fuso para o horário local do Brasil (-3h)
+                    dataObj.setHours(dataObj.getHours() - 3);
+                    let dia = String(dataObj.getDate()).padStart(2, '0');
+                    let mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+                    let ano = dataObj.getFullYear();
+                    let hora = String(dataObj.getHours()).padStart(2, '0');
+                    let min = String(dataObj.getMinutes()).padStart(2, '0');
+                    let seg = String(dataObj.getSeconds()).padStart(2, '0');
+                    return `${dia}/${mes}/${ano} ${hora}:${min}:${seg}`;
+                }
+            }
+            
+            // Se já for uma string normal formatada, retorna ela mesma
+            return s;
         }
     </script>
 
