@@ -137,29 +137,13 @@
         }
 
         /* ========================================================================== */
-        /* 🔵 [ALTERADO]: Função formatarDataHoraBR universal para tratar tanto       */
-        /*    os registros antigos em formato ISO quanto os novos registros locais.   */
+        /* 🔵 [ALTERADO]: Força a exibição exata da string vinda da planilha sem     */
+        /*    qualquer conversão ou alteração de fuso horário pelo navegador.         */
         /* ========================================================================== */
         function formatarDataHoraBR(dataStr) {
             if (!dataStr) return "---";
-            let s = String(dataStr).trim();
-            
-            // Se for um registro antigo no formato ISO (ex: "2026-01-29T09:19:05.000Z")
-            if (s.includes('T') && (s.includes('Z') || s.includes('+') || s.includes('-'))) {
-                let dataObj = new Date(s);
-                if (!isNaN(dataObj.getTime())) {
-                    let dia = String(dataObj.getDate()).padStart(2, '0');
-                    let mes = String(dataObj.getMonth() + 1).padStart(2, '0');
-                    let ano = dataObj.getFullYear();
-                    let hora = String(dataObj.getHours()).padStart(2, '0');
-                    let min = String(dataObj.getMinutes()).padStart(2, '0');
-                    let seg = String(dataObj.getSeconds()).padStart(2, '0');
-                    return `${dia}/${mes}/${ano} ${hora}:${min}:${seg}`;
-                }
-            }
-            
-            // Retorna a string exata se já estiver no padrão brasileiro
-            return s;
+            // Retorna o texto bruto exato que veio da planilha (ex: "01/01/2026 18:42:17")
+            return String(dataStr).trim();
         }
     </script>
 
