@@ -108,7 +108,7 @@
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
-    <nav class="side-menu" id="sideMenu">
+        <nav class="side-menu" id="sideMenu">
         <div class="side-menu-header">
             <h3>Menu do Sistema</h3>
             <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
@@ -117,10 +117,22 @@
             <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
                 <i class="fa-solid fa-house"></i> Início (Página Inicial)
             </a>
+            
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
             <div class="side-menu-sublinks">
+                <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
+                <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
                 <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
             </div>
+
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
+            <div class="side-menu-sublinks">
+                <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
+                <a href="relatorio_atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios & Fichas</a>
+            </div>
+            
+            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
+            <a href="./ebook/" target="_blank" class="menu-link-item"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
         </div>
     </nav>
 
