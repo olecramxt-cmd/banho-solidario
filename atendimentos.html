@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.14.000                      -->
-<!-- Data de atualização: 27/10/2026 - 06:53                                        -->
-<!-- Descrição: Correção definitiva da leitura de data/hora no frontend para        -->
-<!--            exibir exatamente a hora exata local sem conversão UTC do navegador.-->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.15.000                      -->
+<!-- Data de atualização: 27/10/2026 - 07:35                                        -->
+<!-- Descrição: Restauração completa da autenticação, menu sanduíche, busca de      -->
+<!--            assistidos e sincronização exata de data/hora local.                -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -91,7 +91,6 @@
         .avatar-mini-mov { width: 55px; height: 55px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .avatar-mini-mov img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        /* Estilo para a foto do assistido ao lado do campo Sexo */
         .sexo-foto-container { display: flex; gap: 10px; align-items: center; width: 100%; }
         .avatar-campo-sexo { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .avatar-campo-sexo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
@@ -109,6 +108,7 @@
 
     <script src="config.js"></script>
     <script>
+        // Verificação de autenticação e operador ativo
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         let operadorAtivo = {};
         try {
@@ -128,6 +128,7 @@
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
+
         function converterLinkDrive(url) {
             if (!url) return "";
             let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
@@ -135,28 +136,9 @@
             return url;
         }
 
-        /* ========================================================================== */
-        /* 🔵 [ALTERADO]: Função formatarDataHoraBR otimizada para ler string ISO    */
-        /*    ou string local bruta sem conversão automática de fuso do navegador.    */
-        /* ========================================================================== */
         function formatarDataHoraBR(dataStr) {
             if (!dataStr) return "---";
-            // Retorna exatamente a string do jeito que está gravada na planilha, sem conversões do navegador
             return String(dataStr).trim();
-        }
-            
-            // Se vier no formato ISO do servidor (ex: "2026-10-27T06:50:11.000Z"), extrai direto a data/hora exata
-            if (s.includes('T') && s.includes('Z')) {
-                let partes = s.split('T');
-                let dataPartes = partes[0].split('-');
-                let horaPartes = partes[1].split('.')[0];
-                if (dataPartes.length === 3) {
-                    return `${dataPartes[2]}/${dataPartes[1]}/${dataPartes[0]} ${horaPartes}`;
-                }
-            }
-            
-            // Retorna o texto bruto exato gravado na planilha
-            return s;
         }
     </script>
 
@@ -226,7 +208,6 @@
                     <input type="text" id="matriculaAssistido" class="form-control" placeholder="Automático..." readonly required>
                 </div>
                 
-                <!-- CAMPO SEXO COM FOTO DO ASSISTIDO E BOTÃO NOVO AO LADO -->
                 <div class="form-group">
                     <label>Sexo</label>
                     <div class="sexo-foto-container">
@@ -238,7 +219,6 @@
                     </div>
                 </div>
 
-                <!-- TÍTULO COM ASTERISCO E CHECKBOXES DE SERVIÇOS RESTAURADOS -->
                 <div class="form-group full-width" style="text-align: center;">
                     <label style="display: block; text-align: center; font-weight: 600; color: var(--dark-color);">Serviços Prestados na Ação *</label>
                     <div class="checkbox-group">
@@ -523,7 +503,7 @@
             .then(res => res.json())
             .then(data => {
                 if (data.status === "sucesso") {
-                    statusDiv.style.color="green";
+                    statusDiv.style.color = "green";
                     statusDiv.innerText = "Atendimento gravado com sucesso!";
                     
                     document.getElementById('formAtendimento').reset();
