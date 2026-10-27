@@ -463,7 +463,6 @@
                     filtrados.forEach(at => {
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
-                            /* 🔵 [ALTERADO]: Exibe a data/hora tratada sem conversão de fuso do navegador */
                             <td style="color: #7c3aed; font-weight: 600;">${formatarDataHoraBR(at.carimbo || at.dataAcao)}</td>
                             <td><strong>${at.matricula || '---'}</strong></td>
                             <td>${at.nomeAssistido || '---'}</td>
