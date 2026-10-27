@@ -2,10 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.12.000                      -->
-<!-- Data de atualização: 27/10/2026 - 06:14                                        -->
-<!-- Descrição: Correção completa e íntegra do arquivo de atendimentos, com os      -->
-<!--            checkboxes restaurados e formatação limpa de data/hora na tabela.   -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.13.000                      -->
+<!-- Data de atualização: 27/10/2026 - 06:44                                        -->
+<!-- Descrição: Ajuste definitivo na função de formatação para sincronizar a hora    -->
+<!--            local do Brasil exibida na tabela com a planilha e o Windows.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -135,18 +135,25 @@
             return url;
         }
 
-        // Função auxiliar para formatar a data/hora de forma limpa no padrão BR
+        /* ========================================================================== */
+        /* 🔵 [ALTERADO/ACRESCENTADO]: Função formatarDataHoraBR otimizada para     */
+        /*    exibir perfeitamente a string de carimbo local sem distorções de fuso.  */
+        /* ========================================================================== */
         function formatarDataHoraBR(dataStr) {
             if (!dataStr) return "---";
-            if (dataStr.includes('T')) {
-                let partesIso = dataStr.split('T');
+            let s = String(dataStr).trim();
+            // Se já vier formatado da planilha no padrão brasileiro (ex: "29/01/2026 01:19:05"), retorna direto
+            if (s.includes('/') && s.includes(':')) return s;
+            // Caso venha no padrão ISO antigo com 'T', converte limpo
+            if (s.includes('T')) {
+                let partesIso = s.split('T');
                 let dataPartes = partesIso[0].split('-');
                 if (dataPartes.length === 3) {
                     let horaPartes = partesIso[1].split('.')[0];
                     return `${dataPartes[2]}/${dataPartes[1]}/${dataPartes[0]} ${horaPartes}`;
                 }
             }
-            return dataStr;
+            return s;
         }
     </script>
 
@@ -455,7 +462,8 @@
                     filtrados.forEach(at => {
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td>${formatarDataHoraBR(at.carimbo || at.dataAcao)}</td>
+                            /* 🔵 [ALTERADO]: Utiliza a função formatarDataHoraBR otimizada */
+                            <td style="color: #7c3aed; font-weight: 600;">${formatarDataHoraBR(at.carimbo || at.dataAcao)}</td>
                             <td><strong>${at.matricula || '---'}</strong></td>
                             <td>${at.nomeAssistido || '---'}</td>
                             <td>${at.sexo || '---'}</td>
