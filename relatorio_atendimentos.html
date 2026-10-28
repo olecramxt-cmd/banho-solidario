@@ -389,66 +389,47 @@
             });
         }
 
-        function formatarDataDdMmAaHhMm(dataStr) {
+function formatarDataDdMmAaHhMm(dataStr) {
             if (!dataStr) return "---";
             try {
                 let dataLimpa = String(dataStr).trim();
                 
-                // Se a string contiver o formato brasileiro "DD/MM/YYYY HH:MM:SS" (vindo diretamente da planilha)
+                // Se contiver a barra do formato brasileiro "DD/MM/YYYY HH:MM:SS"
                 if (dataLimpa.includes('/')) {
                     let partes = dataLimpa.split(' ');
-                    if (partes.length >= 2) {
-                        let dataPt = partes[0].split('/');
-                        let horaPt = partes[1].substring(0, 5); // Pega apenas "HH:MM"
-                        if (dataPt.length === 3) {
-                            let dd = dataPt[0];
-                            let mm = dataPt[1];
-                            let aa = dataPt[2].slice(-2);
+                    let dataPt = partes[0].split('/');
+                    if (dataPt.length === 3) {
+                        let dd = dataPt[0];
+                        let mm = dataPt[1];
+                        let aa = dataPt[2].slice(-2);
+                        
+                        // Se houver horário na string, extrai ele de forma segura
+                        if (partes.length >= 2 && partes[1]) {
+                            let horaPt = partes[1].substring(0, 5); // "HH:MM"
                             return `${dd}/${mm}/${aa} - ${horaPt}`;
                         }
+                        return `${dd}/${mm}/${aa}`;
                     }
                 }
                 
-                // Fallback para formato ISO ou outros padrões, preservando as horas locais sem deslocamento de fuso
-                let d = new Date(dataStr);
-                if (isNaN(d.getTime())) return dataStr;
-                
-                let dd = String(d.getUTCDate()).padStart(2, '0');
-                let mm = String(d.getUTCMonth() + 1).padStart(2, '0');
-                let aa = String(d.getUTCFullYear()).slice(-2);
-                let hh = String(d.getUTCHours()).padStart(2, '0');
-                let min = String(d.getUTCMinutes()).padStart(2, '0');
-                return `${dd}/${mm}/${aa} - ${hh}:${min}`;
-            } catch(e) {
-                return dataStr;
-            }
-        }
-                
-                // Fallback para formato ISO ou outros padrões, preservando as horas locais sem deslocamento de fuso
-                let d = new Date(dataStr);
-                if (isNaN(d.getTime())) return dataStr;
-                
-                let dd = String(d.getUTCDate()).padStart(2, '0');
-                let mm = String(d.getUTCMonth() + 1).padStart(2, '0');
-                let aa = String(d.getUTCFullYear()).slice(-2);
-                let hh = String(d.getUTCHours()).padStart(2, '0');
-                let min = String(d.getUTCMinutes()).padStart(2, '0');
-                return `${dd}/${mm}/${aa} - ${hh}:${min}`;
-            } catch(e) {
-                return dataStr;
-            }
-        }
+                // Se contiver formato ISO "YYYY-MM-DD..."
+                if (dataLimpa.includes('T') || dataLimpa.includes('-')) {
+                    let d = new Date(dataStr);
+                    if (!isNaN(d.getTime())) {
+                        let dd = String(d.getUTCDate()).padStart(2, '0');
+                        let mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+                        let aa = String(d.getUTCFullYear()).slice(-2);
+                        let hh = String(d.getUTCHours()).padStart(2, '0');
+                        let min = String(d.getUTCMinutes()).padStart(2, '0');
+                        return `${dd}/${mm}/${aa} - ${hh}:${min}`;
+                    }
+                }
 
-        function numeroPorExtenso(num) {
-            const unidades = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
-            const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-            if (num < 20) return unidades[num];
-            if (num < 100) {
-                let d = Math.floor(num / 10);
-                let u = num % 10;
-                return u === 0 ? dezenas[d] : `${dezenas[d]} e ${unidades[u]}`;
+                return dataStr;
+            } catch(e) {
+                console.error("Erro ao formatar data:", e);
+                return dataStr;
             }
-            return String(num);
         }
 
 function processarEAtualizarTudo() {
