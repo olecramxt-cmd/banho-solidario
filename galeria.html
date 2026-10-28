@@ -349,15 +349,17 @@
                         if (fotoFinal) {
                             avatarHtml = `<img src="${fotoFinal}" alt="Assistido" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
                         } else {
-                            // Ícones específicos por gênero quando não houver foto cadastrada
+                            // Seleção dinâmica dos avatares personalizados do repositório
                             const sexoLower = (reg.sexo || "").trim().toLowerCase();
+                            let imgPadrao = "imagens/AvatarPessoaNeutra.png"; // Padrão
+                            
                             if (sexoLower.includes("masculino") || sexoLower === "m") {
-                                avatarHtml = `<i class="fa-solid fa-mars" style="font-size: 2.2rem; color: #0284c7;" title="Masculino"></i>`;
+                                imgPadrao = "imagens/AvatarHomem.png";
                             } else if (sexoLower.includes("feminino") || sexoLower === "f") {
-                                avatarHtml = `<i class="fa-solid fa-venus" style="font-size: 2.2rem; color: #db2777;" title="Feminino"></i>`;
-                            } else {
-                                avatarHtml = `<i class="fa-solid fa-genderless" style="font-size: 2.2rem; color: #64748b;" title="Neutro / Outro"></i>`;
+                                imgPadrao = "imagens/AvatarMulher.png";
                             }
+                            
+                            avatarHtml = `<img src="${imgPadrao}" alt="Avatar Padrão" style="width: 100%; height: 100%; object-fit: cover;">`;
                         }
 
                         card.innerHTML = `
