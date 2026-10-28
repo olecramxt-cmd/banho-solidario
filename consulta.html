@@ -89,7 +89,23 @@
             window.location.href = 'login.html';
         }
         const API_URL = CONFIG.API_URL;
-    </script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // 🟢 [COLOQUE AQUI]: Função auxiliar de normalização de texto
+        const normalizarTexto = (texto) => {
+            return String(texto || "")
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        };
+
+        function sairConsulta() {
+            window.history.back();
+        }
 
     <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
@@ -237,13 +253,13 @@
             }
         }
 
-        function pesquisarCadastros() {
-            const termo = document.getElementById('termoBusca').value.trim();
+function pesquisarCadastros() {
+            const termoBruto = document.getElementById('termoBusca').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
             document.getElementById('listaResultadosContainer').style.display = 'none';
             document.getElementById('resultadoContainer').style.display = 'none';
 
-            if (!termo) {
+            if (!termoBruto) {
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Por favor, digite um termo ou 'TODOS' para pesquisar.";
                 return;
@@ -252,16 +268,43 @@
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "Pesquisando assistidos na nuvem...";
 
+            // Se o termo digitado for "todos", enviamos "todos" para o backend; caso contrário, buscamos por "todos" para filtrar localmente com precisão total
+            const termoEnvio = normalizarTexto(termoBruto) === "todos" ? "todos" : "todos";
+
             fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarTriagem", termo: termo })
+                body: JSON.stringify({ action: "consultarTriagem", termo: termoEnvio })
             })
             .then(res => res.json())
             .then(data => {
                 statusDiv.innerText = "";
-                if (data.status === "encontrado") {
-                    montarListaSelecao(data.lista);
+                if (data.status === "encontrado" && data.lista) {
+                    if (normalizarTexto(termoBruto) === "todos") {
+                        montarListaSelecao(data.lista);
+                    } else {
+                        // Filtro local potente e imune a acentos e maiúsculas/minúsculas
+                        const termoFiltro = normalizarTexto(termoBruto);
+                        const listaFiltrada = data.lista.filter(item => {
+                            const reg = item.registro || {};
+                            const nomeC = normalizarTexto(reg.nomeCompleto);
+                            const nomeS = normalizarTexto(reg.nomeSocial);
+                            const mat = normalizarTexto(reg.matricula);
+                            const cpf = normalizarTexto(reg.cpf);
+
+                            return nomeC.includes(termoFiltro) || 
+                                   nomeS.includes(termoFiltro) || 
+                                   mat.includes(termoFiltro) || 
+                                   cpf.includes(termoFiltro);
+                        });
+
+                        if (listaFiltrada.length > 0) {
+                            montarListaSelecao(listaFiltrada);
+                        } else {
+                            statusDiv.style.color = "red";
+                            statusDiv.innerText = "Nenhum registro encontrado para o termo pesquisado.";
+                        }
+                    }
                 } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Nenhum registro encontrado.";
