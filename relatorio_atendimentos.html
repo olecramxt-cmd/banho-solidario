@@ -389,15 +389,17 @@
             });
         }
 
-        function formatarDataDdMmAaHhMm(dataStr) {
+function formatarDataDdMmAaHhMm(dataStr) {
             if (!dataStr) return "---";
             try {
-                let d = new Date(dataStr);
-                if (isNaN(d.getTime())) {
-                    let partes = String(dataStr).trim().split(' ');
+                let dataLimpa = String(dataStr).trim();
+                
+                // Se a string contiver o formato brasileiro "DD/MM/YYYY HH:MM:SS" (vindo diretamente da planilha)
+                if (dataLimpa.includes('/')) {
+                    let partes = dataLimpa.split(' ');
                     if (partes.length >= 2) {
                         let dataPt = partes[0].split('/');
-                        let horaPt = partes[1].substring(0, 5);
+                        let horaPt = partes[1].substring(0, 5); // Pega apenas "HH:MM"
                         if (dataPt.length === 3) {
                             let dd = dataPt[0];
                             let mm = dataPt[1];
@@ -405,13 +407,17 @@
                             return `${dd}/${mm}/${aa} - ${horaPt}`;
                         }
                     }
-                    return dataStr;
                 }
-                let dd = String(d.getDate()).padStart(2, '0');
-                let mm = String(d.getMonth() + 1).padStart(2, '0');
-                let aa = String(d.getFullYear()).slice(-2);
-                let hh = String(d.getHours()).padStart(2, '0');
-                let min = String(d.getMinutes()).padStart(2, '0');
+                
+                // Fallback para formato ISO ou outros padrões, preservando as horas locais sem deslocamento de fuso
+                let d = new Date(dataStr);
+                if (isNaN(d.getTime())) return dataStr;
+                
+                let dd = String(d.getUTCDate()).padStart(2, '0');
+                let mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+                let aa = String(d.getUTCFullYear()).slice(-2);
+                let hh = String(d.getUTCHours()).padStart(2, '0');
+                let min = String(d.getUTCMinutes()).padStart(2, '0');
                 return `${dd}/${mm}/${aa} - ${hh}:${min}`;
             } catch(e) {
                 return dataStr;
