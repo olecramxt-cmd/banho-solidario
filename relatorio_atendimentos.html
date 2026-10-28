@@ -447,18 +447,23 @@
                     let dAno = "";
                     let dMes = "";
 
-                    if (String(dataRef).includes('-')) {
-                        let partesIso = String(dataRef).split('T')[0].split('-');
+                    let dataLimpa = String(dataRef).trim();
+
+                    // Tratamento robusto para formato brasileiro "DD/MM/YYYY HH:MM:SS" (como gravado na planilha)
+                    if (dataLimpa.includes('/')) {
+                        let partesDataHora = dataLimpa.split(' ')[0]; // Pega só a parte da data "DD/MM/YYYY"
+                        let partesBr = partesDataHora.split('/');
+                        if (partesBr.length === 3) {
+                            dMes = partesBr[1]; // Mês (ex: "01")
+                            dAno = partesBr[2]; // Ano (ex: "2026")
+                        }
+                    } 
+                    // Tratamento para formato ISO "YYYY-MM-DD..."
+                    else if (dataLimpa.includes('-')) {
+                        let partesIso = dataLimpa.split('T')[0].split('-');
                         if (partesIso.length === 3) {
                             dAno = partesIso[0];
                             dMes = partesIso[1];
-                        }
-                    } 
-                    else if (String(dataRef).includes('/')) {
-                        let partesBr = String(dataRef).split(' ')[0].split('/');
-                        if (partesBr.length === 3) {
-                            dAno = partesBr[2];
-                            dMes = partesBr[1];
                         }
                     }
 
