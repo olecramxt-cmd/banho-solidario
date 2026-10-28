@@ -2,10 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.000             -->
-<!-- Data de atualização: 28/10/2026 - 04:12                                        -->
-<!-- Descrição: Relatório Geral de Atendimentos com data atual do SO, formatação    -->
-<!--            dd/mm/aa - HH:MM e layout responsivo otimizado para celulares.      -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.001             -->
+<!-- Data de atualização: 28/10/2026 - 04:15                                        -->
+<!-- Descrição: Correção de tags CSS extraviadas e alinhamento visual perfeito.      -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -61,6 +60,13 @@
         .form-group { display: flex; flex-direction: column; margin-bottom: 15px; position: relative; width: 100%; }
         .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
         .form-group select, .form-group input { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: white; width: 100%; }
+
+        /* Classes de layout responsivas corrigidas */
+        .filtros-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; width: 100%; }
+        @media(min-width: 768px) { .filtros-grid { grid-template-columns: 1fr 1fr; } }
+
+        .busca-row { display: flex; flex-direction: column; gap: 15px; width: 100%; }
+        @media(min-width: 768px) { .busca-row { flex-direction: row; align-items: flex-end; } }
 
         .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 6px 6px; max-height: 200px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
         .autocomplete-item { padding: 10px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
@@ -173,8 +179,7 @@
 
         <div class="section-box">
             <div class="section-title">Filtros e Parâmetros do Relatório</div>
-            <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px;">
-                @media(min-width: 768px) { display: grid; grid-template-columns: 1fr 1fr; }
+            <div class="filtros-grid">
                 <div class="form-group" style="margin:0;">
                     <label>Filtrar por Ano</label>
                     <select id="filtroAno" onchange="processarEAtualizarTudo()">
@@ -194,8 +199,7 @@
                 </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                @media(min-width: 768px) { flex-direction: row; align-items: flex-end; }
+            <div class="busca-row">
                 <div class="form-group" style="flex: 1; margin:0;">
                     <label>Consultar Assistido Específico (Opcional)</label>
                     <input type="text" id="buscaAssistidoFiltro" placeholder="Digite o nome do assistido..." oninput="filtrarNomesAssistidos()" autocomplete="off">
@@ -270,7 +274,6 @@
         }
 
         function inicializarRelatorioMovimentacao() {
-            // [AJUSTE 1]: Define automaticamente o Ano e o Mês vigentes do SO Windows
             const agora = new Date();
             const anoAtual = String(agora.getFullYear());
             const mesAtual = String(agora.getMonth() + 1).padStart(2, '0');
@@ -386,15 +389,11 @@
             });
         }
 
-        /* ========================================================================== */
-        /* [AJUSTE 2]: Formato exigido dd/mm/aa e hora HH:MM                         */
-        /* ========================================================================== */
         function formatarDataDdMmAaHhMm(dataStr) {
             if (!dataStr) return "---";
             try {
                 let d = new Date(dataStr);
                 if (isNaN(d.getTime())) {
-                    // Se for string no formato brasileiro "DD/MM/YYYY HH:MM:SS"
                     let partes = String(dataStr).trim().split(' ');
                     if (partes.length >= 2) {
                         let dataPt = partes[0].split('/');
@@ -602,5 +601,3 @@
         }
     </script>
 </body>
-</html>
-<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
