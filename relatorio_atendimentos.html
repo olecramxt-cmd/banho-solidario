@@ -389,7 +389,7 @@
             });
         }
 
-function formatarDataDdMmAaHhMm(dataStr) {
+        function formatarDataDdMmAaHhMm(dataStr) {
             if (!dataStr) return "---";
             try {
                 let dataLimpa = String(dataStr).trim();
@@ -408,6 +408,21 @@ function formatarDataDdMmAaHhMm(dataStr) {
                         }
                     }
                 }
+                
+                // Fallback para formato ISO ou outros padrões, preservando as horas locais sem deslocamento de fuso
+                let d = new Date(dataStr);
+                if (isNaN(d.getTime())) return dataStr;
+                
+                let dd = String(d.getUTCDate()).padStart(2, '0');
+                let mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+                let aa = String(d.getUTCFullYear()).slice(-2);
+                let hh = String(d.getUTCHours()).padStart(2, '0');
+                let min = String(d.getUTCMinutes()).padStart(2, '0');
+                return `${dd}/${mm}/${aa} - ${hh}:${min}`;
+            } catch(e) {
+                return dataStr;
+            }
+        }
                 
                 // Fallback para formato ISO ou outros padrões, preservando as horas locais sem deslocamento de fuso
                 let d = new Date(dataStr);
