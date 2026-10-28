@@ -348,6 +348,16 @@
                         let avatarHtml = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--primary-color);"></i>`;
                         if (fotoFinal) {
                             avatarHtml = `<img src="${fotoFinal}" alt="Assistido" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
+                        } else {
+                            // Ícones específicos por gênero quando não houver foto cadastrada
+                            const sexoLower = (reg.sexo || "").trim().toLowerCase();
+                            if (sexoLower.includes("masculino") || sexoLower === "m") {
+                                avatarHtml = `<i class="fa-solid fa-mars" style="font-size: 2.2rem; color: #0284c7;" title="Masculino"></i>`;
+                            } else if (sexoLower.includes("feminino") || sexoLower === "f") {
+                                avatarHtml = `<i class="fa-solid fa-venus" style="font-size: 2.2rem; color: #db2777;" title="Feminino"></i>`;
+                            } else {
+                                avatarHtml = `<i class="fa-solid fa-genderless" style="font-size: 2.2rem; color: #64748b;" title="Neutro / Outro"></i>`;
+                            }
                         }
 
                         card.innerHTML = `
