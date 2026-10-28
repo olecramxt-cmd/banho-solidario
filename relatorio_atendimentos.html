@@ -274,25 +274,21 @@
         }
 
         function inicializarRelatorioMovimentacao() {
+            // [AJUSTE DO MÊS CORRENTE]: Captura automaticamente o Ano e o Mês vigentes do SO Windows
             const agora = new Date();
             const anoAtual = String(agora.getFullYear());
-            
-            // [AJUSTE DEFINITIVO]: Como a base atual possui registros em Janeiro, 
-            // definimos o mês padrão como "01" (Janeiro) para abrir já com os dados visíveis,
-            // permitindo que o senhor altere para qualquer outro mês livremente no filtro.
-            const mesPadrao = "01"; 
+            const mesAtual = String(agora.getMonth() + 1).padStart(2, '0');
 
             const selectAno = document.getElementById('filtroAno');
             const selectMes = document.getElementById('filtroMes');
 
             if (selectAno) selectAno.value = anoAtual;
-            if (selectMes) selectMes.value = mesPadrao;
+            if (selectMes) selectMes.value = mesAtual; // Define Outubro ("10") automaticamente
 
             atualizarDataExtensoRodape();
             carregarDadosRelatorio();
             carregarNomesAssistidosCache();
         }
-
         function atualizarDataExtensoRodape() {
             const agora = new Date();
             const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
