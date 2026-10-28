@@ -107,13 +107,26 @@
 
     <script src="config.js"></script>
     <script>
-        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        // Validação robusta integrada com localStorage para persistir entre abas (target="_blank")
+        const autorizadoLocal = localStorage.getItem('pbs_autorizado') === 'true';
+        const autorizadoSession = sessionStorage.getItem('pbs_autorizado') === 'true';
+        
         let operadorAtivo = {};
         try {
             operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
         } catch (e) { operadorAtivo = {}; }
 
-        if (!autorizado || (!operadorAtivo.nome && !operadorAtivo.name && !operadorAtivo.username)) {
+        const temOperador = Boolean(operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario);
+
+        // Se tem operador ativo, sincroniza a autorização em ambas as storages automaticamente
+        if (temOperador) {
+            localStorage.setItem('pbs_autorizado', 'true');
+            sessionStorage.setItem('pbs_autorizado', 'true');
+        }
+
+        const estaAutorizado = localStorage.getItem('pbs_autorizado') === 'true' || sessionStorage.getItem('pbs_autorizado') === 'true';
+
+        if (!estaAutorizado || !temOperador) {
             sessionStorage.setItem('pbs_destino', 'atendimentos.html');
             window.location.href = 'login.html';
         }
