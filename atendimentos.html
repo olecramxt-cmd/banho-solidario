@@ -316,9 +316,10 @@
             .catch(() => console.error("Erro ao carregar assistidos."));
         }
 
-        function filtrarAssistidos(termo) {
+function filtrarAssistidos(termo) {
             const container = document.getElementById('listaAutocomplete');
             container.innerHTML = "";
+            
             if (!termo || termo.trim().length === 0) {
                 container.style.display = "none";
                 assistidoSelecionadoGlobal = null;
@@ -333,11 +334,25 @@
                 return;
             }
 
-            const termoFiltro = termo.toLowerCase();
+            // Função auxiliar interna para remover acentos e padronizar letras minúsculas
+            const normalizarTexto = (texto) => {
+                return String(texto || "")
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+            };
+
+            const termoFiltro = normalizarTexto(termo);
+
             const filtrados = listaGeralAssistidos.filter(reg => {
-                const nome = (reg.nomeSocial || reg.nomeCompleto || "").toLowerCase();
-                const mat = (reg.matricula || "").toLowerCase();
-                return nome.includes(termoFiltro) || mat.includes(termoFiltro);
+                if (!reg) return false;
+                const nomeSocial = normalizarTexto(reg.nomeSocial);
+                const nomeCompleto = normalizarTexto(reg.nomeCompleto || reg.nome);
+                const mat = normalizarTexto(reg.matricula);
+
+                return nomeSocial.includes(termoFiltro) || 
+                       nomeCompleto.includes(termoFiltro) || 
+                       mat.includes(termoFiltro);
             });
 
             if (filtrados.length > 0) {
@@ -345,7 +360,7 @@
                 filtrados.forEach(reg => {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
-                    const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || "---";
+                    const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || reg.nome || "---";
                     div.innerHTML = `<strong>${nomeExibicao}</strong> (${reg.matricula || 'Sem Matrícula'})`;
                     div.onclick = () => selecionarAssistido(reg);
                     container.appendChild(div);
