@@ -392,37 +392,39 @@
         function formatarDataDdMmAaHhMm(dataStr) {
             if (!dataStr) return "---";
             try {
+                // Se a string veio com barras e espaços (formato texto da planilha)
                 let dataLimpa = String(dataStr).trim();
-                
-                // Exemplo vindo da planilha: "01/01/2026 07:13:35" ou similar
-                if (dataLimpa.includes('/')) {
+                if (dataLimpa.includes('/') && dataLimpa.includes(':')) {
                     let partes = dataLimpa.split(' ');
-                    let dataPt = partes[0].split('/'); // ["01", "01", "2026"]
-                    if (dataPt.length === 3) {
+                    let dataPt = partes[0].split('/');
+                    let horaPt = partes[1].split(':');
+                    if (dataPt.length === 3 && horaPt.length >= 2) {
                         let dd = dataPt[0];
                         let mm = dataPt[1];
                         let aa = dataPt[2].slice(-2);
                         
-                        // Se houver horário na string, extrai os caracteres textuais puros (HH:MM)
-                        if (partes.length >= 2 && partes[1]) {
-                            let horaPt = partes[1].substring(0, 5); // Pega exatamente "07:13" da string original
-                            return `${dd}/${mm}/${aa} - ${horaPt}`;
-                        }
-                        return `${dd}/${mm}/${aa}`;
+                        // Subtrai 8 horas diretamente se houver o deslocamento de fuso da API
+                        let h = parseInt(horaPt[0], 10);
+                        let m = parseInt(horaPt[1], 10);
+                        
+                        // Ajuste exato para compensar o fuso horária da API do Google Sheets
+                        h = h - 8;
+                        if (h < 0) h += 24; // Se virar o dia para trás
+                        
+                        let horaFormatada = String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
+                        return `${dd}/${mm}/${aa} - ${horaFormatada}`;
                     }
                 }
                 
-                // Caso venha em formato ISO (ex: "2026-01-01T07:13:35")
-                if (dataLimpa.includes('T')) {
-                    let partesIso = dataLimpa.split('T');
-                    let dataIso = partesIso[0].split('-'); // ["2026", "01", "01"]
-                    if (dataIso.length === 3 && partesIso[1]) {
-                        let dd = dataIso[2];
-                        let mm = dataIso[1];
-                        let aa = dataIso[0].slice(-2);
-                        let horaIso = partesIso[1].substring(0, 5); // "HH:MM" puro
-                        return `${dd}/${mm}/${aa} - ${horaIso}`;
-                    }
+                // Fallback padrão se vier como objeto ISO da API
+                let d = new Date(dataStr);
+                if (!isNaN(d.getTime())) {
+                    let dd = String(d.getUTCDate()).padStart(2, '0');
+                    let mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+                    let aa = String(d.getUTCFullYear()).slice(-2);
+                    let hh = String(d.getUTCHours()).padStart(2, '0');
+                    let min = String(d.getUTCMinutes()).padStart(2, '0');
+                    return `${dd}/${mm}/${aa} - ${hh}:${min}`;
                 }
 
                 return dataStr;
