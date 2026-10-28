@@ -434,7 +434,7 @@
             return String(num);
         }
 
-        function processarEAtualizarTudo() {
+function processarEAtualizarTudo() {
             const anoSelecionado = document.getElementById('filtroAno').value;
             const mesSelecionado = document.getElementById('filtroMes').value;
             const ativarIndividual = document.getElementById('chkFiltroIndividual').checked;
@@ -453,16 +453,15 @@
 
                     let dataLimpa = String(dataRef).trim();
 
-                    // Tratamento robusto para formato brasileiro "DD/MM/YYYY HH:MM:SS" (como gravado na planilha)
+                    // Extração rigorosa da data no formato brasileiro "DD/MM/YYYY"
                     if (dataLimpa.includes('/')) {
-                        let partesDataHora = dataLimpa.split(' ')[0]; // Pega só a parte da data "DD/MM/YYYY"
+                        let partesDataHora = dataLimpa.split(' ')[0]; 
                         let partesBr = partesDataHora.split('/');
                         if (partesBr.length === 3) {
-                            dMes = partesBr[1]; // Mês (ex: "01")
-                            dAno = partesBr[2]; // Ano (ex: "2026")
+                            dMes = partesBr[1]; // Ex: "01" para janeiro, "10" para outubro
+                            dAno = partesBr[2]; // Ex: "2026"
                         }
                     } 
-                    // Tratamento para formato ISO "YYYY-MM-DD..."
                     else if (dataLimpa.includes('-')) {
                         let partesIso = dataLimpa.split('T')[0].split('-');
                         if (partesIso.length === 3) {
@@ -471,15 +470,16 @@
                         }
                     }
 
-                    if (dAno === anoSelecionado) {
-                        if (mesSelecionado === "TODOS" || dMes === mesSelecionado) {
-                            if (!ativarIndividual || !nomeFiltro || (item.nomeAssistido && item.nomeAssistido.toLowerCase().includes(nomeFiltro))) {
-                                filtradosTabela.push(item);
-                                if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
-                                if (String(item.janta).toUpperCase() === "SIM") totalJanta++;
-                                if (String(item.curativos).toUpperCase() === "SIM") totalCurativos++;
-                            }
-                        }
+                    // Validação estrita: O ano E o mês devem bater com o filtro escolhido
+                    let anoCorresponde = (dAno === anoSelecionado);
+                    let mesCorresponde = (mesSelecionado === "TODOS" || dMes === mesSelecionado);
+                    let individuoCorresponde = (!ativarIndividual || !nomeFiltro || (item.nomeAssistido && item.nomeAssistido.toLowerCase().includes(nomeFiltro)));
+
+                    if (anoCorresponde && mesCorresponde && individuoCorresponde) {
+                        filtradosTabela.push(item);
+                        if (String(item.banho).toUpperCase() === "SIM") totalBanho++;
+                        if (String(item.janta).toUpperCase() === "SIM") totalJanta++;
+                        if (String(item.curativos).toUpperCase() === "SIM") totalCurativos++;
                     }
                 }
             });
@@ -487,7 +487,6 @@
             renderizarGraficos(totalBanho, totalJanta, totalCurativos);
             preencherTabelaMovimentacao(filtradosTabela, totalBanho, totalJanta, totalCurativos);
         }
-
         function preencherTabelaMovimentacao(lista, b, j, c) {
             const tbody = document.getElementById('tabelaMovimentacaoCorpo');
             const tfoot = document.getElementById('tabelaMovimentacaoRodape');
