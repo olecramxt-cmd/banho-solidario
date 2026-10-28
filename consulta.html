@@ -99,21 +99,19 @@
             window.location.href = 'login.html';
         }
         const API_URL = CONFIG.API_URL;
-    </script> <!-- 🟢 Garanta que esta tag fecha corretamente aqui -->
 
-    <script>
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        // 🟢 Adicione esta função auxiliar aqui no topo do script principal
+        // 🟢 Função auxiliar de normalização de texto posicionada logo abaixo da URL da API
         const normalizarTexto = (texto) => {
             return String(texto || "")
                 .toLowerCase()
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "");
         };
+
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
 
         function sairConsulta() {
             window.history.back();
