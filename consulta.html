@@ -89,13 +89,25 @@
             window.location.href = 'login.html';
         }
         const API_URL = CONFIG.API_URL;
+<!-- Importação do Config de API Centralizada -->
+    <script src="config.js"></script>
+    <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
+            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+            window.location.href = 'login.html';
+        }
+        const API_URL = CONFIG.API_URL;
+    </script> <!-- 🟢 Garanta que esta tag fecha corretamente aqui -->
+
     <script>
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        // 🟢 [COLOQUE AQUI]: Função auxiliar de normalização de texto
+        // 🟢 Adicione esta função auxiliar aqui no topo do script principal
         const normalizarTexto = (texto) => {
             return String(texto || "")
                 .toLowerCase()
@@ -106,6 +118,7 @@
         function sairConsulta() {
             window.history.back();
         }
+    </script>
 
     <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
