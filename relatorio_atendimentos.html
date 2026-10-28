@@ -389,12 +389,12 @@
         }
 
         // Função de formatação limpa e segura que extrai exatamente a hora da planilha sem conversões de fuso
-        function formatarDataDdMmAaHhMm(dataStr) {
+function formatarDataDdMmAaHhMm(dataStr) {
             if (!dataStr) return "---";
             try {
                 let dataLimpa = String(dataStr).trim();
                 
-                // Se contiver o formato brasileiro "DD/MM/YYYY HH:MM:SS"
+                // Formato brasileiro "DD/MM/YYYY HH:MM:SS" (ou "DD/MM/YYYY HH:MM")
                 if (dataLimpa.includes('/')) {
                     let partes = dataLimpa.split(' ');
                     let dataPt = partes[0].split('/');
@@ -403,15 +403,28 @@
                         let mm = dataPt[1];
                         let aa = dataPt[2].slice(-2);
                         
-                        // Extrai estritamente a hora original da string sem recalcular fuso
+                        // Extração puramente textual da hora (HH:MM), ignorando fuso
                         if (partes.length >= 2 && partes[1]) {
-                            let horaPt = partes[1].substring(0, 5); // "HH:MM"
+                            let horaPt = partes[1].substring(0, 5); // Pega exatamente "07:07"
                             return `${dd}/${mm}/${aa} - ${horaPt}`;
                         }
                         return `${dd}/${mm}/${aa}`;
                     }
                 }
                 
+                // Formato ISO "YYYY-MM-DDTHH:MM:SS..."
+                if (dataLimpa.includes('T')) {
+                    let partesIso = dataLimpa.split('T');
+                    let dataIso = partesIso[0].split('-'); // ["2026", "10", "28"]
+                    if (dataIso.length === 3 && partesIso[1]) {
+                        let dd = dataIso[2];
+                        let mm = dataIso[1];
+                        let aa = dataIso[0].slice(-2);
+                        let horaIso = partesIso[1].substring(0, 5); // "HH:MM" puro
+                        return `${dd}/${mm}/${aa} - ${horaIso}`;
+                    }
+                }
+
                 return dataStr;
             } catch(e) {
                 console.error("Erro ao formatar data:", e);
