@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.001             -->
-<!-- Data de atualização: 28/10/2026 - 04:15                                        -->
-<!-- Descrição: Correção de tags CSS extraviadas e alinhamento visual perfeito.      -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.002             -->
+<!-- Data de atualização: 28/10/2026 - 07:02                                        -->
+<!-- Descrição: Correção definitiva da formatação de hora exata e estabilidade geral. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -61,7 +61,6 @@
         .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
         .form-group select, .form-group input { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; background: white; width: 100%; }
 
-        /* Classes de layout responsivas corrigidas */
         .filtros-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; width: 100%; }
         @media(min-width: 768px) { .filtros-grid { grid-template-columns: 1fr 1fr; } }
 
@@ -274,7 +273,6 @@
         }
 
         function inicializarRelatorioMovimentacao() {
-            // [AJUSTE DO MÊS CORRENTE]: Captura automaticamente o Ano e o Mês vigentes do SO Windows
             const agora = new Date();
             const anoAtual = String(agora.getFullYear());
             const mesAtual = String(agora.getMonth() + 1).padStart(2, '0');
@@ -283,12 +281,13 @@
             const selectMes = document.getElementById('filtroMes');
 
             if (selectAno) selectAno.value = anoAtual;
-            if (selectMes) selectMes.value = mesAtual; // Define Outubro ("10") automaticamente
+            if (selectMes) selectMes.value = mesAtual;
 
             atualizarDataExtensoRodape();
             carregarDadosRelatorio();
             carregarNomesAssistidosCache();
         }
+
         function atualizarDataExtensoRodape() {
             const agora = new Date();
             const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
@@ -389,12 +388,13 @@
             });
         }
 
-function formatarDataDdMmAaHhMm(dataStr) {
+        // Função de formatação limpa e segura que extrai exatamente a hora da planilha sem conversões de fuso
+        function formatarDataDdMmAaHhMm(dataStr) {
             if (!dataStr) return "---";
             try {
                 let dataLimpa = String(dataStr).trim();
                 
-                // Se contiver a barra do formato brasileiro "DD/MM/YYYY HH:MM:SS"
+                // Se contiver o formato brasileiro "DD/MM/YYYY HH:MM:SS"
                 if (dataLimpa.includes('/')) {
                     let partes = dataLimpa.split(' ');
                     let dataPt = partes[0].split('/');
@@ -403,7 +403,7 @@ function formatarDataDdMmAaHhMm(dataStr) {
                         let mm = dataPt[1];
                         let aa = dataPt[2].slice(-2);
                         
-                        // Se houver horário na string, extrai ele de forma segura
+                        // Extrai estritamente a hora original da string sem recalcular fuso
                         if (partes.length >= 2 && partes[1]) {
                             let horaPt = partes[1].substring(0, 5); // "HH:MM"
                             return `${dd}/${mm}/${aa} - ${horaPt}`;
@@ -412,19 +412,6 @@ function formatarDataDdMmAaHhMm(dataStr) {
                     }
                 }
                 
-                // Se contiver formato ISO "YYYY-MM-DD..."
-                if (dataLimpa.includes('T') || dataLimpa.includes('-')) {
-                    let d = new Date(dataStr);
-                    if (!isNaN(d.getTime())) {
-                        let dd = String(d.getUTCDate()).padStart(2, '0');
-                        let mm = String(d.getUTCMonth() + 1).padStart(2, '0');
-                        let aa = String(d.getUTCFullYear()).slice(-2);
-                        let hh = String(d.getUTCHours()).padStart(2, '0');
-                        let min = String(d.getUTCMinutes()).padStart(2, '0');
-                        return `${dd}/${mm}/${aa} - ${hh}:${min}`;
-                    }
-                }
-
                 return dataStr;
             } catch(e) {
                 console.error("Erro ao formatar data:", e);
@@ -432,7 +419,7 @@ function formatarDataDdMmAaHhMm(dataStr) {
             }
         }
 
-function processarEAtualizarTudo() {
+        function processarEAtualizarTudo() {
             const anoSelecionado = document.getElementById('filtroAno').value;
             const mesSelecionado = document.getElementById('filtroMes').value;
             const ativarIndividual = document.getElementById('chkFiltroIndividual').checked;
@@ -451,13 +438,12 @@ function processarEAtualizarTudo() {
 
                     let dataLimpa = String(dataRef).trim();
 
-                    // Extração rigorosa da data no formato brasileiro "DD/MM/YYYY"
                     if (dataLimpa.includes('/')) {
                         let partesDataHora = dataLimpa.split(' ')[0]; 
                         let partesBr = partesDataHora.split('/');
                         if (partesBr.length === 3) {
-                            dMes = partesBr[1]; // Ex: "01" para janeiro, "10" para outubro
-                            dAno = partesBr[2]; // Ex: "2026"
+                            dMes = partesBr[1]; 
+                            dAno = partesBr[2]; 
                         }
                     } 
                     else if (dataLimpa.includes('-')) {
@@ -468,7 +454,6 @@ function processarEAtualizarTudo() {
                         }
                     }
 
-                    // Validação estrita: O ano E o mês devem bater com o filtro escolhido
                     let anoCorresponde = (dAno === anoSelecionado);
                     let mesCorresponde = (mesSelecionado === "TODOS" || dMes === mesSelecionado);
                     let individuoCorresponde = (!ativarIndividual || !nomeFiltro || (item.nomeAssistido && item.nomeAssistido.toLowerCase().includes(nomeFiltro)));
@@ -485,6 +470,7 @@ function processarEAtualizarTudo() {
             renderizarGraficos(totalBanho, totalJanta, totalCurativos);
             preencherTabelaMovimentacao(filtradosTabela, totalBanho, totalJanta, totalCurativos);
         }
+
         function preencherTabelaMovimentacao(lista, b, j, c) {
             const tbody = document.getElementById('tabelaMovimentacaoCorpo');
             const tfoot = document.getElementById('tabelaMovimentacaoRodape');
@@ -526,6 +512,18 @@ function processarEAtualizarTudo() {
 
             let totalGeral = b + j + c;
             resumoDiv.innerHTML = `<strong>Resumo Estatístico Oficial:</strong> Foram realizados no período um total de <strong>${totalGeral}</strong> (${numeroPorExtenso(totalGeral)}) atendimentos, sendo <strong>${b}</strong> (${numeroPorExtenso(b)}) banhos, <strong>${j}</strong> (${numeroPorExtenso(j)}) jantas e <strong>${c}</strong> (${numeroPorExtenso(c)}) curativos.`;
+        }
+
+        function numeroPorExtenso(num) {
+            const unidades = ["zero", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
+            const dezenas = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
+            if (num < 20) return unidades[num];
+            if (num < 100) {
+                let d = Math.floor(num / 10);
+                let u = num % 10;
+                return u === 0 ? dezenas[d] : `${dezenas[d]} e ${unidades[u]}`;
+            }
+            return String(num);
         }
 
         function renderizarGraficos(banho, janta, curativos) {
@@ -607,3 +605,5 @@ function processarEAtualizarTudo() {
         }
     </script>
 </body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
