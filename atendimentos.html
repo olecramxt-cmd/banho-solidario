@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.16.000                      -->
-<!-- Data de atualização: 27/10/2026 - 06:53                                        -->
-<!-- Descrição: Correção definitiva da formatação de fuso na tabela web.           -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.17.000                      -->
+<!-- Data de atualização: 28/10/2026 - 12:10                                        -->
+<!-- Descrição: Integração dos avatares personalizados de gênero na tela de registro. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -70,7 +70,7 @@
         .autocomplete-item:hover { background: var(--accent-color); color: var(--secondary-color); }
 
         .checkbox-group { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: center; margin-top: 8px; }
-        .checkbox-group label { font-weight: 500; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .checkbox-label { font-weight: 500; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
         .btn-salvar { background: var(--secondary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; height: 48px; width: 100%; margin-top: auto; }
         .btn-salvar:hover { background: #6d28d9; }
@@ -134,10 +134,6 @@
             return url;
         }
 
-        /* ========================================================================== */
-        /* 🔵 [CORREÇÃO DEFINITIVA]: Ajuste universal de fuso horário (-3h) para      */
-        /*    converter corretamente strings ISO antigas e exibir a hora exata local. */
-        /* ========================================================================== */
         function formatarDataHoraBR(dataStr) {
             if (!dataStr) return "---";
             let s = String(dataStr).trim();
@@ -145,7 +141,6 @@
             if (s.includes('T') && (s.includes('Z') || s.includes('+') || s.includes('-'))) {
                 let d = new Date(s);
                 if (!isNaN(d.getTime())) {
-                    // Ajuste exato de 5 horas para alinhar com o horário correto
                     d.setHours(d.getHours() - 5);
                     let dia = String(d.getDate()).padStart(2, '0');
                     let mes = String(d.getMonth() + 1).padStart(2, '0');
@@ -229,8 +224,9 @@
                 <div class="form-group">
                     <label>Sexo</label>
                     <div class="sexo-foto-container">
-                        <div id="avatarSexoContainer" class="avatar-campo-sexo" title="Foto do Assistido">
-                            <i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>
+                        <!-- Avatar dinâmico integrado com os arquivos personalizados do repositório -->
+                        <div id="avatarSexoContainer" class="avatar-campo-sexo" title="Avatar / Foto do Assistido">
+                            <img id="avatarSexoPreview" src="imagens/AvatarPessoaNeutra.png" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.2rem; color: var(--secondary-color);\'></i>';">
                         </div>
                         <input type="text" id="sexoAssistido" class="form-control" placeholder="---" readonly style="flex: 1;">
                         <a href="cadastro.html" target="_blank" class="btn-novo-cadastro" title="Novo Cadastro de Assistido (2.1)"><i class="fa-solid fa-user-plus"></i> Novo</a>
@@ -277,274 +273,4 @@
                 <thead>
                     <tr>
                         <th>Data / Hora</th>
-                        <th>Matrícula</th>
-                        <th>Assistido</th>
-                        <th>Sexo</th>
-                        <th style="text-align: center;">Banho</th>
-                        <th style="text-align: center;">Janta</th>
-                        <th style="text-align: center;">Curativos</th>
-                        <th>Operador</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaAtendimentos">
-                    <tr><td colspan="8" style="text-align: center; color: #0284c7;">Carregando o histórico de atendimentos...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <script>
-        function inicializarAtendimentos() {
-            const nomeOp = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Operador";
-            document.getElementById('operadorLogadoBadge').innerText = `Operador: ${nomeOp}`;
-
-            const hoje = new Date().toISOString().split('T')[0];
-            document.getElementById('dataAtendimento').value = hoje;
-
-            carregarListaAssistidosParaBusca();
-            carregarAtendimentosRecentes();
-        }
-
-        function carregarListaAssistidosParaBusca() {
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarTriagem", termo: "todos" })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "encontrado" && data.lista) {
-                    listaGeralAssistidos = data.lista.map(item => item.registro);
-                }
-            })
-            .catch(() => console.error("Erro ao carregar assistidos."));
-        }
-
-        function filtrarAssistidos(termo) {
-            const container = document.getElementById('listaAutocomplete');
-            container.innerHTML = "";
-            if (!termo || termo.trim().length === 0) {
-                container.style.display = "none";
-                assistidoSelecionadoGlobal = null;
-                document.getElementById('painelAssistidoSelecionado').innerHTML = "";
-                document.getElementById('sexoAssistido').value = "";
-                document.getElementById('matriculaAssistido').value = "";
-                document.getElementById('avatarSexoContainer').innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
-                carregarAtendimentosRecentes(); 
-                return;
-            }
-
-            const termoFiltro = termo.toLowerCase();
-            const filtrados = listaGeralAssistidos.filter(reg => {
-                const nome = (reg.nomeSocial || reg.nomeCompleto || "").toLowerCase();
-                const mat = (reg.matricula || "").toLowerCase();
-                return nome.includes(termoFiltro) || mat.includes(termoFiltro);
-            });
-
-            if (filtrados.length > 0) {
-                container.style.display = "block";
-                filtrados.forEach(reg => {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-item';
-                    const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || "---";
-                    div.innerHTML = `<strong>${nomeExibicao}</strong> (${reg.matricula || 'Sem Matrícula'})`;
-                    div.onclick = () => selecionarAssistido(reg);
-                    container.appendChild(div);
-                });
-            } else {
-                container.style.display = "none";
-            }
-        }
-
-        function selecionarAssistido(reg) {
-            assistidoSelecionadoGlobal = reg;
-            const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || "";
-            document.getElementById('nomeAssistidoBusca').value = nomeExibicao;
-            document.getElementById('matriculaAssistido').value = reg.matricula || "";
-            document.getElementById('sexoAssistido').value = reg.sexo || "";
-            document.getElementById('listaAutocomplete').style.display = "none";
-
-            const avatarContainer = document.getElementById('avatarSexoContainer');
-            const fotoFinal = converterLinkDrive(reg.foto);
-            if (fotoFinal) {
-                avatarContainer.innerHTML = `<img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.2rem; color: var(--secondary-color);\'></i>';">`;
-            } else {
-                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
-            }
-
-            renderizarCardAssistidoSelecionado(reg);
-            carregarHistoricoAcumuladoAssistido(reg.matricula, nomeExibicao);
-            carregarAtendimentosRecentes(reg.matricula);
-        }
-
-        function renderizarCardAssistidoSelecionado(reg) {
-            const box = document.getElementById('painelAssistidoSelecionado');
-            const fotoFinal = converterLinkDrive(reg.foto);
-            let avatarHtml = `<div class="avatar-mini-mov"><i class="fa-solid fa-user" style="font-size: 1.5rem; color: var(--secondary-color);"></i></div>`;
-            if (fotoFinal) {
-                avatarHtml = `<div class="avatar-mini-mov"><img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.5rem; color: var(--secondary-color);\'></i>';"></div>`;
-            }
-
-            const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || "---";
-            box.innerHTML = `
-                <div class="assistido-selecionado-box">
-                    ${avatarHtml}
-                    <div>
-                        <div style="font-weight: 700; font-size: 1.05rem; color: var(--secondary-color);">${nomeExibicao}</div>
-                        <div style="font-size: 0.88rem; color: #64748b;">Matrícula: <strong>${reg.matricula || '---'}</strong> | Sexo: ${reg.sexo || '---'}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function carregarHistoricoAcumuladoAssistido(matricula, nome) {
-            document.getElementById('tituloHistoricoAssistido').innerText = `Histórico Acumulado de: ${nome} (${matricula})`;
-            
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarAtendimentos" })
-            })
-            .then(res => res.json())
-            .then(data => {
-                let b = 0, j = 0, c = 0;
-                if (data.status === "encontrado" && data.lista) {
-                    data.lista.forEach(at => {
-                        if (String(at.matricula).trim() === String(matricula).trim()) {
-                            if (String(at.banho).toUpperCase() === "SIM") b++;
-                            if (String(at.janta).toUpperCase() === "SIM") j++;
-                            if (String(at.curativos).toUpperCase() === "SIM") c++;
-                        }
-                    });
-                }
-                document.getElementById('histBanhos').innerText = b;
-                document.getElementById('histJantas').innerText = j;
-                document.getElementById('histCurativos').innerText = c;
-            })
-            .catch(() => {
-                document.getElementById('histBanhos').innerText = 0;
-                document.getElementById('histJantas').innerText = 0;
-                document.getElementById('histCurativos').innerText = 0;
-            });
-        }
-
-        function carregarAtendimentosRecentes(filtroMatricula = null) {
-            const tbody = document.getElementById('tabelaAtendimentos');
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #0284c7;">Carregando histórico de 12 meses...</td></tr>`;
-
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarAtendimentos" })
-            })
-            .then(res => res.json())
-            .then(data => {
-                tbody.innerHTML = "";
-                if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
-                    const dataLimite = new Date();
-                    dataLimite.setMonth(dataLimite.getMonth() - 12);
-
-                    let filtrados = data.lista.filter(at => {
-                        let dataAt = new Date(at.carimbo || at.dataAcao);
-                        let dentroPeriodo = dataAt >= dataLimite || isNaN(dataAt);
-                        if (filtroMatricula) {
-                            return dentroPeriodo && String(at.matricula).trim() === String(filtroMatricula).trim();
-                        }
-                        return dentroPeriodo;
-                    });
-
-                    if (filtrados.length === 0) {
-                        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum atendimento registrado nos últimos 12 meses.</td></tr>`;
-                        return;
-                    }
-
-                    filtrados.sort((a, b) => new Date(b.carimbo || b.dataAcao) - new Date(a.carimbo || a.dataAcao));
-
-                    filtrados.forEach(at => {
-                        let tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="color: #7c3aed; font-weight: 600;">${formatarDataHoraBR(at.carimbo || at.dataAcao)}</td>
-                            <td><strong>${at.matricula || '---'}</strong></td>
-                            <td>${at.nomeAssistido || '---'}</td>
-                            <td>${at.sexo || '---'}</td>
-                            <td style="text-align: center;">${String(at.banho).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
-                            <td style="text-align: center;">${String(at.janta).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
-                            <td style="text-align: center;">${String(at.curativos).toUpperCase() === 'SIM' ? '<i class="fa-solid fa-check" style="color: #16a34a;"></i>' : '-'}</td>
-                            <td>${at.operador || '---'}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Nenhum atendimento registrado no sistema.</td></tr>`;
-                }
-            })
-            .catch(() => {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Erro ao carregar atendimentos.</td></tr>`;
-            });
-        }
-
-        function salvarAtendimento(e) {
-            e.preventDefault();
-            const statusDiv = document.getElementById('mensagemStatus');
-
-            const banho = document.getElementById('checkBanho').checked;
-            const janta = document.getElementById('checkJanta').checked;
-            const curativos = document.getElementById('checkCurativos').checked;
-
-            if (!banho && !janta && !curativos) {
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Atenção: Selecione ao menos um serviço prestado na ação!";
-                return;
-            }
-
-            const nomeOpGravacao = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Sistema";
-            const payload = {
-                action: "inserirAtendimento",
-                matricula: document.getElementById('matriculaAssistido').value.trim(),
-                nomeAssistido: document.getElementById('nomeAssistidoBusca').value.trim(),
-                sexo: document.getElementById('sexoAssistido').value.trim(),
-                banho: banho,
-                janta: janta,
-                curativos: curativos,
-                dataAcao: document.getElementById('dataAtendimento').value,
-                operador: nomeOpGravacao
-            };
-
-            statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "Gravando atendimento na nuvem...";
-
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "sucesso") {
-                    statusDiv.style.color = "green";
-                    statusDiv.innerText = "Atendimento gravado com sucesso!";
-                    
-                    document.getElementById('formAtendimento').reset();
-                    document.getElementById('painelAssistidoSelecionado').innerHTML = "";
-                    document.getElementById('avatarSexoContainer').innerHTML = `<i class="fa-solid fa-user" style="font-size: 1.2rem; color: var(--secondary-color);"></i>`;
-                    document.getElementById('tituloHistoricoAssistido').innerText = "Histórico Acumulado do Assistido: Selecione um assistido";
-                    document.getElementById('histBanhos').innerText = "0";
-                    document.getElementById('histJantas').innerText = "0";
-                    document.getElementById('histCurativos').innerText = "0";
-
-                    inicializarAtendimentos();
-                    setTimeout(() => { statusDiv.innerText = ""; }, 4000);
-                } else {
-                    statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Erro ao gravar atendimento.";
-                }
-            })
-            .catch(() => {
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Erro de conexão com o servidor.";
-            });
-        }
-    </script>
-</body>
-</html>
-<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
+                        <th>Mat
