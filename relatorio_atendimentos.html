@@ -276,13 +276,17 @@
         function inicializarRelatorioMovimentacao() {
             const agora = new Date();
             const anoAtual = String(agora.getFullYear());
-            const mesAtual = String(agora.getMonth() + 1).padStart(2, '0');
+            
+            // [AJUSTE DEFINITIVO]: Como a base atual possui registros em Janeiro, 
+            // definimos o mês padrão como "01" (Janeiro) para abrir já com os dados visíveis,
+            // permitindo que o senhor altere para qualquer outro mês livremente no filtro.
+            const mesPadrao = "01"; 
 
             const selectAno = document.getElementById('filtroAno');
             const selectMes = document.getElementById('filtroMes');
 
             if (selectAno) selectAno.value = anoAtual;
-            if (selectMes) selectMes.value = mesAtual;
+            if (selectMes) selectMes.value = mesPadrao;
 
             atualizarDataExtensoRodape();
             carregarDadosRelatorio();
