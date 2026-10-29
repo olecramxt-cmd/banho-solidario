@@ -230,8 +230,14 @@
                     <div id="listaAutocomplete" class="autocomplete-list"></div>
                 </div>
                 <div class="form-group">
-                    <label>Matrícula do Assistido</label>
-                    <input type="text" id="matriculaAssistido" class="form-control" placeholder="Automático..." readonly required>
+                    <label>Nome do Assistido</label>
+                    <input type="text" id="nomeAssistidoBusca" class="form-control" placeholder="Digite para buscar assistido..." autocomplete="off" oninput="filtrarAssistidos(this.value)" required>
+                    <div id="listaAutocomplete" class="autocomplete-list"></div>
+                </div>
+                <!-- 🟢 ADICIONE ESTE NOVO CAMPO LOGO ABAIXO -->
+                <div class="form-group">
+                    <label>Nome Social</label>
+                    <input type="text" id="nomeSocialAssistido" class="form-control" placeholder="---" readonly style="background:#f1f5f9;">
                 </div>
                 
                 <div class="form-group">
@@ -383,14 +389,17 @@ function filtrarAssistidos(termo) {
             }
         }
 
-        function selecionarAssistido(reg) {
+            function selecionarAssistido(reg) {
             assistidoSelecionadoGlobal = reg;
-            const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || "";
+            const nomeExibicao = reg.nomeCompleto || "";
             document.getElementById('nomeAssistidoBusca').value = nomeExibicao;
+            
+            // 🟢 ADICIONE ESTA LINHA PARA PREENCHER O NOME SOCIAL AUTOMATICAMENTE
+            document.getElementById('nomeSocialAssistido').value = reg.nomeSocial || "---";
+
             document.getElementById('matriculaAssistido').value = reg.matricula || "";
             document.getElementById('sexoAssistido').value = reg.sexo || "";
             document.getElementById('listaAutocomplete').style.display = "none";
-
             // [LÓGICA DOS AVATARES PERSONALIZADOS]:
             const imgPreview = document.getElementById('avatarSexoPreview');
             const fotoDrive = converterLinkDrive(reg.foto);
