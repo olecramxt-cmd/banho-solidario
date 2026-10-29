@@ -372,7 +372,7 @@ function filtrarAssistidos(termo) {
                        mat.includes(termoFiltro);
             });
 
-            // 🟢 ORDENAÇÃO ALFABÉTICA POR NOME COMPLETO OU SOCIAL
+            // 🟢 ORDENAÇÃO ALFABÉTICA POR NOME COMPLETO
             filtrados.sort((a, b) => {
                 const nomeA = (a.nomeCompleto || a.nome || "").toLowerCase();
                 const nomeB = (b.nomeCompleto || b.nome || "").toLowerCase();
@@ -385,11 +385,11 @@ function filtrarAssistidos(termo) {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
                     
-                    // 🟢 GARANTE QUE O NOME PRINCIPAL É O COMPLETO E EXibe O SOCIAL SE HOUVER
-                    const nomePrin = reg.nomeCompleto || reg.nome || "---";
-                    const nomeSocText = reg.nomeSocial ? ` (Social: ${reg.nomeSocial})` : '';
+                    // 🟢 EXIBE O NOME COMPLETO COMO PRINCIPAL E O SOCIAL (SE HOUVER) AO LADO
+                    const nomePrincipal = reg.nomeCompleto || reg.nome || "---";
+                    const nomeSocialText = reg.nomeSocial ? ` (Social: ${reg.nomeSocial})` : '';
                     
-                    div.innerHTML = `<strong>${nomePrin}</strong>${nomeSocText} (${reg.matricula || 'Sem Matrícula'})`;
+                    div.innerHTML = `<strong>${nomePrincipal}</strong>${nomeSocialText} (${reg.matricula || 'Sem Matrícula'})`;
                     div.onclick = () => selecionarAssistido(reg);
                     container.appendChild(div);
                 });
