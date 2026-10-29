@@ -219,7 +219,7 @@
         </div>
 
         <form id="formAtendimento" onsubmit="salvarAtendimento(event)">
-            <div class="form-grid">
+                <div class="form-grid">
                 <div class="form-group">
                     <label>Data do Atendimento</label>
                     <input type="date" id="dataAtendimento" class="form-control" required>
@@ -230,14 +230,12 @@
                     <div id="listaAutocomplete" class="autocomplete-list"></div>
                 </div>
                 <div class="form-group">
-                    <label>Nome do Assistido</label>
-                    <input type="text" id="nomeAssistidoBusca" class="form-control" placeholder="Digite para buscar assistido..." autocomplete="off" oninput="filtrarAssistidos(this.value)" required>
-                    <div id="listaAutocomplete" class="autocomplete-list"></div>
-                </div>
-                <!-- 🟢 ADICIONE ESTE NOVO CAMPO LOGO ABAIXO -->
-                <div class="form-group">
                     <label>Nome Social</label>
                     <input type="text" id="nomeSocialAssistido" class="form-control" placeholder="---" readonly style="background:#f1f5f9;">
+                </div>
+                <div class="form-group">
+                    <label>Matrícula do Assistido</label>
+                    <input type="text" id="matriculaAssistido" class="form-control" placeholder="Automático..." readonly required>
                 </div>
                 
                 <div class="form-group">
@@ -372,6 +370,13 @@ function filtrarAssistidos(termo) {
                 return nomeSocial.includes(termoFiltro) || 
                        nomeCompleto.includes(termoFiltro) || 
                        mat.includes(termoFiltro);
+            });
+
+            // 🟢 ORDENAÇÃO ALFABÉTICA POR NOME COMPLETO OU SOCIAL
+            filtrados.sort((a, b) => {
+                const nomeA = (a.nomeCompleto || a.nome || "").toLowerCase();
+                const nomeB = (b.nomeCompleto || b.nome || "").toLowerCase();
+                return nomeA.localeCompare(nomeB);
             });
 
             if (filtrados.length > 0) {
