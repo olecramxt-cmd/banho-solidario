@@ -384,22 +384,24 @@ function filtrarAssistidos(termo) {
                 filtrados.forEach(reg => {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
-                    const nomeExibicao = reg.nomeSocial || reg.nomeCompleto || reg.nome || "---";
-                    div.innerHTML = `<strong>${nomeExibicao}</strong> (${reg.matricula || 'Sem Matrícula'})`;
+                    
+                    // 🟢 GARANTE QUE O NOME PRINCIPAL É O COMPLETO E EXibe O SOCIAL SE HOUVER
+                    const nomePrin = reg.nomeCompleto || reg.nome || "---";
+                    const nomeSocText = reg.nomeSocial ? ` (Social: ${reg.nomeSocial})` : '';
+                    
+                    div.innerHTML = `<strong>${nomePrin}</strong>${nomeSocText} (${reg.matricula || 'Sem Matrícula'})`;
                     div.onclick = () => selecionarAssistido(reg);
                     container.appendChild(div);
                 });
             } else {
                 container.style.display = "none";
             }
-        }
 
             function selecionarAssistido(reg) {
             assistidoSelecionadoGlobal = reg;
-            const nomeExibicao = reg.nomeCompleto || "";
-            document.getElementById('nomeAssistidoBusca').value = nomeExibicao;
             
-            // 🟢 ADICIONE ESTA LINHA PARA PREENCHER O NOME SOCIAL AUTOMATICAMENTE
+            // 🟢 CAMPO PRINCIPAL RECEBE O NOME COMPLETO E O CAMPO SOCIAL RECEBE O NOME SOCIAL
+            document.getElementById('nomeAssistidoBusca').value = reg.nomeCompleto || reg.nome || "";
             document.getElementById('nomeSocialAssistido').value = reg.nomeSocial || "---";
 
             document.getElementById('matriculaAssistido').value = reg.matricula || "";
