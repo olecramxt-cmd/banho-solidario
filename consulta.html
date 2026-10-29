@@ -3,8 +3,8 @@
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
 <!-- Programa: consulta.html. Versão do Módulo: v.2.7.000                           -->
-<!-- Data de atualização: 16/10/2026 - 07:22                                        -->
-<!-- Descrição: Menu atualizado com Atendimentos e integração ao config.js.         -->
+<!-- Data de atualização: 29/10/2026 - 07:11                                        -->
+<!-- Descrição: Inclusão do Telefone para Contato e limpeza de código duplicado.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -89,18 +89,8 @@
             window.location.href = 'login.html';
         }
         const API_URL = CONFIG.API_URL;
-<!-- Importação do Config de API Centralizada -->
-    <script src="config.js"></script>
-    <script>
-        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
-        const ativoLocal = localStorage.getItem('usuario_ativo');
-        if (!autorizado && !ativoLocal) {
-            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
-            window.location.href = 'login.html';
-        }
-        const API_URL = CONFIG.API_URL;
 
-        // 🟢 Função auxiliar de normalização de texto posicionada logo abaixo da URL da API
+        // Função auxiliar de normalização de texto
         const normalizarTexto = (texto) => {
             return String(texto || "")
                 .toLowerCase()
@@ -198,12 +188,8 @@
                 <div class="form-group"><label>RG</label><input type="text" id="rg"></div>
                 <div class="form-group"><label>CPF</label><input type="text" id="cpf"></div>
                 <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
-                <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
-                <!-- 🟢 CAMPO ADICIONADO NA TELA DE CONSULTA -->
-                <div class="form-group">
-                    <label>Telefone para Contato</label>
-                    <input type="text" id="telefoneContato" placeholder="(38) 9.9999-9999">
-                </div>
+                <div class="form-group"><label>Telefone para Contato</label><input type="text" id="telefoneContato" placeholder="(38) 9.9999-9999"></div>
+
                 <div class="section-title">2. Filiação e Contatos</div>
                 <div class="form-group"><label>Filiação (Mãe)</label><input type="text" id="filiacaoMae"></div>
                 <div class="form-group"><label>Filiação (Pai)</label><input type="text" id="filiacaoPai"></div>
@@ -237,15 +223,6 @@
     </div>
 
     <script>
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        function sairConsulta() {
-            window.history.back();
-        }
-
         function formatarDataAmigavel(dataStr, operadorNome) {
             if (!dataStr) return "Data não informada";
             try {
@@ -269,7 +246,7 @@
             }
         }
 
-function pesquisarCadastros() {
+        function pesquisarCadastros() {
             const termoBruto = document.getElementById('termoBusca').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
             document.getElementById('listaResultadosContainer').style.display = 'none';
@@ -284,7 +261,6 @@ function pesquisarCadastros() {
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "Pesquisando assistidos na nuvem...";
 
-            // Se o termo digitado for "todos", enviamos "todos" para o backend; caso contrário, buscamos por "todos" para filtrar localmente com precisão total
             const termoEnvio = normalizarTexto(termoBruto) === "todos" ? "todos" : "todos";
 
             fetch(API_URL, {
@@ -299,7 +275,6 @@ function pesquisarCadastros() {
                     if (normalizarTexto(termoBruto) === "todos") {
                         montarListaSelecao(data.lista);
                     } else {
-                        // Filtro local potente e imune a acentos e maiúsculas/minúsculas
                         const termoFiltro = normalizarTexto(termoBruto);
                         const listaFiltrada = data.lista.filter(item => {
                             const reg = item.registro || {};
@@ -375,11 +350,7 @@ function pesquisarCadastros() {
             document.getElementById('rg').value = reg.rg || "";
             document.getElementById('cpf').value = reg.cpf || "";
             document.getElementById('corRaca').value = reg.corRaca || "";
-            document.getElementById('cpf').value = reg.cpf || "";
-            document.getElementById('corRaca').value = reg.corRaca || "";
-                        // 🟢 ADICIONE ESTA LINHA PARA PREENCHER AO CONSULTAR
             document.getElementById('telefoneContato').value = reg.telefoneContato || "";
-            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";
             document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";
             document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
             document.getElementById('endereco').value = reg.endereco || "";
@@ -439,12 +410,7 @@ function pesquisarCadastros() {
                 rg: document.getElementById('rg').value,
                 cpf: document.getElementById('cpf').value,
                 corRaca: document.getElementById('corRaca').value,
-                rg: document.getElementById('rg').value,
-                cpf: document.getElementById('cpf').value,
-                corRaca: document.getElementById('corRaca').value,
-                // 🟢 ADICIONE ESTA LINHA NO PAYLOAD DE ATUALIZAÇÃO
                 telefoneContato: document.getElementById('telefoneContato').value,
-                filiacaoMae: document.getElementById('filiacaoMae').value,
                 filiacaoMae: document.getElementById('filiacaoMae').value,
                 filiacaoPai: document.getElementById('filiacaoPai').value,
                 endereco: document.getElementById('endereco').value,
