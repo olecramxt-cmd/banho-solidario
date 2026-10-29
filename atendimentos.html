@@ -385,7 +385,6 @@ function filtrarAssistidos(termo) {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
                     
-                    // 🟢 EXIBE O NOME COMPLETO COMO PRINCIPAL E O SOCIAL (SE HOUVER) AO LADO
                     const nomePrincipal = reg.nomeCompleto || reg.nome || "---";
                     const nomeSocialText = reg.nomeSocial ? ` (Social: ${reg.nomeSocial})` : '';
                     
@@ -396,8 +395,9 @@ function filtrarAssistidos(termo) {
             } else {
                 container.style.display = "none";
             }
+        } // 🟢 FECHAMENTO CORRETO DA FUNÇÃO filtrarAssistidos
 
-            function selecionarAssistido(reg) {
+        function selecionarAssistido(reg) {
             assistidoSelecionadoGlobal = reg;
             
             // 🟢 CAMPO PRINCIPAL RECEBE O NOME COMPLETO E O CAMPO SOCIAL RECEBE O NOME SOCIAL
