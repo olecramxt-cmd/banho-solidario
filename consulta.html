@@ -198,7 +198,12 @@
                 <div class="form-group"><label>RG</label><input type="text" id="rg"></div>
                 <div class="form-group"><label>CPF</label><input type="text" id="cpf"></div>
                 <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
-
+                <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
+                <!-- 🟢 CAMPO ADICIONADO NA TELA DE CONSULTA -->
+                <div class="form-group">
+                    <label>Telefone para Contato</label>
+                    <input type="text" id="telefoneContato" placeholder="(38) 9.9999-9999">
+                </div>
                 <div class="section-title">2. Filiação e Contatos</div>
                 <div class="form-group"><label>Filiação (Mãe)</label><input type="text" id="filiacaoMae"></div>
                 <div class="form-group"><label>Filiação (Pai)</label><input type="text" id="filiacaoPai"></div>
@@ -370,6 +375,11 @@ function pesquisarCadastros() {
             document.getElementById('rg').value = reg.rg || "";
             document.getElementById('cpf').value = reg.cpf || "";
             document.getElementById('corRaca').value = reg.corRaca || "";
+            document.getElementById('cpf').value = reg.cpf || "";
+            document.getElementById('corRaca').value = reg.corRaca || "";
+                        // 🟢 ADICIONE ESTA LINHA PARA PREENCHER AO CONSULTAR
+            document.getElementById('telefoneContato').value = reg.telefoneContato || "";
+            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";
             document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";
             document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
             document.getElementById('endereco').value = reg.endereco || "";
@@ -429,6 +439,12 @@ function pesquisarCadastros() {
                 rg: document.getElementById('rg').value,
                 cpf: document.getElementById('cpf').value,
                 corRaca: document.getElementById('corRaca').value,
+                rg: document.getElementById('rg').value,
+                cpf: document.getElementById('cpf').value,
+                corRaca: document.getElementById('corRaca').value,
+                // 🟢 ADICIONE ESTA LINHA NO PAYLOAD DE ATUALIZAÇÃO
+                telefoneContato: document.getElementById('telefoneContato').value,
+                filiacaoMae: document.getElementById('filiacaoMae').value,
                 filiacaoMae: document.getElementById('filiacaoMae').value,
                 filiacaoPai: document.getElementById('filiacaoPai').value,
                 endereco: document.getElementById('endereco').value,
