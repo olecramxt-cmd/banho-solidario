@@ -189,7 +189,13 @@
                 <div class="form-group"><label>CPF</label><input type="text" id="cpf"></div>
                 <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
                 <div class="form-group"><label>Telefone para Contato</label><input type="text" id="telefoneContato" placeholder="(38) 9.9999-9999"></div>
-
+                <!-- 🟢 CAIXA DE SELEÇÃO DE INATIVIDADE -->
+                 <div class="form-group" style="grid-column: 1 / -1; background: #fef2f2; padding: 12px; border-radius: 6px; border: 1px solid #fecaca; display: flex; flex-direction: row; align-items: center; gap: 10px;">
+                  <input type="checkbox" id="checkInativo" style="width: 20px; height: 20px; cursor: pointer;">
+                  <label for="checkInativo" style="color: var(--danger-color); font-weight: 600; margin: 0; cursor: pointer;">
+                      Marcar este cadastro como INATIVO (Ocultar da lista de atendimentos diários, mas manter na Galeria da Dignidade)
+                  </label>
+              </div>
                 <div class="section-title">2. Filiação e Contatos</div>
                 <div class="form-group"><label>Filiação (Mãe)</label><input type="text" id="filiacaoMae"></div>
                 <div class="form-group"><label>Filiação (Pai)</label><input type="text" id="filiacaoPai"></div>
@@ -351,7 +357,9 @@
             document.getElementById('cpf').value = reg.cpf || "";
             document.getElementById('corRaca').value = reg.corRaca || "";
             document.getElementById('telefoneContato').value = reg.telefoneContato || "";
-            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";
+          // 🟢 ADICIONE ESTA LINHA PARA LER O STATUS AO CONSULTAR
+            document.getElementById('checkInativo').checked = (reg.status === "Inativo");
+            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";      
             document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
             document.getElementById('endereco').value = reg.endereco || "";
             document.getElementById('cidade').value = reg.cidade || "";
@@ -411,7 +419,9 @@
                 cpf: document.getElementById('cpf').value,
                 corRaca: document.getElementById('corRaca').value,
                 telefoneContato: document.getElementById('telefoneContato').value,
-                filiacaoMae: document.getElementById('filiacaoMae').value,
+              // 🟢 ADICIONE ESTA LINHA NO PAYLOAD PARA ENVIAR O STATUS
+                status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo",
+                filiacaoMae: document.getElementById('filiacaoMae').value,                
                 filiacaoPai: document.getElementById('filiacaoPai').value,
                 endereco: document.getElementById('endereco').value,
                 cidade: document.getElementById('cidade').value,
