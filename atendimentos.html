@@ -361,8 +361,12 @@ function filtrarAssistidos(termo) {
 
             const termoFiltro = normalizarTexto(termo);
 
-            const filtrados = listaGeralAssistidos.filter(reg => {
+                const filtrados = listaGeralAssistidos.filter(reg => {
                 if (!reg) return false;
+                
+                // 🟢 FILTRO DE SEGURANÇA: Ignora assistidos com status Inativo
+                if (String(reg.status || "").trim() === "Inativo") return false;
+
                 const nomeSocial = normalizarTexto(reg.nomeSocial);
                 const nomeCompleto = normalizarTexto(reg.nomeCompleto || reg.nome);
                 const mat = normalizarTexto(reg.matricula);
