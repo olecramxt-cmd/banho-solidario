@@ -276,6 +276,7 @@
     </div>
 
     <script>
+ <script>
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
@@ -288,9 +289,7 @@
             return url;
         }
 
-        // ======================================================================
-        // 🟢 COLOQUE A FUNÇÃO gerarHtmlAvatar EXATAMENTE AQUI:
-        // ======================================================================
+        // 🟢 Função unificada para gerar o avatar (Ativo / Inativo com carimbo de banido)
         function gerarHtmlAvatar(reg, tamanhoEstilo = "width: 100%; height: 100%; object-fit: cover;") {
             const isInativo = String(reg.status || "").trim() === "Inativo";
             const fotoFinal = converterLinkDrive(reg.foto);
@@ -320,9 +319,6 @@
             }
             return conteudoInterno;
         }
-
-        function carregarGaleriaDignidade() {
-            // ... (continuação do código original da galeria)
 
         function carregarGaleriaDignidade() {
             const statusDiv = document.getElementById('mensagemStatus');
@@ -373,36 +369,16 @@
                         const isInativo = String(reg.status || "").trim() === "Inativo";                        
                         const nomeCompleto = reg.nomeCompleto || reg.nomeSocial || "Sem Nome";
                         const matricula = reg.matricula || "---";
-                        const fotoFinal = converterLinkDrive(reg.foto);
 
-                        // 🟢 DECLARAÇÃO CORRETA DAS VARIÁVEIS SEGURAS PARA OS BOTÕES
-                        const nomeSegura = encodeURIComponent(reg.nomeSocial || reg.nomeCompleto || "---");
-                        const matSegura = encodeURIComponent(reg.matricula || "");
-                        const sexoSegura = encodeURIComponent(reg.sexo || "");
-                        const fotoSegura = encodeURIComponent(reg.foto || "");
-                        
+                        // 🟢 Uso correto do avatar personalizado com suporte a Inativo
+                        let avatarHtml = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
+
                         const card = document.createElement('div');
                         card.className = 'gallery-card';
                         
                         if (isInativo) {
                             card.style.borderColor = "#fecaca";
                             card.style.background = "#fff5f5";
-                        }
-                        
-                        let avatarHtml = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");></i>`;
-                        if (fotoFinal) {
-                            avatarHtml = `<img src="${fotoFinal}" alt="Assistido" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
-                        } else {
-                            const sexoLower = (reg.sexo || "").trim().toLowerCase();
-                            let imgPadrao = "imagens/AvatarPessoaNeutra.png";
-                            
-                            if (sexoLower.includes("masculino") || sexoLower === "m") {
-                                imgPadrao = "imagens/AvatarHomem.png";
-                            } else if (sexoLower.includes("feminino") || sexoLower === "f") {
-                                imgPadrao = "imagens/AvatarMulher.png";
-                            }
-                            
-                            avatarHtml = `<img src="${imgPadrao}" alt="Avatar Padrão" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
                         }
 
                         // Serialização segura do objeto para eventos inline
@@ -436,7 +412,7 @@
             });
         }
 
-            function abrirProntuario(reg) {
+        function abrirProntuario(reg) {
             document.getElementById('mMatricula').innerText = "Matrícula: " + (reg.matricula || "---");
             document.getElementById('mDataCadastro').innerText = "Data do Cadastro: " + (reg.dataHora || reg.carimbo || "---");
 
@@ -445,16 +421,12 @@
                 ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>' 
                 : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
             
-            // Adicione ou atualize um elemento no HTML do modal para exibir o status, ou concatene na linha de modo:
             document.querySelectorAll('.modal-info p')[1].innerHTML = `Status: ${statusTexto}`;
 
-            // Renderizar o avatar correto no modal
+            // 🟢 Avatar correto no modal de prontuário
             const avatarContainer = document.getElementById('modalAvatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
 
-            // ... (restante dos campos do prontuário)
-            document.getElementById('modalProntuario').style.display = 'flex';
-        }
             document.getElementById('mNomeCompleto').innerText = reg.nomeCompleto || "Não informado";
             document.getElementById('mNomeSocial').innerText = reg.nomeSocial || "Não informado";
             document.getElementById('mDataNascimento').innerText = reg.dataNascimento || "Não informado";
@@ -486,18 +458,10 @@
             document.getElementById('mDocumentosFaltam').innerText = reg.documentosFaltam || "Não informado";
             document.getElementById('mCarteiraTrabalho').innerText = reg.carteiraTrabalho || "Não informado";
 
-            const avatarContainer = document.getElementById('modalAvatarContainer');
-            const fotoFinal = converterLinkDrive(reg.foto);
-            if (fotoFinal) {
-                avatarContainer.innerHTML = `<img src="${fotoFinal}" alt="Foto" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
-            } else {
-                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--primary-color);"></i>`;
-            }
-
             document.getElementById('modalProntuario').style.display = 'flex';
         }
 
-            function abrirHistoricoAssistido(reg) {
+        function abrirHistoricoAssistido(reg) {
             const matriculaDec = reg.matricula || "---";
             const nomeDec = reg.nomeSocial || reg.nomeCompleto || "---";
             const sexoDec = reg.sexo || "---";
@@ -506,7 +470,7 @@
             document.getElementById('telaPrincipalGaleria').style.display = 'none';
             document.getElementById('telaHistoricoIndividual').style.display = 'block';
 
-            // Gerar o avatar personalizado (homem, mulher, neutro ou com carimbo de inativo)
+            // 🟢 Avatar correto no cabeçalho do histórico
             const avatarHtmlWrapper = `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
 
             const statusBadge = isInativo 
@@ -522,9 +486,6 @@
                     <div style="font-size: 0.9rem; color: #64748b;">Matrícula: <strong>${matriculaDec}</strong> | Sexo: ${sexoDec}</div>
                 </div>
             `;
-
-            // ... (restante da busca do histórico de atendimentos)
-        }
 
             fetch(API_URL, {
                 method: "POST",
