@@ -229,6 +229,7 @@
     </div>
 
     <script>
+<script>
         function formatarDataAmigavel(dataStr, operadorNome) {
             if (!dataStr) return "Data não informada";
             try {
@@ -335,25 +336,23 @@
             });
         }
 
-            function preencherFormularioCompleto(reg, linha) {
-            // ... (linhas anteriores)
-            
-            // 🟢 LEITURA CORRETA DO STATUS DA NUVEM
-            const statusReg = String(reg.status || "").trim();
-            document.getElementById('checkInativo').checked = (statusReg === "Inativo");
+        function preencherFormularioCompleto(reg, linha) {
+            document.getElementById('listaResultadosContainer').style.display = "none";
             const containerRes = document.getElementById('resultadoContainer');
             containerRes.style.display = "block";
             document.getElementById('linhaPlanilha').value = linha;
+
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
-          }   
-            // 🟢 CORREÇÃO DA LEITURA DO OPERADOR E DATA
+            
+            // Leitura correta do Operador e Data
             let operadorCad = reg.operador || "Sistema";
             document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
 
-            // 🟢 LEITURA CORRETA DO CHECKBOX DE INATIVO
-            document.getElementById('checkInativo').checked = (String(reg.status).trim() === "Inativo");
-            
-            // ... (restante dos campos do formulário)
+            // 🟢 Leitura correta do status Inativo para marcar o checkbox
+            const statusReg = String(reg.status || "").trim();
+            document.getElementById('checkInativo').checked = (statusReg === "Inativo");
+
+            // Preenchimento dos campos do formulário
             document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
             document.getElementById('nomeSocial').value = reg.nomeSocial || "";
             document.getElementById('dataNascimento').value = reg.dataNascimento || "";
@@ -365,8 +364,6 @@
             document.getElementById('cpf').value = reg.cpf || "";
             document.getElementById('corRaca').value = reg.corRaca || "";
             document.getElementById('telefoneContato').value = reg.telefoneContato || "";
-          // 🟢 ADICIONE ESTA LINHA PARA LER O STATUS AO CONSULTAR
-            document.getElementById('checkInativo').checked = (reg.status === "Inativo");
             document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";      
             document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
             document.getElementById('endereco').value = reg.endereco || "";
@@ -427,9 +424,9 @@
                 cpf: document.getElementById('cpf').value,
                 corRaca: document.getElementById('corRaca').value,
                 telefoneContato: document.getElementById('telefoneContato').value,
-              // 🟢 ADICIONE ESTA LINHA NO PAYLOAD PARA ENVIAR O STATUS
+                // 🟢 Status enviado corretamente com vírgula no final
                 status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo",
-                operador: operadorAtivo.nome || operadorAtivo.usuario || "Sistema"
+                operador: (typeof operadorAtivo !== 'undefined' ? (operadorAtivo.nome || operadorAtivo.usuario) : "Sistema"),
                 filiacaoMae: document.getElementById('filiacaoMae').value,                
                 filiacaoPai: document.getElementById('filiacaoPai').value,
                 endereco: document.getElementById('endereco').value,
