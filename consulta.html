@@ -335,7 +335,7 @@
             });
         }
 
-        function preencherFormularioCompleto(reg, linha) {
+            function preencherFormularioCompleto(reg, linha) {
             document.getElementById('listaResultadosContainer').style.display = "none";
             const containerRes = document.getElementById('resultadoContainer');
             containerRes.style.display = "block";
@@ -343,9 +343,14 @@
 
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
             
-            let operadorCad = reg.operador || reg.usuario || "Sistema";
+            // 🟢 CORREÇÃO DA LEITURA DO OPERADOR E DATA
+            let operadorCad = reg.operador || "Sistema";
             document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
 
+            // 🟢 LEITURA CORRETA DO CHECKBOX DE INATIVO
+            document.getElementById('checkInativo').checked = (String(reg.status).trim() === "Inativo");
+            
+            // ... (restante dos campos do formulário)
             document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
             document.getElementById('nomeSocial').value = reg.nomeSocial || "";
             document.getElementById('dataNascimento').value = reg.dataNascimento || "";
