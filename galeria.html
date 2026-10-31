@@ -370,7 +370,7 @@
                         const nomeCompleto = reg.nomeCompleto || reg.nomeSocial || "Sem Nome";
                         const matricula = reg.matricula || "---";
 
-                        // 🟢 Uso correto do avatar personalizado com suporte a Inativo
+                        // Geração limpa do avatar com suporte a Ativo/Inativo
                         let avatarHtml = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
 
                         const card = document.createElement('div');
