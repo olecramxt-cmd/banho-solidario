@@ -151,10 +151,12 @@
                     <div class="ficha-avatar" id="avatarFichaContainer">
                         <i class="fa-solid fa-user" style="font-size: 2.5rem; color: #0284c7;"></i>
                     </div>
-                    <div>
+                <div>
                         <h3 id="lblNomeFicha" style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.3rem;">Nome Completo</h3>
-                        <p id="lblMatriculaFicha" style="margin: 2px 0; font-weight: 600; color: var(--primary-dark);">Matrícula: ---</p>
+                        <p id="lblMatriculaFicha" style="margin: 2px 0; font-weight: 600; color: var(--primary-color);">Matrícula: ---</p>
                         <p id="lblDataCadFicha" style="margin: 2px 0; font-size: 13px; color: #64748b;">Data do Cadastro: --/--/----</p>
+                        <!-- 🟢 ADICIONE ESTA LINHA ABAIXO: -->
+                        <p id="lblStatusFicha" style="margin: 4px 0 0 0; font-weight: 600; font-size: 13px;"></p>
                     </div>
                 </div>
 
@@ -256,24 +258,54 @@
             }
         }
 
-        function exibirFichaImpressao(reg) {
+function exibirFichaImpressao(reg) {
             const nomeComp = reg.nomeCompleto || reg.nome || "Não informado";
             const matricula = reg.matricula || reg.mat || "---";
             const dataCad = reg.dataHora || reg.carimbo || reg.dataCadastro || "";
             const operador = reg.operador || reg.usuario || "Sistema";
+            const isInativo = String(reg.status || "").trim() === "Inativo";
 
             document.getElementById('lblNomeFicha').innerText = nomeComp;
             document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + matricula;
             document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + formatarDataAmigavelFicha(dataCad) + " | Operador: " + operador;
 
+            // 🟢 Exibir o status correto na ficha impressa
+            document.getElementById('lblStatusFicha').innerHTML = isInativo 
+                ? '<span style="color: #dc2626; font-weight: bold;"><i class="fa-solid fa-ban"></i> Status: Inativo no Sistema</span>' 
+                : '<span style="color: #16a34a; font-weight: bold;"><i class="fa-solid fa-check"></i> Status: Ativo no Sistema</span>';
+
+            // 🟢 Renderizar o avatar adequado (com suporte a inativo na impressão)
             const avatarContainer = document.getElementById('avatarFichaContainer');
             const urlFoto = reg.foto || reg.urlFoto || reg.imagem || "";
             const urlFinal = converterLinkDriveFicha(urlFoto);
-            if (urlFinal) {
-                avatarContainer.innerHTML = `<img src="${urlFinal}" alt="Foto" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/145/145867.png';">`;
-            } else {
-                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: #0284c7;"></i>`;
+            const sexoLower = (reg.sexo || "").trim().toLowerCase();
+            
+            let imgPadrao = "imagens/AvatarPessoaNeutra.png";
+            if (sexoLower.includes("masculino") || sexoLower === "m") {
+                imgPadrao = "imagens/AvatarHomem.png";
+            } else if (sexoLower.includes("feminino") || sexoLower === "f") {
+                imgPadrao = "imagens/AvatarMulher.png";
             }
+
+            let conteudoInterno = "";
+            if (urlFinal) {
+                conteudoInterno = `<img src="${urlFinal}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='${imgPadrao}';">`;
+            } else {
+                conteudoInterno = `<img src="${imgPadrao}" alt="Avatar Padrão" style="width: 100%; height: 100%; object-fit: cover;">`;
+            }
+
+            if (isInativo) {
+                avatarContainer.innerHTML = `<div style="position: relative; width: 100%; height: 100%;">
+                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%;">${conteudoInterno}</div>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
+                        <i class="fa-solid fa-ban" style="font-size: 1.5rem; color: #dc2626;" title="Cadastro Inativo"></i>
+                    </div>
+                </div>`;
+            } else {
+                avatarContainer.innerHTML = conteudoInterno;
+            }
+
+            // ... (restante do preenchimento dos campos da ficha)
 
             document.getElementById('fNomeComp').innerText = nomeComp;
             document.getElementById('fSocial').innerText = reg.nomeSocial || reg.social || "Não informado";
