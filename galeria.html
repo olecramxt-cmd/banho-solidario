@@ -288,6 +288,42 @@
             return url;
         }
 
+        // ======================================================================
+        // 🟢 COLOQUE A FUNÇÃO gerarHtmlAvatar EXATAMENTE AQUI:
+        // ======================================================================
+        function gerarHtmlAvatar(reg, tamanhoEstilo = "width: 100%; height: 100%; object-fit: cover;") {
+            const isInativo = String(reg.status || "").trim() === "Inativo";
+            const fotoFinal = converterLinkDrive(reg.foto);
+            const sexoLower = (reg.sexo || "").trim().toLowerCase();
+            
+            let imgPadrao = "imagens/AvatarPessoaNeutra.png";
+            if (sexoLower.includes("masculino") || sexoLower === "m") {
+                imgPadrao = "imagens/AvatarHomem.png";
+            } else if (sexoLower.includes("feminino") || sexoLower === "f") {
+                imgPadrao = "imagens/AvatarMulher.png";
+            }
+
+            let conteudoInterno = "";
+            if (fotoFinal) {
+                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="${tamanhoEstilo}" onerror="this.onerror=null;this.src='${imgPadrao}';">`;
+            } else {
+                conteudoInterno = `<img src="${imgPadrao}" alt="Avatar Padrão" style="${tamanhoEstilo}">`;
+            }
+
+            if (isInativo) {
+                return `<div style="position: relative; width: 100%; height: 100%;">
+                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%;">${conteudoInterno}</div>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
+                        <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
+                    </div>
+                </div>`;
+            }
+            return conteudoInterno;
+        }
+
+        function carregarGaleriaDignidade() {
+            // ... (continuação do código original da galeria)
+
         function carregarGaleriaDignidade() {
             const statusDiv = document.getElementById('mensagemStatus');
             const statsBanner = document.getElementById('statsBanner');
@@ -353,7 +389,7 @@
                             card.style.background = "#fff5f5";
                         }
                         
-                        let avatarHtml = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--primary-color);"></i>`;
+                        let avatarHtml = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");></i>`;
                         if (fotoFinal) {
                             avatarHtml = `<img src="${fotoFinal}" alt="Assistido" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
                         } else {
@@ -381,7 +417,7 @@
 
                             <div class="acoes-card">
                                 <button type="button" class="btn-acao btn-azul" title="Prontuário Completo (Leitura)" onclick='abrirProntuario(${regJson})'><i class="fa-solid fa-address-card"></i></button>
-                                <button type="button" class="btn-acao btn-amarelo" title="Histórico de Atendimentos" onclick="abrirHistoricoAssistido('${matSegura}', '${nomeSegura}', '${sexoSegura}', '${fotoSegura}')"><i class="fa-solid fa-list-check"></i></button>
+                                <button type="button" class="btn-acao btn-amarelo" title="Histórico de Atendimentos" onclick='abrirHistoricoAssistido(${regJson})'><i class="fa-solid fa-list-check"></i></button>
                                 <button type="button" class="btn-acao btn-roxo" title="Impressão Direta da Ficha" onclick='imprimirFichaDireta(${regJson})'><i class="fa-solid fa-print"></i></button>
                             </div>              
                         `;
@@ -400,10 +436,25 @@
             });
         }
 
-        function abrirProntuario(reg) {
+            function abrirProntuario(reg) {
             document.getElementById('mMatricula').innerText = "Matrícula: " + (reg.matricula || "---");
             document.getElementById('mDataCadastro').innerText = "Data do Cadastro: " + (reg.dataHora || reg.carimbo || "---");
 
+            const isInativo = String(reg.status || "").trim() === "Inativo";
+            const statusTexto = isInativo 
+                ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>' 
+                : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
+            
+            // Adicione ou atualize um elemento no HTML do modal para exibir o status, ou concatene na linha de modo:
+            document.querySelectorAll('.modal-info p')[1].innerHTML = `Status: ${statusTexto}`;
+
+            // Renderizar o avatar correto no modal
+            const avatarContainer = document.getElementById('modalAvatarContainer');
+            avatarContainer.innerHTML = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
+
+            // ... (restante dos campos do prontuário)
+            document.getElementById('modalProntuario').style.display = 'flex';
+        }
             document.getElementById('mNomeCompleto').innerText = reg.nomeCompleto || "Não informado";
             document.getElementById('mNomeSocial').innerText = reg.nomeSocial || "Não informado";
             document.getElementById('mDataNascimento').innerText = reg.dataNascimento || "Não informado";
@@ -446,28 +497,34 @@
             document.getElementById('modalProntuario').style.display = 'flex';
         }
 
-        function abrirHistoricoAssistido(matricula, nomeEnc, sexoEnc, fotoEnc) {
-            const matriculaDec = decodeURIComponent(matricula);
-            const nomeDec = decodeURIComponent(nomeEnc);
-            const sexoDec = decodeURIComponent(sexoEnc);
-            const fotoDec = decodeURIComponent(fotoEnc);
+            function abrirHistoricoAssistido(reg) {
+            const matriculaDec = reg.matricula || "---";
+            const nomeDec = reg.nomeSocial || reg.nomeCompleto || "---";
+            const sexoDec = reg.sexo || "---";
+            const isInativo = String(reg.status || "").trim() === "Inativo";
 
             document.getElementById('telaPrincipalGaleria').style.display = 'none';
             document.getElementById('telaHistoricoIndividual').style.display = 'block';
 
-            const fotoFinal = converterLinkDrive(fotoDec);
-            let avatarHtml = `<div style="width: 60px; height: 60px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fa-solid fa-user" style="font-size: 1.6rem; color: var(--secondary-color);"></i></div>`;
-            if (fotoFinal) {
-                avatarHtml = `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0;"><img src="${fotoFinal}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.6rem; color: var(--secondary-color);\'></i>';"></div>`;
-            }
+            // Gerar o avatar personalizado (homem, mulher, neutro ou com carimbo de inativo)
+            const avatarHtmlWrapper = `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
+
+            const statusBadge = isInativo 
+                ? '<span style="color: #dc2626; font-weight: 700; background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">INATIVO</span>' 
+                : '<span style="color: #16a34a; font-weight: 700; background: #dcfce7; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">ATIVO</span>';
 
             document.getElementById('cabecalhoAssistidoInd').innerHTML = `
-                ${avatarHtml}
-                <div>
-                    <div style="font-weight: 700; font-size: 1.15rem; color: var(--secondary-color);">${nomeDec}</div>
-                    <div style="font-size: 0.9rem; color: #64748b;">Matrícula: <strong>${matriculaDec}</strong> | Sexo: ${sexoDec || '---'}</div>
+                ${avatarHtmlWrapper}
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; font-size: 1.15rem; color: var(--secondary-color); display: flex; justify-content: space-between; align-items: center;">
+                        ${nomeDec} ${statusBadge}
+                    </div>
+                    <div style="font-size: 0.9rem; color: #64748b;">Matrícula: <strong>${matriculaDec}</strong> | Sexo: ${sexoDec}</div>
                 </div>
             `;
+
+            // ... (restante da busca do histórico de atendimentos)
+        }
 
             fetch(API_URL, {
                 method: "POST",
