@@ -312,7 +312,8 @@
                     let qtdMulheres = 0;
 
                     data.lista.forEach(item => {
-                        const sexo = (item.registro.sexo || "").trim().toLowerCase();
+                        const reg = item.registro || {};
+                        const sexo = (reg.sexo || "").trim().toLowerCase();
                         if (sexo.includes("masculino") || sexo === "m") {
                             qtdHomens++;
                         } else if (sexo.includes("feminino") || sexo === "f") {
@@ -326,14 +327,13 @@
                     statsBanner.innerHTML = `Total: ${totalRegistros} registros | ${qtdHomens} (${percHomens}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheres} (${percMulheres}%) Mulheres`;
 
                     data.lista.sort((a, b) => {
-                        const nomeA = (a.registro.nomeCompleto || "").toLowerCase();
-                        const nomeB = (b.registro.nomeCompleto || "").toLowerCase();
+                        const nomeA = (a.registro && a.registro.nomeCompleto ? a.registro.nomeCompleto : "").toLowerCase();
+                        const nomeB = (b.registro && b.registro.nomeCompleto ? b.registro.nomeCompleto : "").toLowerCase();
                         return nomeA.localeCompare(nomeB, 'pt-BR');
                     });
 
                     data.lista.forEach(item => {
-                        const reg = item.registro;                        
-                        // 🟢 VERIFICAÇÃO DE STATUS INATIVO
+                        const reg = item.registro || {};
                         const isInativo = String(reg.status || "").trim() === "Inativo";                        
                         const nomeCompleto = reg.nomeCompleto || reg.nomeSocial || "Sem Nome";
                         const matricula = reg.matricula || "---";
@@ -343,9 +343,10 @@
                         const matSegura = encodeURIComponent(reg.matricula || "");
                         const sexoSeguro = encodeURIComponent(reg.sexo || "");
                         const fotoSegura = encodeURIComponent(reg.foto || "");
+                        
                         const card = document.createElement('div');
                         card.className = 'gallery-card';
-                        // 🟢 APLICAR ESTILO DIFERENCIADO SE FOR INATIVO
+                        
                         if (isInativo) {
                             card.style.borderColor = "#fecaca";
                             card.style.background = "#fff5f5";
@@ -355,9 +356,8 @@
                         if (fotoFinal) {
                             avatarHtml = `<img src="${fotoFinal}" alt="Assistido" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
                         } else {
-                            // Seleção dinâmica dos avatares personalizados do repositório
                             const sexoLower = (reg.sexo || "").trim().toLowerCase();
-                            let imgPadrao = "imagens/AvatarPessoaNeutra.png"; // Padrão
+                            let imgPadrao = "imagens/AvatarPessoaNeutra.png";
                             
                             if (sexoLower.includes("masculino") || sexoLower === "m") {
                                 imgPadrao = "imagens/AvatarHomem.png";
@@ -365,21 +365,23 @@
                                 imgPadrao = "imagens/AvatarMulher.png";
                             }
                             
-                            avatarHtml = `<img src="${imgPadrao}" alt="Avatar Padrão" style="width: 100%; height: 100%; object-fit: cover;">`;
+                            avatarHtml = `<img src="${imgPadrao}" alt="Avatar Padrão" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--primary-color);\'></i>';">`;
                         }
 
-                            card.innerHTML = `
-                            <div class="gallery-avatar" onclick='abrirProntuario(${JSON.stringify(reg)})'>${avatarHtml}</div>
-                            <div class="gallery-name" title="${nomeCompleto}" onclick='abrirProntuario(${JSON.stringify(reg)})'>${nomeCompleto}</div>
+                        // Serialização segura do objeto para eventos inline
+                        const regJson = JSON.stringify(reg).replace(/'/g, "&#39;");
+
+                        card.innerHTML = `
+                            <div class="gallery-avatar" onclick='abrirProntuario(${regJson})'>${avatarHtml}</div>
+                            <div class="gallery-name" title="${nomeCompleto}" onclick='abrirProntuario(${regJson})'>${nomeCompleto}</div>
                             <div class="gallery-matricula">${matricula}</div>
                             
-                            <!-- 🟢 SELO VISUAL DE INATIVO -->
                             ${isInativo ? '<div style="background: #fee2e2; color: #dc2626; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; border: 1px solid #fecaca;"><i class="fa-solid fa-ban"></i> CADASTRO INATIVO</div>' : ''}
 
                             <div class="acoes-card">
-                                <button type="button" class="btn-acao btn-azul" title="Prontuário Completo (Leitura)" onclick='abrirProntuario(${JSON.stringify(reg)})'><i class="fa-solid fa-address-card"></i></button>
+                                <button type="button" class="btn-acao btn-azul" title="Prontuário Completo (Leitura)" onclick='abrirProntuario(${regJson})'><i class="fa-solid fa-address-card"></i></button>
                                 <button type="button" class="btn-acao btn-amarelo" title="Histórico de Atendimentos" onclick="abrirHistoricoAssistido('${matSegura}', '${nomeSegura}', '${sexoSeguro}', '${fotoSegura}')"><i class="fa-solid fa-list-check"></i></button>
-                                <button type="button" class="btn-acao btn-roxo" title="Impressão Direta da Ficha" onclick='imprimirFichaDireta(${JSON.stringify(reg)})'><i class="fa-solid fa-print"></i></button>
+                                <button type="button" class="btn-acao btn-roxo" title="Impressão Direta da Ficha" onclick='imprimirFichaDireta(${regJson})'><i class="fa-solid fa-print"></i></button>
                             </div>              
                         `;
                         grid.appendChild(card);
@@ -387,10 +389,11 @@
                 } else {
                     statsBanner.innerText = "Total: 0 registros | 0 (0%) Homens • 0 (0%) Mulheres";
                     statusDiv.style.color = "red";
-                    statusDiv.innerText = "Nenhum registro encontrado na base de dados.";
+                    statusDiv.innerText = data.message || "Nenhum registro encontrado na base de dados.";
                 }
             })
             .catch(err => {
+                console.error("Erro na galeria:", err);
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão ao carregar a galeria.";
             });
