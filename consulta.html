@@ -229,7 +229,6 @@
     </div>
 
     <script>
-<script>
         function formatarDataAmigavel(dataStr, operadorNome) {
             if (!dataStr) return "Data não informada";
             try {
@@ -336,7 +335,7 @@
             });
         }
 
-        function preencherFormularioCompleto(reg, linha) {
+function preencherFormularioCompleto(reg, linha) {
             document.getElementById('listaResultadosContainer').style.display = "none";
             const containerRes = document.getElementById('resultadoContainer');
             containerRes.style.display = "block";
@@ -348,7 +347,7 @@
             let operadorCad = reg.operador || "Sistema";
             document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
 
-            // 🟢 Leitura correta do status Inativo para marcar o checkbox
+            // Leitura correta do status Inativo para marcar o checkbox
             const statusReg = String(reg.status || "").trim();
             document.getElementById('checkInativo').checked = (statusReg === "Inativo");
 
