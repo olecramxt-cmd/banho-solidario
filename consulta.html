@@ -336,13 +336,16 @@
         }
 
             function preencherFormularioCompleto(reg, linha) {
-            document.getElementById('listaResultadosContainer').style.display = "none";
+            // ... (linhas anteriores)
+            
+            // 🟢 LEITURA CORRETA DO STATUS DA NUVEM
+            const statusReg = String(reg.status || "").trim();
+            document.getElementById('checkInativo').checked = (statusReg === "Inativo");
             const containerRes = document.getElementById('resultadoContainer');
             containerRes.style.display = "block";
             document.getElementById('linhaPlanilha').value = linha;
-
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
-            
+          }   
             // 🟢 CORREÇÃO DA LEITURA DO OPERADOR E DATA
             let operadorCad = reg.operador || "Sistema";
             document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
@@ -426,6 +429,7 @@
                 telefoneContato: document.getElementById('telefoneContato').value,
               // 🟢 ADICIONE ESTA LINHA NO PAYLOAD PARA ENVIAR O STATUS
                 status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo",
+                operador: operadorAtivo.nome || operadorAtivo.usuario || "Sistema"
                 filiacaoMae: document.getElementById('filiacaoMae').value,                
                 filiacaoPai: document.getElementById('filiacaoPai').value,
                 endereco: document.getElementById('endereco').value,
