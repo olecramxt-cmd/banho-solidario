@@ -357,7 +357,86 @@
             }
             return conteudoInterno;
         }
+function gerarHtmlAvatar(reg) {
+            // Verifica se o status está inativo (pelo objeto ou pelo checkbox da tela)
+            const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
+            const fotoFinal = converterLinkDrive(reg.foto || document.getElementById('foto').value);
+            
+            let conteudoInterno = "";
+            if (fotoFinal) {
+                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size:3rem; color:#0284c7;\'></i>';">`;
+            } else {
+                conteudoInterno = `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
+            }
 
+            if (isInativo) {
+                return `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${conteudoInterno}</div>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
+                        <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
+                    </div>
+                </div>`;
+            }
+            return conteudoInterno;
+        }
+
+        // 🟢 RESTAURANDO A FUNÇÃO DE PREENCHIMENTO QUE FALTAVA
+        function preencherFormularioCompleto(reg, linha) {
+            document.getElementById('listaResultadosContainer').style.display = "none";
+            const containerRes = document.getElementById('resultadoContainer');
+            containerRes.style.display = "block";
+            document.getElementById('linhaPlanilha').value = linha;
+
+            document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
+            
+            let operadorCad = reg.operador || "Sistema";
+            document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
+
+            const statusReg = String(reg.status || "").trim();
+            const isInativo = (statusReg === "Inativo");
+            document.getElementById('checkInativo').checked = isInativo;
+
+            const statusDisplayHtml = isInativo
+                ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>'
+                : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
+            
+            document.querySelectorAll('.profile-info p')[1].innerHTML = `Status: ${statusDisplayHtml}`;
+
+            // Preenchimento dos campos do formulário
+            document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
+            document.getElementById('nomeSocial').value = reg.nomeSocial || "";
+            document.getElementById('dataNascimento').value = reg.dataNascimento || "";
+            document.getElementById('idade').value = reg.idade || "";
+            document.getElementById('sexo').value = reg.sexo || "Masculino";
+            document.getElementById('escolaridade').value = reg.escolaridade || "";
+            document.getElementById('naturalidade').value = reg.naturalidade || "";
+            document.getElementById('rg').value = reg.rg || "";
+            document.getElementById('cpf').value = reg.cpf || "";
+            document.getElementById('corRaca').value = reg.corRaca || "";
+            document.getElementById('telefoneContato').value = reg.telefoneContato || "";
+            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";      
+            document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
+            document.getElementById('endereco').value = reg.endereco || "";
+            document.getElementById('cidade').value = reg.cidade || "";
+            document.getElementById('telefone').value = reg.telefone || "";
+            document.getElementById('residenciaUnaí').value = reg.residenciaUnaí || "";
+            document.getElementById('tipoUsuario').value = reg.tipoUsuario || "";
+            document.getElementById('tempoRua').value = reg.tempoRua || "";
+            document.getElementById('tempoUnaí').value = reg.tempoUnaí || "";
+            document.getElementById('motivosPermanencia').value = reg.motivosPermanencia || "";
+            document.getElementById('outrosMotivos').value = reg.outrosMotivos || "";
+            document.getElementById('passouAtendimento').value = reg.passouAtendimento || "";
+            document.getElementById('recebeAuxilio').value = reg.recebeAuxilio || "Não";
+            document.getElementById('qualBeneficio').value = reg.qualBeneficio || "";
+            document.getElementById('possuiDocumentos').value = reg.possuiDocumentos || "Sim";
+            document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
+            document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
+            document.getElementById('foto').value = reg.foto || "";
+
+            // 🟢 Renderiza o avatar correto utilizando a função nova
+            const avatarContainer = document.getElementById('avatarContainer');
+            avatarContainer.innerHTML = gerarHtmlAvatar(reg);
+        }
         function atualizarAvatarPreview() {
             const avatarContainer = document.getElementById('avatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar({
