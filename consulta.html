@@ -335,28 +335,21 @@
             });
         }
 
-function gerarHtmlAvatar(reg, tamanhoEstilo = "width: 100%; height: 100%; object-fit: cover;") {
-            const isInativo = String(reg.status || "").trim() === "Inativo";
+        function gerarHtmlAvatar(reg) {
+            // Verifica se o status está inativo (pelo objeto ou pelo checkbox da tela)
+            const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
             const fotoFinal = converterLinkDrive(reg.foto || document.getElementById('foto').value);
-            const sexoLower = (reg.sexo || "").trim().toLowerCase();
             
-            let imgPadrao = "imagens/AvatarPessoaNeutra.png";
-            if (sexoLower.includes("masculino") || sexoLower === "m") {
-                imgPadrao = "imagens/AvatarHomem.png";
-            } else if (sexoLower.includes("feminino") || sexoLower === "f") {
-                imgPadrao = "imagens/AvatarMulher.png";
-            }
-
             let conteudoInterno = "";
             if (fotoFinal) {
-                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="${tamanhoEstilo}" onerror="this.onerror=null;this.src='${imgPadrao}';">`;
+                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size:3rem; color:#0284c7;\'></i>';">`;
             } else {
-                conteudoInterno = `<img src="${imgPadrao}" alt="Avatar Padrão" style="${tamanhoEstilo}">`;
+                conteudoInterno = `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
             }
 
             if (isInativo) {
-                return `<div style="position: relative; width: 100%; height: 100%;">
-                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%;">${conteudoInterno}</div>
+                return `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${conteudoInterno}</div>
                     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
                         <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
                     </div>
@@ -365,83 +358,12 @@ function gerarHtmlAvatar(reg, tamanhoEstilo = "width: 100%; height: 100%; object
             return conteudoInterno;
         }
 
-        function preencherFormularioCompleto(reg, linha) {
-            document.getElementById('listaResultadosContainer').style.display = "none";
-            const containerRes = document.getElementById('resultadoContainer');
-            containerRes.style.display = "block";
-            document.getElementById('linhaPlanilha').value = linha;
-
-            document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
-            
-            let operadorCad = reg.operador || "Sistema";
-            document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
-
-            // 🟢 Leitura correta do status Inativo para marcar o checkbox e atualizar o texto visual
-            const statusReg = String(reg.status || "").trim();
-            const isInativo = (statusReg === "Inativo");
-            document.getElementById('checkInativo').checked = isInativo;
-
-            const statusDisplayHtml = isInativo
-                ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>'
-                : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
-            
-            document.querySelectorAll('.profile-info p')[1].innerHTML = `Status: ${statusDisplayHtml}`;
-
-            // 🟢 Renderizar o avatar correto (com carimbo de inativo se for o caso)
-            const avatarContainer = document.getElementById('avatarContainer');
-            avatarContainer.innerHTML = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
-
-            // Preenchimento dos campos do formulário
-            document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
-            document.getElementById('nomeSocial').value = reg.nomeSocial || "";
-            document.getElementById('dataNascimento').value = reg.dataNascimento || "";
-            document.getElementById('idade').value = reg.idade || "";
-            document.getElementById('sexo').value = reg.sexo || "Masculino";
-            document.getElementById('escolaridade').value = reg.escolaridade || "";
-            document.getElementById('naturalidade').value = reg.naturalidade || "";
-            document.getElementById('rg').value = reg.rg || "";
-            document.getElementById('cpf').value = reg.cpf || "";
-            document.getElementById('corRaca').value = reg.corRaca || "";
-            document.getElementById('telefoneContato').value = reg.telefoneContato || "";
-            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";      
-            document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
-            document.getElementById('endereco').value = reg.endereco || "";
-            document.getElementById('cidade').value = reg.cidade || "";
-            document.getElementById('telefone').value = reg.telefone || "";
-            document.getElementById('residenciaUnaí').value = reg.residenciaUnaí || "";
-            document.getElementById('tipoUsuario').value = reg.tipoUsuario || "";
-            document.getElementById('tempoRua').value = reg.tempoRua || "";
-            document.getElementById('tempoUnaí').value = reg.tempoUnaí || "";
-            document.getElementById('motivosPermanencia').value = reg.motivosPermanencia || "";
-            document.getElementById('outrosMotivos').value = reg.outrosMotivos || "";
-            document.getElementById('passouAtendimento').value = reg.passouAtendimento || "";
-            document.getElementById('recebeAuxilio').value = reg.recebeAuxilio || "Não";
-            document.getElementById('qualBeneficio').value = reg.qualBeneficio || "";
-            document.getElementById('possuiDocumentos').value = reg.possuiDocumentos || "Sim";
-            document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
-            document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
-            document.getElementById('foto').value = reg.foto || "";
-
-            atualizarAvatarPreview();
-        }
-
-        function converterLinkDrive(url) {
-            if (!url) return "";
-            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            return url;
-        }
-
         function atualizarAvatarPreview() {
-            const urlBruta = document.getElementById('foto').value.trim();
             const avatarContainer = document.getElementById('avatarContainer');
-            const urlFinal = converterLinkDrive(urlBruta);
-            
-            if (urlFinal) {
-                avatarContainer.innerHTML = `<img src="${urlFinal}" alt="Foto do Assistido" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/145/145867.png';">`;
-            } else {
-                avatarContainer.innerHTML = `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
-            }
+            avatarContainer.innerHTML = gerarHtmlAvatar({
+                foto: document.getElementById('foto').value,
+                status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo"
+            });
         }
 
         function atualizarCadastro() {
