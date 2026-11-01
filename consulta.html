@@ -255,7 +255,7 @@
             }
         }
 
-        function pesquisarCadastros() {
+function pesquisarCadastros() {
             const termoBruto = document.getElementById('termoBusca').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
             document.getElementById('listaResultadosContainer').style.display = 'none';
@@ -270,19 +270,29 @@
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "Pesquisando assistidos na nuvem...";
 
+            console.log("Enviando requisição para API:", API_URL);
+
             fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "consultarTriagem", termo: "todos" })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("Erro HTTP: " + res.status);
+                return res.json();
+            })
             .then(data => {
+                console.log("Dados recebidos da nuvem:", data);
                 statusDiv.innerText = "";
-                if (data.status === "encontrado" && data.lista) {
+                
+                // Aceita tanto data.lista quanto data.dados caso o backend varie
+                const listaBruta = data.lista || data.dados || [];
+
+                if (data.status === "encontrado" && listaBruta.length > 0) {
                     const termoFiltro = normalizarTexto(termoBruto);
                     
-                    const listaFiltrada = data.lista.filter(item => {
-                        const reg = item.registro || {};
+                    const listaFiltrada = listaBruta.filter(item => {
+                        const reg = item.registro || item;
                         if (termoFiltro === "todos") return true;
 
                         const nomeC = normalizarTexto(reg.nomeCompleto);
@@ -299,8 +309,10 @@
                     if (listaFiltrada.length > 0) {
                         // 🟢 ORDENAÇÃO ALFABÉTICA DE A a Z PELO NOME COMPLETO
                         listaFiltrada.sort((a, b) => {
-                            const nomeA = (a.registro?.nomeCompleto || "").toUpperCase();
-                            const nomeB = (b.registro?.nomeCompleto || "").toUpperCase();
+                            const regA = a.registro || a;
+                            const regB = b.registro || b;
+                            const nomeA = (regA.nomeCompleto || "").toUpperCase();
+                            const nomeB = (regB.nomeCompleto || "").toUpperCase();
                             return nomeA.localeCompare(nomeB);
                         });
 
@@ -311,16 +323,15 @@
                     }
                 } else {
                     statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Nenhum registro encontrado.";
+                    statusDiv.innerText = data.message || "Nenhum registro encontrado na base de dados.";
                 }
             })
             .catch(err => {
-                console.error("Erro na consulta:", err);
+                console.error("Erro crítico na consulta:", err);
                 statusDiv.style.color = "red";
-                statusDiv.innerText = "Erro de conexão com o servidor.";
+                statusDiv.innerText = "Erro de conexão com o servidor. Verifique o Console (F12).";
             });
         }
-
         function montarListaSelecao(lista) {
             const container = document.getElementById('listaResultadosItens');
             container.innerHTML = "";
