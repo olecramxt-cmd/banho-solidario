@@ -328,18 +328,26 @@
 
             lista.forEach(item => {
                 const reg = item.registro || item;
-                const div = document.createElement('div');
-                div.className = 'resultado-item';
-                div.innerHTML = `
-                    <div>
-                        <strong>Matrícula:</strong> ${reg.matricula} | 
-                        <strong>Nome:</strong> ${reg.nomeCompleto} 
-                        ${reg.nomeSocial ? `(${reg.nomeSocial})` : ''} | 
-                        <strong>CPF:</strong> ${reg.cpf || 'Não informado'}
-                    </div>
-                    <button class="btn" onclick='preencherFormularioCompleto(${JSON.stringify(reg)}, ${item.linha})'>Selecionar</button>
-                `;
-                container.appendChild(div);
+                
+                // Criação segura de elementos via DOM (Sem risco de erro de sintaxe HTML/Crase)
+                const divItem = document.createElement('div');
+                divItem.className = 'resultado-item';
+
+                const divInfo = document.createElement('div');
+                const cpfTexto = reg.cpf ? reg.cpf : 'Não informado';
+                const socialTexto = reg.nomeSocial ? ` (${reg.nomeSocial})` : '';
+                divInfo.innerHTML = `<strong>Matrícula:</strong> ${reg.matricula || '---'} | <strong>Nome:</strong> ${reg.nomeCompleto || ''}${socialTexto} | <strong>CPF:</strong> ${cpfTexto}`;
+
+                const btnSelecionar = document.createElement('button');
+                btnSelecionar.className = 'btn';
+                btnSelecionar.innerHTML = 'Selecionar';
+                btnSelecionar.onclick = function() {
+                    preencherFormularioCompleto(reg, item.linha);
+                };
+
+                divItem.appendChild(divInfo);
+                divItem.appendChild(btnSelecionar);
+                container.appendChild(divItem);
             });
         }
 
