@@ -230,6 +230,7 @@
     </div>
 
     <script>
+<script>
         function formatarDataAmigavel(dataStr, operadorNome) {
             if (!dataStr) return "Data não informada";
             try {
@@ -253,7 +254,7 @@
             }
         }
 
-function pesquisarCadastros() {
+        function pesquisarCadastros() {
             const termoBruto = document.getElementById('termoBusca').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
             document.getElementById('listaResultadosContainer').style.display = 'none';
@@ -316,6 +317,190 @@ function pesquisarCadastros() {
                 console.error("Erro na consulta:", err);
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão com o servidor.";
+            });
+        }
+
+        function montarListaSelecao(lista) {
+            const container = document.getElementById('listaResultadosItens');
+            container.innerHTML = "";
+            document.getElementById('listaResultadosContainer').style.display = 'block';
+
+            lista.forEach(item => {
+                const reg = item.registro;
+                const div = document.createElement('div');
+                div.className = 'resultado-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>Matrícula:</strong> ${reg.matricula} | 
+                        <strong>Nome:</strong> ${reg.nomeCompleto} 
+                        ${reg.nomeSocial ? `(${reg.nomeSocial})` : ''} | 
+                        <strong>CPF:</strong> ${reg.cpf || 'Não informado'}
+                    </div>
+                    <button class="btn" onclick='preencherFormularioCompleto(${JSON.stringify(reg)}, ${item.linha})'>Selecionar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function converterLinkDrive(url) {
+            if (!url) return "";
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            return url;
+        }
+
+        function gerarHtmlAvatar(reg) {
+            const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
+            const fotoFinal = converterLinkDrive(reg.foto || document.getElementById('foto').value);
+            
+            let conteudoInterno = "";
+            if (fotoFinal) {
+                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size:3rem; color:#0284c7;\'></i>';">`;
+            } else {
+                conteudoInterno = `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
+            }
+
+            if (isInativo) {
+                return `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${conteudoInterno}</div>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
+                        <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
+                    </div>
+                </div>`;
+            }
+            return conteudoInterno;
+        }
+
+        function preencherFormularioCompleto(reg, linha) {
+            document.getElementById('listaResultadosContainer').style.display = "none";
+            const containerRes = document.getElementById('resultadoContainer');
+            containerRes.style.display = "block";
+            document.getElementById('linhaPlanilha').value = linha;
+
+            document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
+            
+            let operadorCad = reg.operador || "Sistema";
+            document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
+
+            const statusReg = String(reg.status || "").trim();
+            const isInativo = (statusReg === "Inativo");
+            document.getElementById('checkInativo').checked = isInativo;
+
+            const statusDisplayHtml = isInativo
+                ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>'
+                : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
+            
+            document.querySelectorAll('.profile-info p')[1].innerHTML = `Status: ${statusDisplayHtml}`;
+
+            document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
+            document.getElementById('nomeSocial').value = reg.nomeSocial || "";
+            document.getElementById('dataNascimento').value = reg.dataNascimento || "";
+            document.getElementById('idade').value = reg.idade || "";
+            document.getElementById('sexo').value = reg.sexo || "Masculino";
+            document.getElementById('escolaridade').value = reg.escolaridade || "";
+            document.getElementById('naturalidade').value = reg.naturalidade || "";
+            document.getElementById('rg').value = reg.rg || "";
+            document.getElementById('cpf').value = reg.cpf || "";
+            document.getElementById('corRaca').value = reg.corRaca || "";
+            document.getElementById('telefoneContato').value = reg.telefoneContato || "";
+            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";      
+            document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
+            document.getElementById('endereco').value = reg.endereco || "";
+            document.getElementById('cidade').value = reg.cidade || "";
+            document.getElementById('telefone').value = reg.telefone || "";
+            document.getElementById('residenciaUnaí').value = reg.residenciaUnaí || "";
+            document.getElementById('tipoUsuario').value = reg.tipoUsuario || "";
+            document.getElementById('tempoRua').value = reg.tempoRua || "";
+            document.getElementById('tempoUnaí').value = reg.tempoUnaí || "";
+            document.getElementById('motivosPermanencia').value = reg.motivosPermanencia || "";
+            document.getElementById('outrosMotivos').value = reg.outrosMotivos || "";
+            document.getElementById('passouAtendimento').value = reg.passouAtendimento || "";
+            document.getElementById('recebeAuxilio').value = reg.recebeAuxilio || "Não";
+            document.getElementById('qualBeneficio').value = reg.qualBeneficio || "";
+            document.getElementById('possuiDocumentos').value = reg.possuiDocumentos || "Sim";
+            document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
+            document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
+            document.getElementById('foto').value = reg.foto || "";
+
+            const avatarContainer = document.getElementById('avatarContainer');
+            avatarContainer.innerHTML = gerarHtmlAvatar(reg);
+        }
+
+        function atualizarAvatarPreview() {
+            const avatarContainer = document.getElementById('avatarContainer');
+            avatarContainer.innerHTML = gerarHtmlAvatar({
+                foto: document.getElementById('foto').value,
+                status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo"
+            });
+        }
+
+        function atualizarCadastro() {
+            const linha = document.getElementById('linhaPlanilha').value;
+            const statusDiv = document.getElementById('mensagemStatus');
+            const containerRes = document.getElementById('resultadoContainer');
+
+            const payload = {
+                action: "atualizarTriagem",
+                linha: parseInt(linha),
+                nomeCompleto: document.getElementById('nomeCompleto').value,
+                nomeSocial: document.getElementById('nomeSocial').value,
+                dataNascimento: document.getElementById('dataNascimento').value,
+                idade: document.getElementById('idade').value,
+                sexo: document.getElementById('sexo').value,
+                escolaridade: document.getElementById('escolaridade').value,
+                naturalidade: document.getElementById('naturalidade').value,
+                rg: document.getElementById('rg').value,
+                cpf: document.getElementById('cpf').value,
+                corRaca: document.getElementById('corRaca').value,
+                telefoneContato: document.getElementById('telefoneContato').value,
+                status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo",
+                operador: (typeof operadorAtivo !== 'undefined' ? (operadorAtivo.nome || operadorAtivo.usuario) : "Sistema"),
+                filiacaoMae: document.getElementById('filiacaoMae').value,                
+                filiacaoPai: document.getElementById('filiacaoPai').value,
+                endereco: document.getElementById('endereco').value,
+                cidade: document.getElementById('cidade').value,
+                telefone: document.getElementById('telefone').value,
+                residenciaUnaí: document.getElementById('residenciaUnaí').value,
+                tipoUsuario: document.getElementById('tipoUsuario').value,
+                tempoRua: document.getElementById('tempoRua').value,
+                tempoUnaí: document.getElementById('tempoUnaí').value,
+                motivosPermanencia: document.getElementById('motivosPermanencia').value,
+                outrosMotivos: document.getElementById('outrosMotivos').value,
+                passouAtendimento: document.getElementById('passouAtendimento').value,
+                recebeAuxilio: document.getElementById('recebeAuxilio').value,
+                qualBeneficio: document.getElementById('qualBeneficio').value,
+                possuiDocumentos: document.getElementById('possuiDocumentos').value,
+                documentosFaltam: document.getElementById('documentosFaltam').value,
+                carteiraTrabalho: document.getElementById('carteiraTrabalho').value,
+                foto: document.getElementById('foto').value
+            };
+
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "A atualizar cadastro na nuvem...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "sucesso") {
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = data.message;
+                    
+                    containerRes.classList.add('animar-salvamento');
+                    setTimeout(() => {
+                        containerRes.classList.remove('animar-salvamento');
+                    }, 600);
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Erro ao atualizar.";
+                }
+            })
+            .catch(err => {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão ao salvar.";
             });
         }
     </script>
