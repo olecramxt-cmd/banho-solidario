@@ -167,15 +167,23 @@
         <div id="resultadoContainer">
             <input type="hidden" id="linhaPlanilha">
             
-            <div class="profile-header">
+            <div class="profile-header" style="display: flex; align-items: flex-start; gap: 20px;">
                 <div class="avatar-box" id="avatarContainer"></div>
-                <div class="profile-info">
+                <div class="profile-info" style="flex: 1;">
+                    
+                    <!-- 🟢 CAIXA DE INATIVIDADE MOVIDA PARA O TOPO (ACIMA DA MATRÍCULA) -->
+                    <div style="background: #fef2f2; padding: 10px 14px; border-radius: 6px; border: 1px solid #fecaca; display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <input type="checkbox" id="checkInativo" style="width: 18px; height: 18px; cursor: pointer;" onchange="atualizarAvatarPreview()">
+                        <label for="checkInativo" style="color: var(--danger-color); font-weight: 700; font-size: 13px; margin: 0; cursor: pointer;">
+                            INATIVO. ATENÇÃO!!!! Só marque esta alternativa em caso de ÓBITO do assistido.
+                        </label>
+                    </div>
+
                     <h3 id="lblMatriculaDisplay">MATRÍCULA</h3>
                     <p id="lblDataCadastro">Data do Cadastro: --/--/----</p>
                     <p>Status: <span style="color: var(--success-color); font-weight: bold;">Ativo no Sistema</span></p>
                 </div>
             </div>
-
             <div class="form-grid">
                 <div class="section-title">1. Dados Pessoais e Identificação</div>
                 <div class="form-group"><label>Nome Completo *</label><input type="text" id="nomeCompleto"></div>
