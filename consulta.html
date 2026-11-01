@@ -4,7 +4,7 @@
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
 <!-- Programa: consulta.html. Versão do Módulo: v.2.7.000                           -->
 <!-- Data de atualização: 01/11/2026                                                -->
-<!-- Descrição: Correção de sintaxe e unificação completa do módulo de consulta.     -->
+<!-- Descrição: Módulo de Consulta unificado, limpo e à prova de erros de sintaxe.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -87,7 +87,8 @@
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
-        const API_URL = CONFIG.API_URL;
+        // Fallback seguro caso o config.js demore ou falhe
+        const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "https://script.google.com/macros/s/AKfycby.../exec";
 
         const normalizarTexto = (texto) => {
             return String(texto || "")
@@ -329,7 +330,6 @@
             lista.forEach(item => {
                 const reg = item.registro || item;
                 
-                // Criação segura de elementos via DOM (Sem risco de erro de sintaxe HTML/Crase)
                 const divItem = document.createElement('div');
                 divItem.className = 'resultado-item';
 
