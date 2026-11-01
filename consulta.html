@@ -296,14 +296,16 @@
                                    cpf.includes(termoFiltro);
                         });
 
-                        if (listaFiltrada.length > 0) {
-                            montarListaSelecao(listaFiltrada);
-                        } else {
-                            statusDiv.style.color = "red";
-                            statusDiv.innerText = "Nenhum registro encontrado para o termo pesquisado.";
-                        }
-                    }
-                } else {
+                if (listaFiltrada.length > 0) {
+                        // 🟢 ORDENAÇÃO ALFABÉTICA DE A a Z PELO NOME COMPLETO
+                        listaFiltrada.sort((a, b) => {
+                            const nomeA = (a.registro?.nomeCompleto || "").toUpperCase();
+                            const nomeB = (b.registro?.nomeCompleto || "").toUpperCase();
+                            return nomeA.localeCompare(nomeB);
+                        });
+
+                        montarListaSelecao(listaFiltrada);
+                    } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Nenhum registro encontrado.";
                 }
