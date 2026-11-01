@@ -335,7 +335,37 @@
             });
         }
 
-function preencherFormularioCompleto(reg, linha) {
+function gerarHtmlAvatar(reg, tamanhoEstilo = "width: 100%; height: 100%; object-fit: cover;") {
+            const isInativo = String(reg.status || "").trim() === "Inativo";
+            const fotoFinal = converterLinkDrive(reg.foto || document.getElementById('foto').value);
+            const sexoLower = (reg.sexo || "").trim().toLowerCase();
+            
+            let imgPadrao = "imagens/AvatarPessoaNeutra.png";
+            if (sexoLower.includes("masculino") || sexoLower === "m") {
+                imgPadrao = "imagens/AvatarHomem.png";
+            } else if (sexoLower.includes("feminino") || sexoLower === "f") {
+                imgPadrao = "imagens/AvatarMulher.png";
+            }
+
+            let conteudoInterno = "";
+            if (fotoFinal) {
+                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="${tamanhoEstilo}" onerror="this.onerror=null;this.src='${imgPadrao}';">`;
+            } else {
+                conteudoInterno = `<img src="${imgPadrao}" alt="Avatar Padrão" style="${tamanhoEstilo}">`;
+            }
+
+            if (isInativo) {
+                return `<div style="position: relative; width: 100%; height: 100%;">
+                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%;">${conteudoInterno}</div>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
+                        <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
+                    </div>
+                </div>`;
+            }
+            return conteudoInterno;
+        }
+
+        function preencherFormularioCompleto(reg, linha) {
             document.getElementById('listaResultadosContainer').style.display = "none";
             const containerRes = document.getElementById('resultadoContainer');
             containerRes.style.display = "block";
@@ -343,13 +373,23 @@ function preencherFormularioCompleto(reg, linha) {
 
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
             
-            // Leitura correta do Operador e Data
             let operadorCad = reg.operador || "Sistema";
             document.getElementById('lblDataCadastro').innerText = "Data do Cadastro: " + formatarDataAmigavel(reg.dataHora, operadorCad);
 
-            // Leitura correta do status Inativo para marcar o checkbox
+            // 🟢 Leitura correta do status Inativo para marcar o checkbox e atualizar o texto visual
             const statusReg = String(reg.status || "").trim();
-            document.getElementById('checkInativo').checked = (statusReg === "Inativo");
+            const isInativo = (statusReg === "Inativo");
+            document.getElementById('checkInativo').checked = isInativo;
+
+            const statusDisplayHtml = isInativo
+                ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>'
+                : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
+            
+            document.querySelectorAll('.profile-info p')[1].innerHTML = `Status: ${statusDisplayHtml}`;
+
+            // 🟢 Renderizar o avatar correto (com carimbo de inativo se for o caso)
+            const avatarContainer = document.getElementById('avatarContainer');
+            avatarContainer.innerHTML = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
 
             // Preenchimento dos campos do formulário
             document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
@@ -423,7 +463,6 @@ function preencherFormularioCompleto(reg, linha) {
                 cpf: document.getElementById('cpf').value,
                 corRaca: document.getElementById('corRaca').value,
                 telefoneContato: document.getElementById('telefoneContato').value,
-                // 🟢 Status enviado corretamente com vírgula no final
                 status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo",
                 operador: (typeof operadorAtivo !== 'undefined' ? (operadorAtivo.nome || operadorAtivo.usuario) : "Sistema"),
                 filiacaoMae: document.getElementById('filiacaoMae').value,                
