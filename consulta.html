@@ -335,30 +335,15 @@
             });
         }
 
+        // 🟢 Função auxiliar essencial para converter links do Google Drive
+        function converterLinkDrive(url) {
+            if (!url) return "";
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            return url;
+        }
+
         function gerarHtmlAvatar(reg) {
-            // Verifica se o status está inativo (pelo objeto ou pelo checkbox da tela)
-            const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
-            const fotoFinal = converterLinkDrive(reg.foto || document.getElementById('foto').value);
-            
-            let conteudoInterno = "";
-            if (fotoFinal) {
-                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size:3rem; color:#0284c7;\'></i>';">`;
-            } else {
-                conteudoInterno = `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
-            }
-
-            if (isInativo) {
-                return `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${conteudoInterno}</div>
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
-                        <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
-                    </div>
-                </div>`;
-            }
-            return conteudoInterno;
-        }
-function gerarHtmlAvatar(reg) {
-            // Verifica se o status está inativo (pelo objeto ou pelo checkbox da tela)
             const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
             const fotoFinal = converterLinkDrive(reg.foto || document.getElementById('foto').value);
             
@@ -380,7 +365,7 @@ function gerarHtmlAvatar(reg) {
             return conteudoInterno;
         }
 
-        // 🟢 RESTAURANDO A FUNÇÃO DE PREENCHIMENTO QUE FALTAVA
+        // 🟢 Função restaurada para preencher todos os dados e o avatar correto
         function preencherFormularioCompleto(reg, linha) {
             document.getElementById('listaResultadosContainer').style.display = "none";
             const containerRes = document.getElementById('resultadoContainer');
@@ -402,7 +387,7 @@ function gerarHtmlAvatar(reg) {
             
             document.querySelectorAll('.profile-info p')[1].innerHTML = `Status: ${statusDisplayHtml}`;
 
-            // Preenchimento dos campos do formulário
+            // Preenchimento de todos os campos do formulário
             document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
             document.getElementById('nomeSocial').value = reg.nomeSocial || "";
             document.getElementById('dataNascimento').value = reg.dataNascimento || "";
@@ -433,10 +418,11 @@ function gerarHtmlAvatar(reg) {
             document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
             document.getElementById('foto').value = reg.foto || "";
 
-            // 🟢 Renderiza o avatar correto utilizando a função nova
+            // Renderiza o avatar adequado (ativo ou inativo com carimbo)
             const avatarContainer = document.getElementById('avatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar(reg);
         }
+
         function atualizarAvatarPreview() {
             const avatarContainer = document.getElementById('avatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar({
