@@ -395,6 +395,14 @@
             input.value = valor;
         }
 
+        // 🟢 ADICIONE AQUI:
+        function normalizarTexto(texto) {
+            return String(texto || "")
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        }
+
         function pesquisarCadastros() {
             const termoBruto = document.getElementById('termoBusca').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
