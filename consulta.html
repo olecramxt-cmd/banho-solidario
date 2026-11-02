@@ -88,23 +88,22 @@
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
+
+        // 🟢 CAPTURA DINÂMICA DO OPERADOR REAL LOGADO (Sem nomes fixos)
+        let operadorLogado = "Sistema";
+        try {
+            if (ativoLocal) {
+                const objUser = JSON.parse(ativoLocal);
+                operadorLogado = objUser.nome || objUser.username || "Sistema";
+            } else {
+                const sessionUser = sessionStorage.getItem('pbs_usuario_nome');
+                if (sessionUser) operadorLogado = sessionUser;
+            }
+        } catch(e) {
+            operadorLogado = "Sistema";
+        }
+
         const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
-
-        const normalizarTexto = (texto) => {
-            return String(texto || "")
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "");
-        };
-
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        function sairConsulta() {
-            window.history.back();
-        }
     </script>
 
     <div class="navbar">
@@ -622,7 +621,10 @@
                 corRaca: document.getElementById('corRaca').value,
                 telefoneContato: document.getElementById('telefoneContato').value,
                 status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo",
-                operador: (typeof operadorAtivo !== 'undefined' ? (operadorAtivo.nome || operadorAtivo.usuario) : "Sistema"),
+                
+                // 🟢 OPERADOR CAPTURADO CORRETAMENTE DA SESSÃO
+                operador: operadorLogado,
+
                 filiacaoMae: document.getElementById('filiacaoMae').value,                
                 filiacaoPai: document.getElementById('filiacaoPai').value,
                 endereco: document.getElementById('endereco').value,
@@ -642,7 +644,6 @@
                 carteiraTrabalho: document.getElementById('carteiraTrabalho').value,
                 foto: document.getElementById('foto').value
             };
-
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "A atualizar cadastro na nuvem...";
 
