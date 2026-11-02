@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.2.8.000                           -->
+<!-- Programa: consulta.html. Versão do Módulo: v.2.9.000                           -->
 <!-- Data de atualização: 02/11/2026                                                -->
-<!-- Descrição: Automatização de idade, validação de CPF e menus padronizados.       -->
+<!-- Descrição: Idade em anos/meses/dias, novos menus e Data de Registro editável.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -178,18 +178,27 @@
                     </div>
 
                     <h3 id="lblMatriculaDisplay">MATRÍCULA</h3>
-                    <p id="lblDataCadastro">Data do Cadastro: --/--/----</p>
-                    <p id="lblDataCriacaoRegistro">Criação do Registro: --/--/----</p>
+                    <p id="lblDataCadastro">Data da Última Atualização: --/--/----</p>
                     <p>Status: <span style="color: var(--success-color); font-weight: bold;">Ativo no Sistema</span></p>
                 </div>
             </div>
 
             <div class="form-grid">
                 <div class="section-title">1. Dados Pessoais e Identificação</div>
+                
+                <!-- 🟢 NOVO CAMPO: DATA DE REGISTRO (CALENDÁRIO EDITÁVEL) -->
+                <div class="form-group">
+                    <label>Data de Registro *</label>
+                    <input type="date" id="dataRegistro">
+                </div>
+
                 <div class="form-group"><label>Nome Completo *</label><input type="text" id="nomeCompleto"></div>
                 <div class="form-group"><label>Nome Social</label><input type="text" id="nomeSocial"></div>
-                <div class="form-group"><label>Data de Nascimento</label><input type="date" id="dataNascimento" onchange="calcularIdadeAutomatica()"></div>
-                <div class="form-group"><label>Idade</label><input type="text" id="idade" placeholder="Automático ou manual"></div>
+                <div class="form-group"><label>Data de Nascimento</label><input type="date" id="dataNascimento" onchange="calcularIdadeDetalhada()"></div>
+                
+                <!-- 🟢 IDADE EM ANOS, MESES E DIAS -->
+                <div class="form-group"><label>Idade (Anos, Meses e Dias)</label><input type="text" id="idade" placeholder="Automático ou manual"></div>
+                
                 <div class="form-group"><label>Sexo</label><select id="sexo"><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option><option value="Outro">Outro</option></select></div>
                 <div class="form-group"><label>Escolaridade</label><select id="escolaridade"><option value="">Selecione...</option><option value="Ensino Fundamental I">Ensino Fundamental I</option><option value="Ensino Fundamental II">Ensino Fundamental II</option><option value="Ensino Médio">Ensino Médio</option><option value="Ensino Superior">Ensino Superior</option><option value="Não Alfabetizado">Não Alfabetizado</option></select></div>
                 <div class="form-group"><label>Naturalidade</label><input type="text" id="naturalidade"></div>
@@ -211,57 +220,48 @@
                 <div class="form-group"><label>Residência ou Familiares em Unaí</label><select id="residenciaUnaí"><option value="">Selecione...</option><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
 
                 <div class="section-title">3. Perfil Social e Permanência na Rua</div>
-                <div class="form-group"><label>Tipo de Usuário</label><select id="tipoUsuario"><option value="Assistido">Assistido</option><option value="Idoso">Idoso</option><option value="Outro">Outro</option></select></div>
                 
-                <!-- 🟢 TEMPO DE RUA (MENU SUSPENSO) -->
+                <!-- 🟢 TIPO DE USUÁRIO ATUALIZADO -->
+                <div class="form-group">
+                    <label>Tipo de Usuário</label>
+                    <select id="tipoUsuario">
+                        <option value="">Selecione...</option>
+                        <option value="Pessoa Idosa">Pessoa Idosa</option>
+                        <option value="Adulto">Adulto</option>
+                        <option value="Criança/Adolescente">Criança/Adolescente</option>
+                        <option value="PCD">PCD</option>
+                    </select>
+                </div>
+                
+                <!-- 🟢 TEMPO DE RUA (4 OPÇÕES) -->
                 <div class="form-group">
                     <label>Tempo de Rua</label>
                     <select id="tempoRua">
                         <option value="">Selecione...</option>
                         <option value="Até 30 dias">Até 30 dias</option>
+                        <option value="30 a 90 dias">30 a 90 dias</option>
                         <option value="90 dias a 01 ano">90 dias a 01 ano</option>
                         <option value="01 ano ou mais">01 ano ou mais</option>
                     </select>
                 </div>
 
-                <!-- 🟢 TEMPO DE UNAÍ (MENU SUSPENSO) -->
+                <!-- 🟢 TEMPO DE UNAÍ (4 OPÇÕES) -->
                 <div class="form-group">
                     <label>Tempo de Unaí</label>
                     <select id="tempoUnaí">
                         <option value="">Selecione...</option>
                         <option value="Até 30 dias">Até 30 dias</option>
+                        <option value="30 a 90 dias">30 a 90 dias</option>
                         <option value="90 dias a 01 ano">90 dias a 01 ano</option>
                         <option value="01 ano ou mais">01 ano ou mais</option>
                     </select>
                 </div>
 
-                <!-- 🟢 MOTIVOS PERMANÊNCIA (MENU SUSPENSO) -->
-                <div class="form-group">
-                    <label>Motivos Permanência</label>
-                    <select id="motivosPermanencia">
-                        <option value="">Selecione...</option>
-                        <option value="Alcoolismo e/ou drogas">Alcoolismo e/ou drogas</option>
-                        <option value="Conflitos familiares">Conflitos familiares</option>
-                        <option value="Desemprego">Desemprego</option>
-                        <option value="Separação Conjugal">Separação Conjugal</option>
-                    </select>
-                </div>
-
+                <div class="form-group"><label>Motivos Permanência</label><select id="motivosPermanencia"><option value="">Selecione...</option><option value="Alcoolismo e/ou drogas">Alcoolismo e/ou drogas</option><option value="Conflitos familiares">Conflitos familiares</option><option value="Desemprego">Desemprego</option><option value="Separação Conjugal">Separação Conjugal</option></select></div>
                 <div class="form-group"><label>Outros Motivos</label><input type="text" id="outrosMotivos"></div>
 
                 <div class="section-title">4. Atendimentos, Benefícios e Documentação</div>
-                
-                <!-- 🟢 PASSO ATENDIMENTO (MENU SUSPENSO) -->
-                <div class="form-group">
-                    <label>Passou Atendimento</label>
-                    <select id="passouAtendimento">
-                        <option value="">Selecione...</option>
-                        <option value="CAPS">CAPS</option>
-                        <option value="CAPS-AD">CAPS-AD</option>
-                        <option value="Clínica de recuperação">Clínica de recuperação</option>
-                    </select>
-                </div>
-
+                <div class="form-group"><label>Passou Atendimento</label><select id="passouAtendimento"><option value="">Selecione...</option><option value="CAPS">CAPS</option><option value="CAPS-AD">CAPS-AD</option><option value="Clínica de recuperação">Clínica de recuperação</option></select></div>
                 <div class="form-group"><label>Recebe Auxílio</label><select id="recebeAuxilio"><option value="Não">Não</option><option value="Sim">Sim</option></select></div>
                 <div class="form-group"><label>Qual Benefício</label><input type="text" id="qualBeneficio"></div>
                 <div class="form-group"><label>Possui Documentos</label><select id="possuiDocumentos"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
@@ -301,26 +301,42 @@
             }
         }
 
-        // 🟢 CÁLCULO AUTOMÁTICO DE IDADE
-        function calcularIdadeAutomatica() {
+        // 🟢 CÁLCULO DETALHADO DE IDADE (ANOS, MESES E DIAS)
+        function calcularIdadeDetalhada() {
             const dataNascStr = document.getElementById('dataNascimento').value;
             const inputIdade = document.getElementById('idade');
-            if (!dataNascStr) {
-                return; // Se apagar a data, mantém liberado para digitação manual se desejar
-            }
+            if (!dataNascStr) return;
+
             const hoje = new Date();
             const nascimento = new Date(dataNascStr);
-            let idade = hoje.getFullYear() - nascimento.getFullYear();
-            const m = hoje.getMonth() - nascimento.getMonth();
-            if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
-                idade--;
+            if (nascimento > hoje) {
+                inputIdade.value = "Data futura inválida";
+                return;
             }
-            if (!isNaN(idade) && idade >= 0) {
-                inputIdade.value = idade + " anos";
+
+            let anos = hoje.getFullYear() - nascimento.getFullYear();
+            let meses = hoje.getMonth() - nascimento.getMonth();
+            let dias = hoje.getDate() - nascimento.getDate();
+
+            if (dias < 0) {
+                meses--;
+                const ultimoDiaMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
+                dias += ultimoDiaMesAnterior;
             }
+            if (meses < 0) {
+                anos--;
+                meses += 12;
+            }
+
+            let resultado = "";
+            if (anos > 0) resultado += `${anos} ano${anos > 1 ? 's' : ''}`;
+            if (meses > 0) resultado += `${resultado ? ', ' : ''}${meses} mes${meses > 1 ? 'es' : 'e'}`;
+            if (dias > 0 || !resultado) resultado += `${resultado ? ' e ' : ''}${dias} dia${dias > 1 ? 's' : ''}`;
+
+            inputIdade.value = resultado;
         }
 
-        // 🟢 VALIDADOR DE CPF (NÃO OBRIGATÓRIO SE INVÁLIDO)
+        // 🟢 VALIDADOR DE CPF (NÃO OBRIGATÓRIO)
         function validarCpfDigitado(cpfStr) {
             const aviso = document.getElementById('avisoCpf');
             const cpfLimpo = cpfStr.replace(/\D/g, '');
@@ -349,7 +365,7 @@
                 aviso.style.display = 'block';
                 return;
             }
-            aviso.style.display = 'none'; // CPF Válido
+            aviso.style.display = 'none';
         }
 
         function pesquisarCadastros() {
@@ -488,8 +504,11 @@
             document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
             
             let operadorCad = reg.operador || "Sistema";
-            document.getElementById('lblDataCadastro').innerText = "Data da Atualização: " + formatarDataAmigavel(reg.dataHora, operadorCad);
-            document.getElementById('lblDataCriacaoRegistro').innerText = "Criação do Registro: " + (reg.dataHora ? formatarDataAmigavel(reg.dataHora) : "Não informada");
+            document.getElementById('lblDataCadastro').innerText = "Última Atualização: " + formatarDataAmigavel(reg.dataHora, operadorCad);
+
+            // 🟢 PREENCHIMENTO DA DATA DE REGISTRO (Se houver, senão assume a data atual)
+            let dataRegOriginal = reg.dataRegistro || (reg.dataHora ? reg.dataHora.split('T')[0] : new Date().toISOString().split('T')[0]);
+            document.getElementById('dataRegistro').value = dataRegOriginal;
 
             const statusReg = String(reg.status || "").trim();
             const isInativo = (statusReg === "Inativo");
@@ -499,7 +518,7 @@
                 ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>'
                 : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
             
-            document.querySelectorAll('.profile-info p')[2].innerHTML = `Status: ${statusDisplayHtml}`;
+            document.querySelectorAll('.profile-info p')[1].innerHTML = `Status: ${statusDisplayHtml}`;
 
             document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
             document.getElementById('nomeSocial').value = reg.nomeSocial || "";
@@ -552,6 +571,7 @@
             const payload = {
                 action: "atualizarTriagem",
                 linha: parseInt(linha),
+                dataRegistro: document.getElementById('dataRegistro').value,
                 nomeCompleto: document.getElementById('nomeCompleto').value,
                 nomeSocial: document.getElementById('nomeSocial').value,
                 dataNascimento: document.getElementById('dataNascimento').value,
