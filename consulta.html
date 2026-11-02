@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.3.0.002                           -->
+<!-- Programa: consulta.html. Versão do Módulo: v.3.0.003                           -->
 <!-- Data de atualização: 02/11/2026                                                -->
-<!-- Descrição: Versão unificada final blindada (Menu, Pesquisa e Operador Dinâmico)-->
+<!-- Descrição: Versão unificada completa, blindada e sem nenhum corte.             -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -82,7 +82,6 @@
 
     <script src="config.js"></script>
     <script>
-        // 🟢 FUNÇÕES GLOBAIS BLINDADAS (Disponíveis imediatamente)
         window.toggleMenu = function() {
             const sideMenu = document.getElementById('sideMenu');
             const overlay = document.getElementById('overlay');
@@ -109,7 +108,6 @@
             window.location.href = 'login.html';
         }
 
-        // 🟢 CAPTURA DINÂMICA DO OPERADOR REAL LOGADO (Multiusuário)
         let operadorLogado = "Voluntário / Operador"; 
         try {
             if (ativoLocal) {
@@ -365,3 +363,349 @@
             let dias = hoje.getDate() - nascimento.getDate();
 
             if (dias < 0) {
+                meses--;
+                const ultimoDiaMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
+                dias += ultimoDiaMesAnterior;
+            }
+            if (meses < 0) {
+                anos--;
+                meses += 12;
+            }
+
+            let resultado = "";
+            if (anos > 0) resultado += `${anos} ano${anos > 1 ? 's' : ''}`;
+            if (meses > 0) resultado += `${resultado ? ', ' : ''}${meses} mes${meses > 1 ? 'es' : 'e'}`;
+            if (dias > 0 || !resultado) resultado += `${resultado ? ' e ' : ''}${dias} dia${dias > 1 ? 's' : ''}`;
+
+            inputIdade.value = resultado;
+        }
+
+        function validarCpfDigitado(cpfStr) {
+            const aviso = document.getElementById('avisoCpf');
+            const cpfLimpo = cpfStr.replace(/\D/g, '');
+            if (!cpfLimpo) {
+                aviso.style.display = 'none';
+                return;
+            }
+            if (cpfLimpo.length !== 11 || /^(\d)\1{10}$/.test(cpfLimpo)) {
+                aviso.style.display = 'block';
+                return;
+            }
+            let soma = 0;
+            let resto;
+            for (let i = 1; i <= 9; i++) soma += parseInt(cpfLimpo.substring(i-1, i)) * (11 - i);
+            resto = (soma * 10) % 11;
+            if ((resto === 10) || (resto === 11)) resto = 0;
+            if (resto !== parseInt(cpfLimpo.substring(9, 10))) {
+                aviso.style.display = 'block';
+                return;
+            }
+            soma = 0;
+            for (let i = 1; i <= 10; i++) soma += parseInt(cpfLimpo.substring(i-1, i)) * (12 - i);
+            resto = (soma * 10) % 11;
+            if ((resto === 10) || (resto === 11)) resto = 0;
+            if (resto !== parseInt(cpfLimpo.substring(10, 11))) {
+                aviso.style.display = 'block';
+                return;
+            }
+            aviso.style.display = 'none';
+        }
+
+        function mascaraCpf(input) {
+            let valor = input.value.replace(/\D/g, "");
+            if (valor.length > 11) valor = valor.substring(0, 11);
+            if (valor.length > 9) {
+                valor = valor.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*$/, "$1.$2.$3-$4");
+            } else if (valor.length > 6) {
+                valor = valor.replace(/^(\d{3})(\d{3})(\d{3}).*$/, "$1.$2.$3");
+            } else if (valor.length > 3) {
+                valor = valor.replace(/^(\d{3})(\d{3}).*$/, "$1.$2");
+            }
+            input.value = valor;
+        }
+
+        function normalizarTexto(texto) {
+            return String(texto || "")
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function pesquisarCadastros() {
+            const termoBruto = document.getElementById('termoBusca').value.trim();
+            const statusDiv = document.getElementById('mensagemStatus');
+            document.getElementById('listaResultadosContainer').style.display = 'none';
+            document.getElementById('resultadoContainer').style.display = 'none';
+
+            if (!termoBruto) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Por favor, digite um termo ou 'TODOS' para pesquisar.";
+                return;
+            }
+
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "Pesquisando assistidos na nuvem...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarTriagem", termo: "todos" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                statusDiv.innerText = "";
+                const listaBruta = data.lista || data.dados || [];
+
+                if (data.status === "encontrado" && listaBruta.length > 0) {
+                    const termoFiltro = normalizarTexto(termoBruto);
+                    
+                    const listaFiltrada = listaBruta.filter(item => {
+                        const reg = item.registro || item;
+                        if (termoFiltro === "todos") return true;
+
+                        const nomeC = normalizarTexto(reg.nomeCompleto);
+                        const nomeS = normalizarTexto(reg.nomeSocial);
+                        const mat = normalizarTexto(reg.matricula);
+                        const cpf = normalizarTexto(reg.cpf);
+
+                        return nomeC.includes(termoFiltro) || 
+                               nomeS.includes(termoFiltro) || 
+                               mat.includes(termoFiltro) || 
+                               cpf.includes(termoFiltro);
+                    });
+
+                    if (listaFiltrada.length > 0) {
+                        listaFiltrada.sort((a, b) => {
+                            const regA = a.registro || a;
+                            const regB = b.registro || b;
+                            const nomeA = (regA.nomeCompleto || "").toUpperCase();
+                            const nomeB = (regB.nomeCompleto || "").toUpperCase();
+                            return nomeA.localeCompare(nomeB);
+                        });
+
+                        montarListaSelecao(listaFiltrada);
+                    } else {
+                        statusDiv.style.color = "red";
+                        statusDiv.innerText = "Nenhum registro encontrado para o termo pesquisado.";
+                    }
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Nenhum registro encontrado.";
+                }
+            })
+            .catch(err => {
+                console.error("Erro na consulta:", err);
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão com o servidor.";
+            });
+        }
+
+        function montarListaSelecao(lista) {
+            const container = document.getElementById('listaResultadosItens');
+            container.innerHTML = "";
+            document.getElementById('listaResultadosContainer').style.display = 'block';
+
+            lista.forEach(item => {
+                const reg = item.registro || item;
+                
+                const divItem = document.createElement('div');
+                divItem.className = 'resultado-item';
+
+                const divInfo = document.createElement('div');
+                const cpfTexto = reg.cpf ? reg.cpf : 'Não informado';
+                const socialTexto = reg.nomeSocial ? ` (${reg.nomeSocial})` : '';
+                divInfo.innerHTML = `<strong>Matrícula:</strong> ${reg.matricula || '---'} | <strong>Nome:</strong> ${reg.nomeCompleto || ''}${socialTexto} | <strong>CPF:</strong> ${cpfTexto}`;
+
+                const btnSelecionar = document.createElement('button');
+                btnSelecionar.className = 'btn';
+                btnSelecionar.innerHTML = 'Selecionar';
+                btnSelecionar.onclick = function() {
+                    preencherFormularioCompleto(reg, item.linha);
+                };
+
+                divItem.appendChild(divInfo);
+                divItem.appendChild(btnSelecionar);
+                container.appendChild(divItem);
+            });
+        }
+
+        function converterLinkDrive(url) {
+            if (!url) return "";
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            return url;
+        }
+
+        function gerarHtmlAvatar(reg) {
+            const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
+            const urlFotoInput = document.getElementById('foto') ? document.getElementById('foto').value : "";
+            const fotoFinal = converterLinkDrive(reg.foto || urlFotoInput);
+            
+            const sexoReg = (reg.sexo || document.getElementById('sexo')?.value || "").toLowerCase();
+            let avatarPadrao = "imagens/AvatarPessoaNeutra.png";
+            if (sexoReg.includes("masculino")) {
+                avatarPadrao = "imagens/AvatarHomem.png";
+            } else if (sexoReg.includes("feminino")) {
+                avatarPadrao = "imagens/AvatarMulher.png";
+            }
+
+            const imagemExibicao = fotoFinal ? fotoFinal : avatarPadrao;
+            let conteudoInterno = `<img src="${imagemExibicao}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='imagens/AvatarPessoaNeutra.png';">`;
+
+            if (isInativo) {
+                return `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${conteudoInterno}</div>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
+                        <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
+                    </div>
+                </div>`;
+            }
+            return conteudoInterno;
+        }
+
+        function atualizaravatarespontual() {
+            atualizarAvatarPreview();
+        }
+
+        function preencherFormularioCompleto(reg, linha) {
+            document.getElementById('listaResultadosContainer').style.display = "none";
+            const containerRes = document.getElementById('resultadoContainer');
+            containerRes.style.display = "block";
+            document.getElementById('linhaPlanilha').value = linha;
+
+            document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
+            
+            let operadorCad = reg.operador || "Sistema";
+            document.getElementById('lblDataCadastro').innerText = "Última Atualização: " + formatarDataAmigavel(reg.dataHora, operadorCad);
+
+            let dataRegOriginal = reg.dataRegistro || (reg.dataHora ? reg.dataHora.split('T')[0] : new Date().toISOString().split('T')[0]);
+            document.getElementById('dataRegistro').value = dataRegOriginal;
+
+            const statusReg = String(reg.status || "").trim();
+            const isInativo = (statusReg === "Inativo");
+            document.getElementById('checkInativo').checked = isInativo;
+
+            const statusDisplayHtml = isInativo
+                ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>'
+                : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
+            
+            document.querySelectorAll('.profile-info p')[1].innerHTML = `Status: ${statusDisplayHtml}`;
+
+            document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
+            document.getElementById('nomeSocial').value = reg.nomeSocial || "";
+            document.getElementById('dataNascimento').value = reg.dataNascimento || "";
+            document.getElementById('idade').value = reg.idade || "";
+            document.getElementById('sexo').value = reg.sexo || "Masculino";
+            document.getElementById('escolaridade').value = reg.escolaridade || "";
+            document.getElementById('naturalidade').value = reg.naturalidade || "";
+            document.getElementById('rg').value = reg.rg || "";
+            document.getElementById('cpf').value = reg.cpf || "";
+            mascaraCpf(document.getElementById('cpf'));
+            validarCpfDigitado(reg.cpf || "");
+            document.getElementById('corRaca').value = reg.corRaca || "";
+            document.getElementById('telefoneContato').value = reg.telefoneContato || "";
+            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";      
+            document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
+            document.getElementById('endereco').value = reg.endereco || "";
+            document.getElementById('cidade').value = reg.cidade || "";
+            document.getElementById('telefone').value = reg.telefone || "";
+            document.getElementById('residenciaUnaí').value = reg.residenciaUnaí || "";
+            document.getElementById('tipoUsuario').value = reg.tipoUsuario || "";
+            document.getElementById('tempoRua').value = reg.tempoRua || "";
+            document.getElementById('tempoUnaí').value = reg.tempoUnaí || "";
+            document.getElementById('motivosPermanencia').value = reg.motivosPermanencia || "";
+            document.getElementById('outrosMotivos').value = reg.outrosMotivos || "";
+            document.getElementById('passouAtendimento').value = reg.passouAtendimento || "";
+            document.getElementById('recebeAuxilio').value = reg.recebeAuxilio || "Não";
+            document.getElementById('qualBeneficio').value = reg.qualBeneficio || "";
+            document.getElementById('possuiDocumentos').value = reg.possuiDocumentos || "Sim";
+            document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
+            document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
+            document.getElementById('foto').value = reg.foto || "";
+
+            const avatarContainer = document.getElementById('avatarContainer');
+            avatarContainer.innerHTML = gerarHtmlAvatar(reg);
+        }
+
+        function atualizarAvatarPreview() {
+            const avatarContainer = document.getElementById('avatarContainer');
+            avatarContainer.innerHTML = gerarHtmlAvatar({
+                foto: document.getElementById('foto').value,
+                sexo: document.getElementById('sexo').value,
+                status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo"
+            });
+        }
+
+        function atualizarCadastro() {
+            const linha = document.getElementById('linhaPlanilha').value;
+            const statusDiv = document.getElementById('mensagemStatus');
+            const containerRes = document.getElementById('resultadoContainer');
+
+            const payload = {
+                action: "atualizarTriagem",
+                linha: parseInt(linha),
+                dataRegistro: document.getElementById('dataRegistro').value,
+                nomeCompleto: document.getElementById('nomeCompleto').value,
+                nomeSocial: document.getElementById('nomeSocial').value,
+                dataNascimento: document.getElementById('dataNascimento').value,
+                idade: document.getElementById('idade').value,
+                sexo: document.getElementById('sexo').value,
+                escolaridade: document.getElementById('escolaridade').value,
+                naturalidade: document.getElementById('naturalidade').value,
+                rg: document.getElementById('rg').value,
+                cpf: document.getElementById('cpf').value,
+                corRaca: document.getElementById('corRaca').value,
+                telefoneContato: document.getElementById('telefoneContato').value,
+                status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo",
+                operador: operadorLogado,
+                filiacaoMae: document.getElementById('filiacaoMae').value,                
+                filiacaoPai: document.getElementById('filiacaoPai').value,
+                endereco: document.getElementById('endereco').value,
+                cidade: document.getElementById('cidade').value,
+                telefone: document.getElementById('telefone').value,
+                residenciaUnaí: document.getElementById('residenciaUnaí').value,
+                tipoUsuario: document.getElementById('tipoUsuario').value,
+                tempoRua: document.getElementById('tempoRua').value,
+                tempoUnaí: document.getElementById('tempoUnaí').value,
+                motivosPermanencia: document.getElementById('motivosPermanencia').value,
+                outrosMotivos: document.getElementById('outrosMotivos').value,
+                passouAtendimento: document.getElementById('passouAtendimento').value,
+                recebeAuxilio: document.getElementById('recebeAuxilio').value,
+                qualBeneficio: document.getElementById('qualBeneficio').value,
+                possuiDocumentos: document.getElementById('possuiDocumentos').value,
+                documentosFaltam: document.getElementById('documentosFaltam').value,
+                carteiraTrabalho: document.getElementById('carteiraTrabalho').value,
+                foto: document.getElementById('foto').value
+            };
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "A atualizar cadastro na nuvem...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "sucesso") {
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = data.message;
+                    
+                    containerRes.classList.add('animar-salvamento');
+                    setTimeout(() => {
+                        containerRes.classList.remove('animar-salvamento');
+                    }, 600);
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Erro ao atualizar.";
+                }
+            })
+            .catch(err => {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão ao salvar.";
+            });
+        }
+    </script>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
