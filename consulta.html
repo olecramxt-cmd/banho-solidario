@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.3.0.001                           -->
+<!-- Programa: consulta.html. Versão do Módulo: v.3.0.002                           -->
 <!-- Data de atualização: 02/11/2026                                                -->
-<!-- Descrição: Versão unificada final com menu corrigido e operador dinâmico.      -->
+<!-- Descrição: Versão unificada final blindada (Menu, Pesquisa e Operador Dinâmico)-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -80,9 +80,9 @@
 </head>
 <body>
 
-<script src="config.js"></script>
+    <script src="config.js"></script>
     <script>
-        // 🟢 FUNÇÕES GLOBAIS IMEDIATAS
+        // 🟢 FUNÇÕES GLOBAIS BLINDADAS (Disponíveis imediatamente)
         window.toggleMenu = function() {
             const sideMenu = document.getElementById('sideMenu');
             const overlay = document.getElementById('overlay');
@@ -109,7 +109,7 @@
             window.location.href = 'login.html';
         }
 
-        // 🟢 CAPTURA PURAMENTE DINÂMICA (Sem nomes fixos ou hardcoded)
+        // 🟢 CAPTURA DINÂMICA DO OPERADOR REAL LOGADO (Multiusuário)
         let operadorLogado = "Voluntário / Operador"; 
         try {
             if (ativoLocal) {
@@ -122,7 +122,6 @@
             } else if (sessionAutorizado) {
                 operadorLogado = sessionAutorizado;
             } else {
-                // Tenta localizar qualquer chave de usuário ativa na sessão
                 for (let i = 0; i < sessionStorage.length; i++) {
                     let key = sessionStorage.key(i);
                     if (key.includes('usuario') || key.includes('nome') || key.includes('operador')) {
@@ -366,127 +365,3 @@
             let dias = hoje.getDate() - nascimento.getDate();
 
             if (dias < 0) {
-                meses--;
-                const ultimoDiaMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
-                dias += ultimoDiaMesAnterior;
-            }
-            if (meses < 0) {
-                anos--;
-                meses += 12;
-            }
-
-            let resultado = "";
-            if (anos > 0) resultado += `${anos} ano${anos > 1 ? 's' : ''}`;
-            if (meses > 0) resultado += `${resultado ? ', ' : ''}${meses} mes${meses > 1 ? 'es' : 'e'}`;
-            if (dias > 0 || !resultado) resultado += `${resultado ? ' e ' : ''}${dias} dia${dias > 1 ? 's' : ''}`;
-
-            inputIdade.value = resultado;
-        }
-
-        function validarCpfDigitado(cpfStr) {
-            const aviso = document.getElementById('avisoCpf');
-            const cpfLimpo = cpfStr.replace(/\D/g, '');
-            if (!cpfLimpo) {
-                aviso.style.display = 'none';
-                return;
-            }
-            if (cpfLimpo.length !== 11 || /^(\d)\1{10}$/.test(cpfLimpo)) {
-                aviso.style.display = 'block';
-                return;
-            }
-            let soma = 0;
-            let resto;
-            for (let i = 1; i <= 9; i++) soma += parseInt(cpfLimpo.substring(i-1, i)) * (11 - i);
-            resto = (soma * 10) % 11;
-            if ((resto === 10) || (resto === 11)) resto = 0;
-            if (resto !== parseInt(cpfLimpo.substring(9, 10))) {
-                aviso.style.display = 'block';
-                return;
-            }
-            soma = 0;
-            for (let i = 1; i <= 10; i++) soma += parseInt(cpfLimpo.substring(i-1, i)) * (12 - i);
-            resto = (soma * 10) % 11;
-            if ((resto === 10) || (resto === 11)) resto = 0;
-            if (resto !== parseInt(cpfLimpo.substring(10, 11))) {
-                aviso.style.display = 'block';
-                return;
-            }
-            aviso.style.display = 'none';
-        }
-
-        function mascaraCpf(input) {
-            let valor = input.value.replace(/\D/g, "");
-            if (valor.length > 11) valor = valor.substring(0, 11);
-            if (valor.length > 9) {
-                valor = valor.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*$/, "$1.$2.$3-$4");
-            } else if (valor.length > 6) {
-                valor = valor.replace(/^(\d{3})(\d{3})(\d{3}).*$/, "$1.$2.$3");
-            } else if (valor.length > 3) {
-                valor = valor.replace(/^(\d{3})(\d{3}).*$/, "$1.$2");
-            }
-            input.value = valor;
-        }
-
-        function normalizarTexto(texto) {
-            return String(texto || "")
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "");
-        }
-
-        function pesquisarCadastros() {
-            const termoBruto = document.getElementById('termoBusca').value.trim();
-            const statusDiv = document.getElementById('mensagemStatus');
-            document.getElementById('listaResultadosContainer').style.display = 'none';
-            document.getElementById('resultadoContainer').style.display = 'none';
-
-            if (!termoBruto) {
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Por favor, digite um termo ou 'TODOS' para pesquisar.";
-                return;
-            }
-
-            statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "Pesquisando assistidos na nuvem...";
-
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarTriagem", termo: "todos" })
-            })
-            .then(res => res.json())
-            .then(data => {
-                statusDiv.innerText = "";
-                const listaBruta = data.lista || data.dados || [];
-
-                if (data.status === "encontrado" && listaBruta.length > 0) {
-                    const termoFiltro = normalizarTexto(termoBruto);
-                    
-                    const listaFiltrada = listaBruta.filter(item => {
-                        const reg = item.registro || item;
-                        if (termoFiltro === "todos") return true;
-
-                        const nomeC = normalizarTexto(reg.nomeCompleto);
-                        const nomeS = normalizarTexto(reg.nomeSocial);
-                        const mat = normalizarTexto(reg.matricula);
-                        const cpf = normalizarTexto(reg.cpf);
-
-                        return nomeC.includes(termoFiltro) || 
-                               nomeS.includes(termoFiltro) || 
-                               mat.includes(termoFiltro) || 
-                               cpf.includes(termoFiltro);
-                    });
-
-                    if (listaFiltrada.length > 0) {
-                        listaFiltrada.sort((a, b) => {
-                            const regA = a.registro || a;
-                            const regB = b.registro || b;
-                            const nomeA = (regA.nomeCompleto || "").toUpperCase();
-                            const nomeB = (regB.nomeCompleto || "").toUpperCase();
-                            return nomeA.localeCompare(nomeB);
-                        });
-
-                        montarListaSelecao(listaFiltrada);
-                    } else {
-                        statusDiv.style.color = "red";
-                        statusDiv.innerText = "Nenhum registro encontrado para o termo pesquisado.";
