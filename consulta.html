@@ -80,8 +80,26 @@
 </head>
 <body>
 
-    <script src="config.js"></script>
+<script src="config.js"></script>
     <script>
+        // 🟢 FUNÇÕES GLOBAIS IMEDIATAS
+        window.toggleMenu = function() {
+            const sideMenu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('overlay');
+            if (sideMenu && overlay) {
+                sideMenu.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        };
+
+        window.sairConsulta = function() {
+            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        };
+
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
         const sessionAutorizado = sessionStorage.getItem('pbs_usuario_nome');
@@ -91,8 +109,8 @@
             window.location.href = 'login.html';
         }
 
-        // 🟢 CAPTURA ROBUSTA E DINÂMICA DO OPERADOR REAL LOGADO
-        let operadorLogado = "Marcelo Travassos"; 
+        // 🟢 CAPTURA PURAMENTE DINÂMICA (Sem nomes fixos ou hardcoded)
+        let operadorLogado = "Voluntário / Operador"; 
         try {
             if (ativoLocal) {
                 try {
@@ -104,7 +122,7 @@
             } else if (sessionAutorizado) {
                 operadorLogado = sessionAutorizado;
             } else {
-                // Tenta varrer sessionStorage por qualquer nome de operador salvo
+                // Tenta localizar qualquer chave de usuário ativa na sessão
                 for (let i = 0; i < sessionStorage.length; i++) {
                     let key = sessionStorage.key(i);
                     if (key.includes('usuario') || key.includes('nome') || key.includes('operador')) {
@@ -114,24 +132,10 @@
                 }
             }
         } catch(e) {
-            operadorLogado = "Marcelo Travassos";
+            operadorLogado = "Voluntário / Operador";
         }
 
         const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
-
-        // 🟢 RESTAURAÇÃO DA FUNÇÃO DO MENU SANDUÍCHE
-        function toggleMenu() {
-            const sideMenu = document.getElementById('sideMenu');
-            const overlay = document.getElementById('overlay');
-            if (sideMenu && overlay) {
-                sideMenu.classList.toggle('active');
-                overlay.classList.toggle('active');
-            }
-        }
-
-        function sairConsulta() {
-            window.history.back();
-        }
     </script>
 
     <div class="navbar">
