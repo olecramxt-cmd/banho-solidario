@@ -314,6 +314,11 @@
                 <div class="form-group"><label>Carteira de Trabalho</label><select id="carteiraTrabalho"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
                 <div class="form-group"><label>URL da Foto</label><input type="text" id="foto" oninput="atualizarAvatarPreview()"></div>
 
+                <!-- 🟢 NOVO CAMPO: Observações (Limitado a texto de célula única) -->
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Observações</label>
+                <input type="text" id="observacoes" placeholder="Observações gerais sobre o assistido...">
+                </div>
                 <div class="actions-bar">
                     <button class="btn btn-danger" onclick="sairConsulta()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
                     <button class="btn btn-success" onclick="atualizarCadastro()"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
@@ -622,7 +627,7 @@
             document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
             document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
             document.getElementById('foto').value = reg.foto || "";
-
+            document.getElementById('observacoes').value = reg.observacoes || ""; // 🟢 Preenche as observações
             const avatarContainer = document.getElementById('avatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar(reg);
         }
@@ -675,7 +680,8 @@
                 possuiDocumentos: document.getElementById('possuiDocumentos').value,
                 documentosFaltam: document.getElementById('documentosFaltam').value,
                 carteiraTrabalho: document.getElementById('carteiraTrabalho').value,
-                foto: document.getElementById('foto').value
+                foto: document.getElementById('foto').value,
+                observacoes: document.getElementById('observacoes').value // 🟢 Envia observações para a Coluna AH
             };
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "A atualizar cadastro na nuvem...";
