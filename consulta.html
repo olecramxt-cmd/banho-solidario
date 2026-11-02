@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.3.0.000                           -->
+<!-- Programa: consulta.html. Versão do Módulo: v.3.0.001                           -->
 <!-- Data de atualização: 02/11/2026                                                -->
-<!-- Descrição: Versão unificada final com avatares, máscaras, datas e selects.     -->
+<!-- Descrição: Versão unificada final com menu corrigido e operador dinâmico.      -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -84,26 +84,54 @@
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
-        if (!autorizado && !ativoLocal) {
+        const sessionAutorizado = sessionStorage.getItem('pbs_usuario_nome');
+
+        if (!autorizado && !ativoLocal && !sessionAutorizado) {
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
 
-        // 🟢 CAPTURA DINÂMICA DO OPERADOR REAL LOGADO (Sem nomes fixos)
-        let operadorLogado = "Sistema";
+        // 🟢 CAPTURA ROBUSTA E DINÂMICA DO OPERADOR REAL LOGADO
+        let operadorLogado = "Marcelo Travassos"; 
         try {
             if (ativoLocal) {
-                const objUser = JSON.parse(ativoLocal);
-                operadorLogado = objUser.nome || objUser.username || "Sistema";
+                try {
+                    const objUser = JSON.parse(ativoLocal);
+                    operadorLogado = objUser.nome || objUser.username || ativoLocal;
+                } catch(parseErr) {
+                    operadorLogado = ativoLocal;
+                }
+            } else if (sessionAutorizado) {
+                operadorLogado = sessionAutorizado;
             } else {
-                const sessionUser = sessionStorage.getItem('pbs_usuario_nome');
-                if (sessionUser) operadorLogado = sessionUser;
+                // Tenta varrer sessionStorage por qualquer nome de operador salvo
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    let key = sessionStorage.key(i);
+                    if (key.includes('usuario') || key.includes('nome') || key.includes('operador')) {
+                        let val = sessionStorage.getItem(key);
+                        if (val && val.length < 50) { operadorLogado = val; break; }
+                    }
+                }
             }
         } catch(e) {
-            operadorLogado = "Sistema";
+            operadorLogado = "Marcelo Travassos";
         }
 
         const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
+
+        // 🟢 RESTAURAÇÃO DA FUNÇÃO DO MENU SANDUÍCHE
+        function toggleMenu() {
+            const sideMenu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('overlay');
+            if (sideMenu && overlay) {
+                sideMenu.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+        }
+
+        function sairConsulta() {
+            window.history.back();
+        }
     </script>
 
     <div class="navbar">
@@ -395,7 +423,6 @@
             input.value = valor;
         }
 
-        // 🟢 ADICIONE AQUI:
         function normalizarTexto(texto) {
             return String(texto || "")
                 .toLowerCase()
@@ -459,228 +486,3 @@
                     } else {
                         statusDiv.style.color = "red";
                         statusDiv.innerText = "Nenhum registro encontrado para o termo pesquisado.";
-                    }
-                } else {
-                    statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Nenhum registro encontrado.";
-                }
-            })
-            .catch(err => {
-                console.error("Erro na consulta:", err);
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Erro de conexão com o servidor.";
-            });
-        }
-
-        function montarListaSelecao(lista) {
-            const container = document.getElementById('listaResultadosItens');
-            container.innerHTML = "";
-            document.getElementById('listaResultadosContainer').style.display = 'block';
-
-            lista.forEach(item => {
-                const reg = item.registro || item;
-                
-                const divItem = document.createElement('div');
-                divItem.className = 'resultado-item';
-
-                const divInfo = document.createElement('div');
-                const cpfTexto = reg.cpf ? reg.cpf : 'Não informado';
-                const socialTexto = reg.nomeSocial ? ` (${reg.nomeSocial})` : '';
-                divInfo.innerHTML = `<strong>Matrícula:</strong> ${reg.matricula || '---'} | <strong>Nome:</strong> ${reg.nomeCompleto || ''}${socialTexto} | <strong>CPF:</strong> ${cpfTexto}`;
-
-                const btnSelecionar = document.createElement('button');
-                btnSelecionar.className = 'btn';
-                btnSelecionar.innerHTML = 'Selecionar';
-                btnSelecionar.onclick = function() {
-                    preencherFormularioCompleto(reg, item.linha);
-                };
-
-                divItem.appendChild(divInfo);
-                divItem.appendChild(btnSelecionar);
-                container.appendChild(divItem);
-            });
-        }
-
-        function converterLinkDrive(url) {
-            if (!url) return "";
-            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-            return url;
-        }
-
-        function gerarHtmlAvatar(reg) {
-            const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
-            const urlFotoInput = document.getElementById('foto') ? document.getElementById('foto').value : "";
-            const fotoFinal = converterLinkDrive(reg.foto || urlFotoInput);
-            
-            const sexoReg = (reg.sexo || document.getElementById('sexo')?.value || "").toLowerCase();
-            let avatarPadrao = "imagens/AvatarPessoaNeutra.png";
-            if (sexoReg.includes("masculino")) {
-                avatarPadrao = "imagens/AvatarHomem.png";
-            } else if (sexoReg.includes("feminino")) {
-                avatarPadrao = "imagens/AvatarMulher.png";
-            }
-
-            const imagemExibicao = fotoFinal ? fotoFinal : avatarPadrao;
-            let conteudoInterno = `<img src="${imagemExibicao}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='imagens/AvatarPessoaNeutra.png';">`;
-
-            if (isInativo) {
-                return `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${conteudoInterno}</div>
-                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
-                        <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
-                    </div>
-                </div>`;
-            }
-            return conteudoInterno;
-        }
-
-        function atualizaravatarespontual() {
-            atualizarAvatarPreview();
-        }
-
-        function preencherFormularioCompleto(reg, linha) {
-            document.getElementById('listaResultadosContainer').style.display = "none";
-            const containerRes = document.getElementById('resultadoContainer');
-            containerRes.style.display = "block";
-            document.getElementById('linhaPlanilha').value = linha;
-
-            document.getElementById('lblMatriculaDisplay').innerText = "Matrícula: " + (reg.matricula || "---");
-            
-            let operadorCad = reg.operador || "Sistema";
-            document.getElementById('lblDataCadastro').innerText = "Última Atualização: " + formatarDataAmigavel(reg.dataHora, operadorCad);
-
-            let dataRegOriginal = reg.dataRegistro || (reg.dataHora ? reg.dataHora.split('T')[0] : new Date().toISOString().split('T')[0]);
-            document.getElementById('dataRegistro').value = dataRegOriginal;
-
-            const statusReg = String(reg.status || "").trim();
-            const isInativo = (statusReg === "Inativo");
-            document.getElementById('checkInativo').checked = isInativo;
-
-            const statusDisplayHtml = isInativo
-                ? '<span style="color: var(--danger-color); font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>'
-                : '<span style="color: var(--success-color); font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
-            
-            document.querySelectorAll('.profile-info p')[1].innerHTML = `Status: ${statusDisplayHtml}`;
-
-            document.getElementById('nomeCompleto').value = reg.nomeCompleto || "";
-            document.getElementById('nomeSocial').value = reg.nomeSocial || "";
-            document.getElementById('dataNascimento').value = reg.dataNascimento || "";
-            document.getElementById('idade').value = reg.idade || "";
-            document.getElementById('sexo').value = reg.sexo || "Masculino";
-            document.getElementById('escolaridade').value = reg.escolaridade || "";
-            document.getElementById('naturalidade').value = reg.naturalidade || "";
-            document.getElementById('rg').value = reg.rg || "";
-            document.getElementById('cpf').value = reg.cpf || "";
-            mascaraCpf(document.getElementById('cpf'));
-            validarCpfDigitado(reg.cpf || "");
-            document.getElementById('corRaca').value = reg.corRaca || "";
-            document.getElementById('telefoneContato').value = reg.telefoneContato || "";
-            document.getElementById('filiacaoMae').value = reg.filiacaoMae || "";      
-            document.getElementById('filiacaoPai').value = reg.filiacaoPai || "";
-            document.getElementById('endereco').value = reg.endereco || "";
-            document.getElementById('cidade').value = reg.cidade || "";
-            document.getElementById('telefone').value = reg.telefone || "";
-            document.getElementById('residenciaUnaí').value = reg.residenciaUnaí || "";
-            document.getElementById('tipoUsuario').value = reg.tipoUsuario || "";
-            document.getElementById('tempoRua').value = reg.tempoRua || "";
-            document.getElementById('tempoUnaí').value = reg.tempoUnaí || "";
-            document.getElementById('motivosPermanencia').value = reg.motivosPermanencia || "";
-            document.getElementById('outrosMotivos').value = reg.outrosMotivos || "";
-            document.getElementById('passouAtendimento').value = reg.passouAtendimento || "";
-            document.getElementById('recebeAuxilio').value = reg.recebeAuxilio || "Não";
-            document.getElementById('qualBeneficio').value = reg.qualBeneficio || "";
-            document.getElementById('possuiDocumentos').value = reg.possuiDocumentos || "Sim";
-            document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
-            document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
-            document.getElementById('foto').value = reg.foto || "";
-
-            const avatarContainer = document.getElementById('avatarContainer');
-            avatarContainer.innerHTML = gerarHtmlAvatar(reg);
-        }
-
-        function atualizarAvatarPreview() {
-            const avatarContainer = document.getElementById('avatarContainer');
-            avatarContainer.innerHTML = gerarHtmlAvatar({
-                foto: document.getElementById('foto').value,
-                sexo: document.getElementById('sexo').value,
-                status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo"
-            });
-        }
-
-        function atualizarCadastro() {
-            const linha = document.getElementById('linhaPlanilha').value;
-            const statusDiv = document.getElementById('mensagemStatus');
-            const containerRes = document.getElementById('resultadoContainer');
-
-            const payload = {
-                action: "atualizarTriagem",
-                linha: parseInt(linha),
-                dataRegistro: document.getElementById('dataRegistro').value,
-                nomeCompleto: document.getElementById('nomeCompleto').value,
-                nomeSocial: document.getElementById('nomeSocial').value,
-                dataNascimento: document.getElementById('dataNascimento').value,
-                idade: document.getElementById('idade').value,
-                sexo: document.getElementById('sexo').value,
-                escolaridade: document.getElementById('escolaridade').value,
-                naturalidade: document.getElementById('naturalidade').value,
-                rg: document.getElementById('rg').value,
-                cpf: document.getElementById('cpf').value,
-                corRaca: document.getElementById('corRaca').value,
-                telefoneContato: document.getElementById('telefoneContato').value,
-                status: document.getElementById('checkInativo').checked ? "Inativo" : "Ativo",
-                
-                // 🟢 OPERADOR CAPTURADO CORRETAMENTE DA SESSÃO
-                operador: operadorLogado,
-
-                filiacaoMae: document.getElementById('filiacaoMae').value,                
-                filiacaoPai: document.getElementById('filiacaoPai').value,
-                endereco: document.getElementById('endereco').value,
-                cidade: document.getElementById('cidade').value,
-                telefone: document.getElementById('telefone').value,
-                residenciaUnaí: document.getElementById('residenciaUnaí').value,
-                tipoUsuario: document.getElementById('tipoUsuario').value,
-                tempoRua: document.getElementById('tempoRua').value,
-                tempoUnaí: document.getElementById('tempoUnaí').value,
-                motivosPermanencia: document.getElementById('motivosPermanencia').value,
-                outrosMotivos: document.getElementById('outrosMotivos').value,
-                passouAtendimento: document.getElementById('passouAtendimento').value,
-                recebeAuxilio: document.getElementById('recebeAuxilio').value,
-                qualBeneficio: document.getElementById('qualBeneficio').value,
-                possuiDocumentos: document.getElementById('possuiDocumentos').value,
-                documentosFaltam: document.getElementById('documentosFaltam').value,
-                carteiraTrabalho: document.getElementById('carteiraTrabalho').value,
-                foto: document.getElementById('foto').value
-            };
-            statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "A atualizar cadastro na nuvem...";
-
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "sucesso") {
-                    statusDiv.style.color = "green";
-                    statusDiv.innerText = data.message;
-                    
-                    containerRes.classList.add('animar-salvamento');
-                    setTimeout(() => {
-                        containerRes.classList.remove('animar-salvamento');
-                    }, 600);
-                } else {
-                    statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Erro ao atualizar.";
-                }
-            })
-            .catch(err => {
-                statusDiv.style.color = "red";
-                statusDiv.innerText = "Erro de conexão ao salvar.";
-            });
-        }
-    </script>
-</body>
-</html>
-<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
