@@ -489,15 +489,22 @@
             return url;
         }
 
-        function gerarHtmlAvatar(reg) {
+            function gerarHtmlAvatar(reg) {
             const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
-            const fotoFinal = converterLinkDrive(reg.foto || document.getElementById('foto').value);
+            
+            // Pega a foto do registro ou do input da tela e converte o link do Drive se houver
+            const urlFotoInput = document.getElementById('foto') ? document.getElementById('foto').value : "";
+            const fotoFinal = converterLinkDrive(reg.foto || urlFotoInput);
+            
+            // Define o ícone padrão com base no sexo caso não tenha foto
+            const sexoReg = (reg.sexo || document.getElementById('sexo')?.value || "").toLowerCase();
+            const iconeSexo = sexoReg === "feminino" ? "fa-user-nurse" : "fa-user";
             
             let conteudoInterno = "";
             if (fotoFinal) {
-                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size:3rem; color:#0284c7;\'></i>';">`;
+                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid ${iconeSexo}\' style=\'font-size:3rem; color:#0284c7;\'></i>';">`;
             } else {
-                conteudoInterno = `<i class="fa-solid fa-user" style="font-size:3rem; color:#0284c7;"></i>`;
+                conteudoInterno = `<i class="fa-solid ${iconeSexo}" style="font-size:3rem; color:#0284c7;"></i>`;
             }
 
             if (isInativo) {
@@ -510,7 +517,6 @@
             }
             return conteudoInterno;
         }
-
         function preencherFormularioCompleto(reg, linha) {
             document.getElementById('listaResultadosContainer').style.display = "none";
             const containerRes = document.getElementById('resultadoContainer');
