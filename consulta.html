@@ -492,20 +492,23 @@
             function gerarHtmlAvatar(reg) {
             const isInativo = (String(reg.status || "").trim() === "Inativo") || document.getElementById('checkInativo').checked;
             
-            // Pega a foto do registro ou do input da tela e converte o link do Drive se houver
+            // Pega a foto salva no registro ou o input da tela
             const urlFotoInput = document.getElementById('foto') ? document.getElementById('foto').value : "";
             const fotoFinal = converterLinkDrive(reg.foto || urlFotoInput);
             
-            // Define o ícone padrão com base no sexo caso não tenha foto
+            // Define o avatar personalizado com base no sexo caso não tenha foto cadastrada
             const sexoReg = (reg.sexo || document.getElementById('sexo')?.value || "").toLowerCase();
-            const iconeSexo = sexoReg === "feminino" ? "fa-user-nurse" : "fa-user";
-            
-            let conteudoInterno = "";
-            if (fotoFinal) {
-                conteudoInterno = `<img src="${fotoFinal}" alt="Assistido" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid ${iconeSexo}\' style=\'font-size:3rem; color:#0284c7;\'></i>';">`;
-            } else {
-                conteudoInterno = `<i class="fa-solid ${iconeSexo}" style="font-size:3rem; color:#0284c7;"></i>`;
+            let avatarPadrao = "imagens/AvatarPessoaNeutra.png";
+            if (sexoReg.includes("masculino")) {
+                avatarPadrao = "imagens/AvatarHomem.png";
+            } else if (sexoReg.includes("feminino")) {
+                avatarPadrao = "imagens/AvatarMulher.png";
             }
+
+            // Se tiver foto no Drive, usa ela; senão, usa o avatar correspondente do repositório
+            const imagemExibicao = fotoFinal ? fotoFinal : avatarPadrao;
+            
+            let conteudoInterno = `<img src="${imagemExibicao}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='imagens/AvatarPessoaNeutra.png';">`;
 
             if (isInativo) {
                 return `<div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
