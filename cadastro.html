@@ -379,10 +379,8 @@
             event.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
 
-            const payload = {
+const payload = {
                 action: "inserirTriagem",
-                operador: operadorLogado,
-                status: "Ativo", // 🟢 Corrigido: Status agora envia "Ativo" e Operador envia o nome corretamente
                 dataRegistro: document.getElementById('dataRegistro').value,
                 nomeCompleto: document.getElementById('nomeCompleto').value,
                 nomeSocial: document.getElementById('nomeSocial').value,
@@ -413,9 +411,10 @@
                 documentosFaltam: document.getElementById('documentosFaltam').value,
                 carteiraTrabalho: document.getElementById('carteiraTrabalho').value,
                 foto: document.getElementById('foto').value,
+                status: "Ativo",
+                operador: operadorLogado,
                 observacoes: document.getElementById('observacoes').value
             };
-
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "A gravar novo cadastro na nuvem...";
 
