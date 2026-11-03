@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.003                           -->
+<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.004                           -->
 <!-- Data de atualização: 03/11/2026                                                -->
-<!-- Descrição: Versão unificada completa, com toggleMenu no topo e todos os blocos.-->
+<!-- Descrição: Correção do mapeamento da coluna Status e Operador no payload.      -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -64,7 +64,6 @@
 
     <script src="config.js"></script>
     <script>
-        // 🟢 FUNÇÃO TOGGLE MENU DECLARADA IMEDIATAMENTE NO ESCOPO GLOBAL
         window.toggleMenu = function() {
             const sideMenu = document.getElementById('sideMenu');
             const overlay = document.getElementById('overlay');
@@ -383,6 +382,7 @@
             const payload = {
                 action: "inserirTriagem",
                 operador: operadorLogado,
+                status: "Ativo", // 🟢 Corrigido: Status agora envia "Ativo" e Operador envia o nome corretamente
                 dataRegistro: document.getElementById('dataRegistro').value,
                 nomeCompleto: document.getElementById('nomeCompleto').value,
                 nomeSocial: document.getElementById('nomeSocial').value,
