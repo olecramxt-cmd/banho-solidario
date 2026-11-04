@@ -573,7 +573,7 @@
             atualizarAvatarPreview();
         }
 
-        function preencherFormularioCompleto(reg, linha) {
+function preencherFormularioCompleto(reg, linha) {
             document.getElementById('listaResultadosContainer').style.display = "none";
             const containerRes = document.getElementById('resultadoContainer');
             containerRes.style.display = "block";
@@ -609,10 +609,7 @@
             document.getElementById('sexo').value = reg.sexo || "Masculino";
             document.getElementById('escolaridade').value = reg.escolaridade || "";
             document.getElementById('naturalidade').value = reg.naturalidade || "";
-            
-            // 🟢 Garante o reset correto da UF caso esteja vazia no registro
             document.getElementById('ufNaturalidade').value = reg.ufNaturalidade || "";
-            
             document.getElementById('rg').value = reg.rg || "";
             document.getElementById('cpf').value = reg.cpf || "";
             mascaraCpf(document.getElementById('cpf'));
@@ -633,7 +630,7 @@
             document.getElementById('passouAtendimento').value = reg.passouAtendimento || "";
             document.getElementById('recebeAuxilio').value = reg.recebeAuxilio || "Não";
             
-            // 🟢 Limpa corretamente os campos que devem ficar em branco
+            // 🟢 Garante campos limpos se estiverem vazios na nuvem
             document.getElementById('qualBeneficio').value = reg.qualBeneficio || "";
             document.getElementById('possuiDocumentos').value = reg.possuiDocumentos || "Sim";
             document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
@@ -644,7 +641,7 @@
             const avatarContainer = document.getElementById('avatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar(reg);
         }
-
+        
         function atualizarAvatarPreview() {
             const avatarContainer = document.getElementById('avatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar({
