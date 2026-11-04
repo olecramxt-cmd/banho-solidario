@@ -602,6 +602,11 @@
             document.getElementById('nomeSocial').value = reg.nomeSocial || "";
             document.getElementById('dataNascimento').value = reg.dataNascimento || "";
             document.getElementById('idade').value = reg.idade || "";
+            
+            // 🟢 Garante o cálculo automático imediato ao carregar o registro da nuvem
+            if (reg.dataNascimento) {
+                calcularIdadeDetalhada();
+            }
             document.getElementById('sexo').value = reg.sexo || "Masculino";
             document.getElementById('escolaridade').value = reg.escolaridade || "";
             document.getElementById('naturalidade').value = reg.naturalidade || "";
