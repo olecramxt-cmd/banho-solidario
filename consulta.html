@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.3.0.003                           -->
-<!-- Data de atualização: 02/11/2026                                                -->
-<!-- Descrição: Versão unificada completa, blindada e sem nenhum corte.             -->
+<!-- Programa: consulta.html. Versão do Módulo: v.3.0.005                           -->
+<!-- Data de atualização: 04/11/2026                                                -->
+<!-- Descrição: Correção definitiva da função de cálculo de idade e limpeza de script.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -316,10 +316,9 @@
                 <div class="form-group"><label>Carteira de Trabalho</label><select id="carteiraTrabalho"><option value="Sim">Sim</option><option value="Não">Não</option></select></div>
                 <div class="form-group"><label>URL da Foto</label><input type="text" id="foto" oninput="atualizarAvatarPreview()"></div>
 
-                <!-- 🟢 NOVO CAMPO: Observações (Limitado a texto de célula única) -->
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Observações</label>
-                <input type="text" id="observacoes" placeholder="Observações gerais sobre o assistido...">
+                    <input type="text" id="observacoes" placeholder="Observações gerais sobre o assistido...">
                 </div>
                 <div class="actions-bar">
                     <button class="btn btn-danger" onclick="sairConsulta()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
@@ -603,10 +602,10 @@
             document.getElementById('dataNascimento').value = reg.dataNascimento || "";
             document.getElementById('idade').value = reg.idade || "";
             
-            // 🟢 Garante o cálculo automático imediato ao carregar o registro da nuvem
             if (reg.dataNascimento) {
                 calcularIdadeDetalhada();
             }
+
             document.getElementById('sexo').value = reg.sexo || "Masculino";
             document.getElementById('escolaridade').value = reg.escolaridade || "";
             document.getElementById('naturalidade').value = reg.naturalidade || "";
@@ -635,7 +634,8 @@
             document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
             document.getElementById('carteiraTrabalho').value = reg.carteiraTrabalho || "Sim";
             document.getElementById('foto').value = reg.foto || "";
-            document.getElementById('observacoes').value = reg.observacoes || ""; // 🟢 Preenche as observações
+            document.getElementById('observacoes').value = reg.observacoes || "";
+            
             const avatarContainer = document.getElementById('avatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar(reg);
         }
@@ -690,7 +690,7 @@
                 documentosFaltam: document.getElementById('documentosFaltam').value,
                 carteiraTrabalho: document.getElementById('carteiraTrabalho').value,
                 foto: document.getElementById('foto').value,
-                observacoes: document.getElementById('observacoes').value // 🟢 Envia observações para a Coluna AH
+                observacoes: document.getElementById('observacoes').value
             };
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "A atualizar cadastro na nuvem...";
@@ -729,7 +729,6 @@
             }
         });
 
-        // 🟢 COLOQUE A FUNÇÃO DO IBGE AQUI DENTRO DA TAG SCRIPT:
         async function buscarUfPorCidade() {
             const cidadeInput = document.getElementById('naturalidade').value.trim();
             const ufInput = document.getElementById('ufNaturalidade');
@@ -752,10 +751,6 @@
                 console.error("Erro ao buscar UF no IBGE:", error);
             }
         }
-
-        function calcularIdadeDetalhada() {
-            // ... (suas outras funções continuam aqui embaixo)
-        }    
     </script>
 </body>
 </html>
