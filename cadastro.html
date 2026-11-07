@@ -58,8 +58,20 @@
         .btn-danger:hover { background-color: #b91c1c; }
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
         .aviso-cpf-invalido { color: var(--danger-color); font-size: 12px; margin-top: 3px; display: none; font-weight: 600; }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover { background-color: #b91c1c; }
+        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
+        .aviso-cpf-invalido { color: var(--danger-color); font-size: 12px; margin-top: 3px; display: none; font-weight: 600; }
+
+        /* 🟢 Cole o código de animação aqui dentro da tag <style> */
+        @keyframes pulseSalvar {
+            0% { transform: scale(1); background-color: #ffffff; }
+            50% { transform: scale(1.01); background-color: #dcfce7; }
+            100% { transform: scale(1); background-color: #ffffff; }
+        }
+        .animar-salvamento { animation: pulseSalvar 0.6s ease; }
+        .container { transition: all 0.3s ease; }
     </style>
-</head>
 <body>
 
     <script src="config.js"></script>
@@ -376,11 +388,19 @@
             input.value = valor;
         }
 
-        function salvarNovoCadastro(event) {
+function salvarNovoCadastro(event) {
             event.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
+            const btnSubmit = document.querySelector('button[type="submit"]');
+            const containerCard = document.querySelector('.container');
 
-const payload = {
+            // Desativa o botão para evitar múltiplos cliques no celular
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A gravar...';
+            }
+
+            const payload = {
                 action: "inserirTriagem",
                 dataRegistro: document.getElementById('dataRegistro').value,
                 nomeCompleto: document.getElementById('nomeCompleto').value,
@@ -417,6 +437,7 @@ const payload = {
                 operador: operadorLogado,
                 observacoes: document.getElementById('observacoes').value
             };
+
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "A gravar novo cadastro na nuvem...";
 
@@ -427,18 +448,39 @@ const payload = {
             })
             .then(res => res.json())
             .then(data => {
+                // Reativa o botão
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-user-plus"></i> Salvar Novo Cadastro';
+                }
+
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
-                    statusDiv.innerText = "Cadastro efetuado com sucesso! Matrícula Gerada: " + data.matricula + " (Pronto para o próximo).";
+                    statusDiv.innerText = "Cadastro efetuado com sucesso! Matrícula Gerada: " + data.matricula;
+                    
+                    // 🟢 Efeito visual piscando idêntico ao da consulta
+                    if (containerCard) {
+                        containerCard.classList.add('animar-salvamento');
+                        setTimeout(() => {
+                            containerCard.classList.remove('animar-salvamento');
+                        }, 600);
+                    }
+
                     document.getElementById('formCadastro').reset();
                     document.getElementById('cidade').value = "Unaí-MG";
-                    document.getElementById('dataRegistro').value = new Date().toISOString().split('T')[0];
+                    
+                    // 🟢 Garante que o campo Data de Registro fique limpo conforme solicitado
+                    document.getElementById('dataRegistro').value = "";
                 } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao salvar.";
                 }
             })
             .catch(err => {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-user-plus"></i> Salvar Novo Cadastro';
+                }
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão com a API: " + err.message;
             });
