@@ -88,27 +88,28 @@
         .modal-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
         
         .read-only-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
-        .read-field { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; }
+        .read-field { background: rgba(248, 250, 252, 0.85); border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; position: relative; z-index: 2; }
         .read-field label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
         .read-field span { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
         .section-title { grid-column: 1 / -1; font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; }
 
-        /* Marca d'água de Sigilo Oficial */
-        .marca-dagua-sigilo {
+        /* Marca d'água de Sigilo Oficial Otimizada para Mobile */
+            .marca-dagua-sigilo {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 2.2rem;
+            font-size: 1.3rem;
             font-weight: 800;
-            color: rgba(124, 58, 237, 0.05);
+            color: rgba(124, 58, 237, 0.08);
             white-space: nowrap;
             pointer-events: none;
-            z-index: 0;
+            z-index: 5;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            width: 100%;
+            text-align: center;
         }
-
         /* Estilos da Tela de Histórico de Atendimentos Individual (Ícone Amarelo) */
         #telaHistoricoIndividual { display: none; text-align: left; }
         .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
@@ -236,14 +237,16 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(-30deg);
-    font-size: 2.2rem;
+    font-size: 1.3rem;
     font-weight: 800;
-    color: rgba(124, 58, 237, 0.05);
+    color: rgba(124, 58, 237, 0.07);
     white-space: nowrap;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
+    width: 100%;
+    text-align: center;
 }
         <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
             <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
