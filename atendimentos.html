@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.16.003                      -->
-<!-- Data de atualização: 09/11/2026 - 10:25                                        -->
-<!-- Descrição: Correção completa, sem falhas, movimentação exclusiva e rodapé.     -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.16.004                      -->
+<!-- Data de atualização: 09/11/2026 - 10:50                                        -->
+<!-- Descrição: Correção total de responsividade mobile, tabelas e rodapé oficial.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -25,7 +25,7 @@
             --text-color: #4b5563;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--light-color); color: var(--text-color); padding: 1rem; width: 100%; overflow-x: hidden; }
+        body { background-color: var(--light-color); color: var(--text-color); padding: 0.5rem; width: 100%; overflow-x: hidden; }
         
         .navbar-top { position: fixed; top: 0; left: 0; width: 100%; background-color: #0f172a; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 998; }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
@@ -46,14 +46,11 @@
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
         .menu-overlay.active { display: block; }
 
-        .container { max-width: 1100px; width: 100%; margin: 60px auto 20px auto; background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-        
-        .header-flex { display: flex; flex-direction: column; gap: 10px; border-bottom: 2px solid var(--accent-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .container { max-width: 1100px; width: 100%; margin: 55px auto 15px auto; background: white; padding: 1rem; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); box-sizing: border-box; }
         @media(min-width: 768px) {
-            .header-flex { flex-direction: row; justify-content: space-between; align-items: center; }
-            .container { padding: 2.5rem; }
+            .container { padding: 2.2rem; margin: 65px auto 20px auto; }
         }
-        h2 { color: var(--secondary-color); font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
+        h2 { color: var(--secondary-color); font-size: 1.25rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         @media(min-width: 768px) { h2 { font-size: 1.6rem; } }
         
         .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 1.5rem; }
@@ -63,7 +60,7 @@
         }
         .form-group { display: flex; flex-direction: column; position: relative; width: 100%; }
         .form-group label { font-weight: 600; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 6px; }
-        .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background-color: #fff; color: var(--text-color); }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background-color: #fff; color: var(--text-color); box-sizing: border-box; }
         .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
 
         .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #cbd5e1; border-top: none; border-radius: 0 0 8px 8px; max-height: 180px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: none; }
@@ -79,7 +76,8 @@
         .btn-novo-cadastro { background-color: var(--secondary-color); color: white; border: none; padding: 0 16px; border-radius: 8px; font-weight: 500; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s; text-decoration: none; height: 46px; white-space: nowrap; }
         .btn-novo-cadastro:hover { background-color: #6d28d9; color: white; }
 
-        .section-title { font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--accent-color); padding-bottom: 8px; }
+        .section-title { font-size: 1.1rem; color: var(--secondary-color); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--accent-color); padding-bottom: 8px; flex-wrap: wrap; }
+        @media(min-width: 768px) { .section-title { font-size: 1.2rem; } }
 
         .stats-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
         @media(min-width: 768px) { .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
@@ -87,28 +85,42 @@
         .stat-number { font-size: 1.6rem; font-weight: 700; color: var(--secondary-color); }
         .stat-label { font-size: 0.85rem; color: #64748b; font-weight: 500; }
 
-        .assistido-selecionado-box { display: flex; align-items: center; gap: 15px; background: var(--accent-color); padding: 12px 18px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--secondary-color); }
-        .avatar-mini-mov { width: 55px; height: 55px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .assistido-selecionado-box { display: flex; align-items: center; gap: 12px; background: var(--accent-color); padding: 12px 14px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--secondary-color); word-break: break-word; }
+        .avatar-mini-mov { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .avatar-mini-mov img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
         .sexo-foto-container { display: flex; gap: 10px; align-items: center; width: 100%; }
         .avatar-campo-sexo { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .avatar-campo-sexo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        .table-responsive { width: 100%; overflow-x: auto; margin-top: 1rem; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 650px; }
-        th, td { border: 1px solid #e2e8f0; padding: 10px 12px; text-align: left; vertical-align: middle; }
+        .table-responsive { width: 100%; overflow-x: auto; margin-top: 1rem; -webkit-overflow-scrolling: touch; display: block; max-width: 100%; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
+        th, td { border: 1px solid #e2e8f0; padding: 10px 10px; text-align: left; vertical-align: middle; white-space: nowrap; }
         th { background-color: #f8fafc; color: var(--secondary-color); font-weight: 600; }
         tr:nth-child(even) { background-color: #fdfcff; }
 
-        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
+        /* RODAPÉ DE RESUMO ESTATÍSTICO OFICIAL RESPONSIVO */
+        #resumoEstatisticoRodape {
+            margin-top: 15px; 
+            padding: 12px 14px; 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            font-size: 0.85rem; 
+            color: var(--dark-color);
+            word-break: break-word;
+            line-height: 1.5;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.90rem; }
     </style>
 </head>
 <body onload="inicializarAtendimentos()">
 
     <script src="config.js"></script>
     <script>
-        // Validação robusta integrada com localStorage para persistir entre abas (target="_blank")
         const autorizadoLocal = localStorage.getItem('pbs_autorizado') === 'true';
         const autorizadoSession = sessionStorage.getItem('pbs_autorizado') === 'true';
         
@@ -119,7 +131,6 @@
 
         const temOperador = Boolean(operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario);
 
-        // Se tem operador ativo, sincroniza a autorização em ambas as storages automaticamente
         if (temOperador) {
             localStorage.setItem('pbs_autorizado', 'true');
             sessionStorage.setItem('pbs_autorizado', 'true');
@@ -168,7 +179,6 @@
             return s;
         }
 
-        // Função auxiliar para número por extenso (0 a 9999)
         function numeroPorExtenso(num) {
             if (num === 0) return "zero";
             const unidades = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
@@ -200,7 +210,7 @@
 
     <div class="navbar-top">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
-        <span style="font-weight: bold; font-size: 16px;">SISTEMAS iPeC - Atendimentos</span>
+        <span style="font-weight: bold; font-size: 15px;">SISTEMAS iPeC - Atendimentos</span>
     </div>
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -245,11 +255,11 @@
     <div class="container">
         <div class="header-flex">
             <h2><i class="fa-solid fa-clipboard-user"></i> Registro de Atendimentos & Movimentação</h2>
-            <span id="operadorLogadoBadge" style="font-size: 0.88rem; font-weight: 600; color: var(--secondary-color);">Operador: ---</span>
+            <span id="operadorLogadoBadge" style="font-size: 0.85rem; font-weight: 600; color: var(--secondary-color);">Operador: ---</span>
         </div>
 
         <form id="formAtendimento" onsubmit="salvarAtendimento(event)">
-                <div class="form-grid">
+            <div class="form-grid">
                 <div class="form-group">
                     <label>Data do Atendimento</label>
                     <input type="date" id="dataAtendimento" class="form-control" required>
@@ -271,7 +281,6 @@
                 <div class="form-group">
                     <label>Sexo</label>
                     <div class="sexo-foto-container">
-                        <!-- AVATAR DINÂMICO INTEGRADO -->
                         <div id="avatarSexoContainer" class="avatar-campo-sexo" title="Foto do Assistido">
                             <img id="avatarSexoPreview" src="imagens/AvatarPessoaNeutra.png" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.parentNode.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 1.2rem; color: var(--secondary-color);\'></i>';">
                         </div>
@@ -295,7 +304,7 @@
         </form>
         <div id="mensagemStatus"></div>
 
-        <div style="margin-top: 15px; font-weight: 600; color: var(--secondary-color); font-size: 0.95rem;" id="tituloHistoricoAssistido">Histórico Acumulado do Assistido: Selecione um assistido</div>
+        <div style="margin-top: 15px; font-weight: 600; color: var(--secondary-color); font-size: 0.9rem;" id="tituloHistoricoAssistido">Histórico Acumulado do Assistido: Selecione um assistido</div>
         <div class="stats-grid" style="margin-top: 10px;">
             <div class="stat-card">
                 <div class="stat-number" id="histBanhos">0</div>
@@ -313,7 +322,7 @@
 
         <div id="painelAssistidoSelecionado"></div>
 
-        <h3 class="section-title" style="margin-top: 30px;"><i class="fa-solid fa-list-check"></i> Movimentação Recente (Últimos 12 Meses)</h3>
+        <h3 class="section-title" style="margin-top: 25px;"><i class="fa-solid fa-list-check"></i> Movimentação Recente do Assistido (12 Meses)</h3>
 
         <div class="table-responsive">
             <table>
@@ -330,13 +339,13 @@
                     </tr>
                 </thead>
                 <tbody id="tabelaAtendimentos">
-                    <tr><td colspan="8" style="text-align: center; color: #0284c7;">Selecione um assistido para visualizar a movimentação recente...</td></tr>
+                    <tr><td colspan="8" style="text-align: center; color: #64748b;">Selecione um assistido para visualizar a movimentação recente...</td></tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- RODAPÉ DE RESUMO ESTATÍSTICO OFICIAL -->
-        <div id="resumoEstatisticoRodape" style="margin-top: 15px; padding: 12px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; color: var(--dark-color);">
+        <!-- RODAPÉ DE RESUMO ESTATÍSTICO OFICIAL RESPONSIVO -->
+        <div id="resumoEstatisticoRodape">
             <strong>Resumo Estatístico Oficial:</strong> Foram realizados no período um total de <span id="totAtendimentosExtenso">0 (zero)</span> atendimentos, sendo <span id="totBanhosExtenso">0 (zero)</span> banhos, <span id="totJantasExtenso">0 (zero)</span> jantas e <span id="totCurativosExtenso">0 (zero)</span> curativos.
         </div>
     </div>
@@ -381,7 +390,6 @@
                 const imgPre = document.getElementById('avatarSexoPreview');
                 if (imgPre) imgPre.src = "imagens/AvatarPessoaNeutra.png";
 
-                // Limpa tabela e rodapé se nenhum assistido selecionado
                 document.getElementById('tabelaAtendimentos').innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Selecione um assistido para visualizar a movimentação recente...</td></tr>`;
                 atualizarRodapeEstatistico(0, 0, 0, 0);
                 return;
@@ -484,9 +492,9 @@
             box.innerHTML = `
                 <div class="assistido-selecionado-box">
                     ${avatarHtml}
-                    <div>
-                        <div style="font-weight: 700; font-size: 1.05rem; color: var(--secondary-color);">${nomeExibicao}</div>
-                        <div style="font-size: 0.88rem; color: #64748b;">Matrícula: <strong>${reg.matricula || '---'}</strong> | Sexo: ${reg.sexo || '---'}</div>
+                    <div style="overflow: hidden;">
+                        <div style="font-weight: 700; font-size: 1rem; color: var(--secondary-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeExibicao}</div>
+                        <div style="font-size: 0.82rem; color: #64748b;">Matrícula: <strong>${reg.matricula || '---'}</strong> | Sexo: ${reg.sexo || '---'}</div>
                     </div>
                 </div>
             `;
@@ -648,8 +656,6 @@
                     statusDiv.innerText = "Atendimento gravado com sucesso!";
                     
                     const matAtual = document.getElementById('matriculaAssistido').value.trim();
-                    const nomeAtual = document.getElementById('nomeAssistidoBusca').value.trim();
-
                     document.getElementById('formAtendimento').reset();
                     document.getElementById('dataAtendimento').value = new Date().toISOString().split('T')[0];
                     
