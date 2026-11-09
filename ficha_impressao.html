@@ -55,20 +55,21 @@
         /* Área da Ficha A4 com Marca d'Água Diagonal em Destaque */
         #fichaImpressaoArea { display: none; position: relative; background: white; padding: 40px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 20px; overflow: hidden; }
         
-        .watermark-diagonal {
+            .watermark-diagonal {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-35deg);
-            font-size: 44px;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 32px;
             font-weight: 800;
-            color: rgba(220, 38, 38, 0.14);
+            color: rgba(124, 58, 237, 0.04);
             white-space: nowrap;
             pointer-events: none;
             z-index: 10;
             text-align: center;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            width: 100%;
         }
 
         .ficha-conteudo { position: relative; z-index: 1; }
