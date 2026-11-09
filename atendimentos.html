@@ -102,8 +102,8 @@
         tr:nth-child(even) { background-color: #fdfcff; }
         <div id="resumoEstatisticoRodape" style="margin-top: 15px; padding: 12px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; color: var(--dark-color);">
         <strong>Resumo Estatístico Oficial:</strong> Foram realizados no período um total de <span id="totAtendimentosExtenso">0 (zero)</span> atendimentos, sendo <span id="totBanhosExtenso">0 (zero)</span> banhos, <span id="totJantasExtenso">0 (zero)</span> jantas e <span id="totCurativosExtenso">0 (zero)</span> curativos.
-</div>      
-        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
+</div>
+       #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
     </style>
 </head>
 <body onload="inicializarAtendimentos()">
@@ -510,17 +510,17 @@ function filtrarAssistidos(termo) {
                     const dataLimite = new Date();
                     dataLimite.setMonth(dataLimite.getMonth() - 12);
 
-                    let filtrados = data.lista.filter(at => {
-                    let dataAt = new Date(at.carimbo || at.dataAcao);
-                    let dentroPeriodo = dataAt >= dataLimite || isNaN(dataAt);
+                let filtrados = data.lista.filter(at => {
+                let dataAt = new Date(at.carimbo || at.dataAcao);
+                let dentroPeriodo = dataAt >= dataLimite || isNaN(dataAt);
     
-                    // Se houver uma matrícula filtrada ativa, restringe estritamente a ela
-                    if (filtroMatricula) {
-                    return dentroPeriodo && String(at.matricula).trim() === String(filtroMatricula).trim();
-                    }
-                    // Caso contrário, se nenhum assistido estiver selecionado, exibe vazio ou apenas o do assistido em foco
-                    return dentroPeriodo && (filtroMatricula ? String(at.matricula).trim() === String(filtroMatricula).trim() : false);
-                    }); {
+                // Se houver uma matrícula filtrada ativa, restringe estritamente a ela
+                if (filtroMatricula) {
+                return dentroPeriodo && String(at.matricula).trim() === String(filtroMatricula).trim();
+                }
+                // Caso contrário, se nenhum assistido estiver selecionado, exibe vazio ou apenas o do assistido em foco
+                return dentroPeriodo && (filtroMatricula ? String(at.matricula).trim() === String(filtroMatricula).trim() : false);
+            });
                         let dataAt = new Date(at.carimbo || at.dataAcao);
                         let dentroPeriodo = dataAt >= dataLimite || isNaN(dataAt);
                         if (filtroMatricula) {
