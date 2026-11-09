@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.5.005                            -->
-<!-- Data de atualização: 09/11/2026 - 15:42                                        -->
-<!-- Descrição: Galeria da Dignidade otimizada, leve e sem cortes no prontuário.    -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.5.006                            -->
+<!-- Data de atualização: 09/11/2026 - 16:15                                        -->
+<!-- Descrição: Galeria da Dignidade restaurada na base original com modal corrigido.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -29,7 +29,7 @@
             --border-color: #cbd5e1;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+        body { background-color: var(--bg-color); color: var(--text-color); }
         
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: fixed; top: 0; left: 0; width: 100%; z-index: 998; }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
@@ -52,13 +52,15 @@
         .container { max-width: 1200px; margin: 90px auto 30px auto; padding: 0 20px; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
         h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; }
         .subtitle { text-align: center; color: #64748b; margin-bottom: 15px; font-size: 0.95rem; }
-        .stats-banner { text-align: center; color: var(--primary-dark); font-weight: 600; font-size: 1rem; margin-bottom: 15px; background: #e0f2fe; padding: 12px; border-radius: 10px; border: 1px solid #bae6fd; }
+        .stats-banner { text-align: center; color: var(--primary-dark); font-weight: 600; font-size: 1rem; margin-bottom: 25px; background: #e0f2fe; padding: 12px; border-radius: 10px; border: 1px solid #bae6fd; }
+        
+        #mensagemStatus { text-align: center; font-weight: bold; margin: 20px 0; }
 
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         .gallery-card { background: white; border-radius: 12px; padding: 18px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; border: 1px solid #e2e8f0; transition: transform 0.2s; }
         .gallery-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.12); border-color: var(--primary-color); }
         
-        .gallery-avatar { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background: #e2e8f0; cursor: pointer; flex-shrink: 0; }
+        .gallery-avatar { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background: #e2e8f0; cursor: pointer; }
         .gallery-avatar img { width: 100%; height: 100%; object-fit: cover; }
         
         .gallery-name { font-weight: 600; font-size: 1rem; color: #0f172a; margin-bottom: 2px; cursor: pointer; }
@@ -73,43 +75,25 @@
         .btn-amarelo { background-color: var(--warning-color); } 
         .btn-roxo { background-color: var(--secondary-color); } 
 
-        /* Modal de Prontuário Completo Ajustado para Exibição Completa sem Cortes */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 15px; box-sizing: border-box; }
-        .modal-card { background: #ffffff; width: 100%; max-width: 900px; height: 90vh; max-height: 90vh; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow-y: auto; padding: 25px 25px 70px 25px; position: relative; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
-        .close-modal { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 1.5rem; color: #64748b; cursor: pointer; z-index: 3; }
+        /* MODAL DE PRONTUÁRIO COMPLETO CORRIGIDO (Com rolagem livre e sem cortes) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box; }
+        .modal-card { background: white; width: 100%; max-width: 850px; max-height: 88vh; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow-y: auto; padding: 30px 30px 60px 30px; position: relative; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
+        .close-modal { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 1.5rem; color: #64748b; cursor: pointer; }
         .close-modal:hover { color: #dc2626; }
         
-        .profile-header { display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; position: relative; z-index: 2; flex-wrap: wrap; }
-        .modal-avatar { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; flex-shrink: 0; }
+        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; }
+        .modal-avatar { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; flex-shrink: 0; }
         .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .modal-info h3 { margin: 0 0 3px 0; color: #0f172a; font-size: 1.3rem; }
-        .modal-info p { margin: 2px 0; color: #64748b; font-size: 13.5px; }
+        .modal-info h3 { margin: 0 0 5px 0; color: #0f172a; font-size: 1.4rem; }
+        .modal-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
         
-        .read-only-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; position: relative; z-index: 2; }
-        .read-field { background: transparent; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; }
-        .read-field label { display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
-        .read-field span { font-size: 0.9rem; font-weight: 500; color: #1e293b; word-break: break-word; }
-        .section-title { grid-column: 1 / -1; font-size: 1rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; position: relative; z-index: 2; background: rgba(255,255,255,0.95); padding-left: 5px; border-radius: 4px; }
+        .read-only-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
+        .read-field { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; }
+        .read-field label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
+        .read-field span { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
+        .section-title { grid-column: 1 / -1; font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; }
 
-        /* Marca d'água responsiva e elegante */
-        .marca-dagua-sigilo {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: clamp(0.8rem, 3vw, 1.3rem);
-            font-weight: 800;
-            color: rgba(124, 58, 237, 0.08);
-            white-space: nowrap;
-            pointer-events: none;
-            z-index: 1;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            width: 100%;
-            text-align: center;
-        }
-
-        /* Estilos da Tela de Histórico de Atendimentos */
+        /* Estilos da Tela de Histórico de Atendimentos Individual (Ícone Amarelo) */
         #telaHistoricoIndividual { display: none; text-align: left; }
         .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
         @media(min-width: 768px) { .stats-grid-ind { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
@@ -182,11 +166,10 @@
         <div id="telaPrincipalGaleria">
             <h2>Galeria da Dignidade</h2>
             <p class="subtitle">Registro visual humanizado e prontuário de leitura rápida dos assistidos cadastrados.</p>
-            
-            <div class="stats-banner" id="statsBanner">Calculando estatísticas da base de dados...</div>
-            <div class="stats-banner" id="mensagemStatus" style="color: var(--primary-dark);">Carregando galeria de assistidos...</div>
+            <div class="stats-banner" id="statsBanner">A calcular estatísticas da base...</div>
 
-            <div class="gallery-grid" id="galleryGrid" style="margin-top: 20px;"></div>
+            <div id="mensagemStatus"></div>
+            <div class="gallery-grid" id="galleryGrid"></div>
         </div>
 
         <!-- TELA DE HISTÓRICO DE ATENDIMENTOS (ABERTA PELO ÍCONE AMARELO) -->
@@ -235,11 +218,10 @@
 
     <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
     <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
-        <div class="modal-card" style="position: relative; overflow: hidden;">
-            <div class="marca-dagua-sigilo">DOCUMENTO PROTEGIDO POR SIGILO</div>       
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; position: relative; z-index: 3;">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
-                <button class="close-modal" onclick="fecharModal()"><i class="fa-solid fa-xmark"></i></button>
+                <button class="close-modal" onclick="fecharModal()" style="position: static;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <div class="profile-header">
@@ -247,7 +229,7 @@
                 <div class="modal-info">
                     <h3 id="mMatricula">MATRÍCULA</h3>
                     <p id="mDataCadastro">Data do Cadastro: --/--/----</p>
-                    <p id="mStatusProntuario">Status: ---</p>
+                    <p>Modo: <span style="color: var(--primary-dark); font-weight: bold;">Prontuário de Leitura Instantânea</span></p>
                 </div>
             </div>
 
@@ -288,7 +270,7 @@
                 <div class="read-field"><label>Carteira de Trabalho</label><span id="mCarteiraTrabalho">---</span></div>
             </div>
 
-            <div style="margin-top: 30px; text-align: right; border-top: 2px solid #e2e8f0; padding-top: 15px; position: relative; z-index: 3;">
+            <div style="margin-top: 30px; text-align: right; border-top: 2px solid #e2e8f0; padding-top: 15px;">
                 <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 20px; font-weight: 600;"><i class="fa-solid fa-check"></i> Fechar Prontuário</button>
             </div>
         </div>
@@ -343,7 +325,7 @@
             const grid = document.getElementById('galleryGrid');
 
             statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "Carregando galeria de assistidos...";
+            statusDiv.innerText = "A carregar galeria de assistidos...";
 
             fetch(API_URL, {
                 method: "POST",
@@ -375,7 +357,13 @@
 
                     statsBanner.innerHTML = `Total: ${totalRegistros} registros | ${qtdHomens} (${percHomens}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheres} (${percMulheres}%) Mulheres`;
 
-                    // Renderização ultra-leve e rápida (sem sort pesado bloqueando a thread)
+                    // ORDENAÇÃO ALFABÉTICA PERFEITA POR NOME COMPLETO
+                    data.lista.sort((a, b) => {
+                        const nomeA = (a.registro && a.registro.nomeCompleto ? a.registro.nomeCompleto : "").toLowerCase();
+                        const nomeB = (b.registro && b.registro.nomeCompleto ? b.registro.nomeCompleto : "").toLowerCase();
+                        return nomeA.localeCompare(nomeB, 'pt-BR');
+                    });
+
                     data.lista.forEach(item => {
                         const reg = item.registro || {};
                         const isInativo = String(reg.status || "").trim() === "Inativo";                        
@@ -431,7 +419,7 @@
                 ? '<span style="color: #dc2626; font-weight: bold;"><i class="fa-solid fa-ban"></i> Inativo no Sistema</span>' 
                 : '<span style="color: #16a34a; font-weight: bold;"><i class="fa-solid fa-check"></i> Ativo no Sistema</span>';
             
-            document.getElementById('mStatusProntuario').innerHTML = `Status: ${statusTexto}`;
+            document.querySelectorAll('.modal-info p')[1].innerHTML = `Status: ${statusTexto}`;
 
             const avatarContainer = document.getElementById('modalAvatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
@@ -471,8 +459,6 @@
         }
 
         function abrirHistoricoAssistido(reg) {
-            fecharModal(); 
-            
             const matriculaDec = reg.matricula || "---";
             const nomeDec = reg.nomeSocial || reg.nomeCompleto || "---";
             const sexoDec = reg.sexo || "---";
@@ -481,7 +467,7 @@
             document.getElementById('telaPrincipalGaleria').style.display = 'none';
             document.getElementById('telaHistoricoIndividual').style.display = 'block';
 
-            const avatarHtmlWrapper = `<div style="width: 70px; height: 70px; min-width: 70px; min-height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
+            const avatarHtmlWrapper = `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
 
             const statusBadge = isInativo 
                 ? '<span style="color: #dc2626; font-weight: 700; background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">INATIVO</span>' 
@@ -489,9 +475,9 @@
 
             document.getElementById('cabecalhoAssistidoInd').innerHTML = `
                 ${avatarHtmlWrapper}
-                <div style="flex: 1; min-width: 0;">
+                <div style="flex: 1;">
                     <div style="font-weight: 700; font-size: 1.15rem; color: var(--secondary-color); display: flex; justify-content: space-between; align-items: center;">
-                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nomeDec}</span> ${statusBadge}
+                        ${nomeDec} ${statusBadge}
                     </div>
                     <div style="font-size: 0.9rem; color: #64748b;">Matrícula: <strong>${matriculaDec}</strong> | Sexo: ${sexoDec}</div>
                 </div>
