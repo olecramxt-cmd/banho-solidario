@@ -476,7 +476,9 @@
             document.getElementById('modalProntuario').style.display = 'flex';
         }
 
-        function abrirHistoricoAssistido(reg) {
+            function abrirHistoricoAssistido(reg) {
+            fecharModal(); // 🟢 Garante que o modal azul feche caso estivesse aberto
+            
             const matriculaDec = reg.matricula || "---";
             const nomeDec = reg.nomeSocial || reg.nomeCompleto || "---";
             const sexoDec = reg.sexo || "---";
@@ -484,6 +486,8 @@
 
             document.getElementById('telaPrincipalGaleria').style.display = 'none';
             document.getElementById('telaHistoricoIndividual').style.display = 'block';
+            
+            // ... (restante da função)
 
             const avatarHtmlWrapper = `<div style="width: 70px; height: 70px; min-width: 70px; min-height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
 
