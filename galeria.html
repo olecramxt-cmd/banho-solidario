@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.5.000                            -->
-<!-- Data de atualização: 23/10/2026 - 05:37                                        -->
-<!-- Descrição: Galeria da Dignidade com menu lateral padronizado e alinhado.        -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.5.001                            -->
+<!-- Data de atualização: 09/11/2026 - 13:42                                        -->
+<!-- Descrição: Galeria da Dignidade corrigida com marca d'água integrada e rolagem. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -15,7 +15,7 @@
     <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
+    <style>
         :root {
             --primary-color: #0284c7;
             --primary-dark: #0369a1;
@@ -77,39 +77,40 @@
 
         /* Modal de Prontuário Completo */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box; }
-        .modal-card { background: white; width: 100%; max-width: 850px; max-height: 85vh; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow-y: auto; padding: 20px 20px 40px 20px; position: relative; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
+        .modal-card { background: white; width: 100%; max-width: 850px; max-height: 90vh; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow-y: auto; padding: 20px 20px 60px 20px; position: relative; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
         .close-modal { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 1.5rem; color: #64748b; cursor: pointer; }
         .close-modal:hover { color: #dc2626; }
         
-        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; }
+        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; position: relative; z-index: 2; }
         .modal-avatar { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; flex-shrink: 0; }
         .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .modal-info h3 { margin: 0 0 5px 0; color: #0f172a; font-size: 1.4rem; }
         .modal-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
         
-        .read-only-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
-        .read-field { background: rgba(248, 250, 252, 0.85); border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; position: relative; z-index: 2; }
+        .read-only-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; position: relative; z-index: 2; }
+        .read-field { background: rgba(248, 250, 252, 0.90); border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; }
         .read-field label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
         .read-field span { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
         .section-title { grid-column: 1 / -1; font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; }
 
-        /* Marca d'água de Sigilo Oficial Otimizada para Mobile */
-            .marca-dagua-sigilo {
+        /* Marca d'água de Sigilo Oficial Otimizada e Posicionada Internamente */
+        .marca-dagua-sigilo {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
             font-size: 1.3rem;
             font-weight: 800;
-            color: rgba(124, 58, 237, 0.08);
+            color: rgba(124, 58, 237, 0.07);
             white-space: nowrap;
             pointer-events: none;
-            z-index: 5;
+            z-index: 1;
             text-transform: uppercase;
             letter-spacing: 1px;
             width: 100%;
             text-align: center;
         }
+
         /* Estilos da Tela de Histórico de Atendimentos Individual (Ícone Amarelo) */
         #telaHistoricoIndividual { display: none; text-align: left; }
         .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
@@ -232,27 +233,12 @@
             </div>
         </div>
     </div>
-.marca-dagua-sigilo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-30deg);
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: rgba(124, 58, 237, 0.07);
-    white-space: nowrap;
-    pointer-events: none;
-    z-index: 1;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    width: 100%;
-    text-align: center;
-}
-        <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
-            <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
-            <div class="modal-card" style="position: relative; overflow: hidden;">
+
+    <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
+    <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
+        <div class="modal-card" style="position: relative; overflow: hidden;">
             <div class="marca-dagua-sigilo">DOCUMENTO PROTEGIDO POR SIGILO</div>       
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; position: relative; z-index: 2;">
                 <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
                 <button class="close-modal" onclick="fecharModal()" style="position: static;"><i class="fa-solid fa-xmark"></i></button>
             </div>
@@ -303,13 +289,13 @@
                 <div class="read-field"><label>Carteira de Trabalho</label><span id="mCarteiraTrabalho">---</span></div>
             </div>
 
-            <div style="margin-top: 30px; text-align: right; border-top: 2px solid #e2e8f0; padding-top: 15px;">
+            <div style="margin-top: 30px; text-align: right; border-top: 2px solid #e2e8f0; padding-top: 15px; position: relative; z-index: 2;">
                 <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 20px; font-weight: 600;"><i class="fa-solid fa-check"></i> Fechar Prontuário</button>
             </div>
         </div>
     </div>
 
- <script>
+    <script>
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
@@ -322,7 +308,6 @@
             return url;
         }
 
-        // 🟢 Função unificada para gerar o avatar (Ativo / Inativo com carimbo de banido)
         function gerarHtmlAvatar(reg, tamanhoEstilo = "width: 100%; height: 100%; object-fit: cover;") {
             const isInativo = String(reg.status || "").trim() === "Inativo";
             const fotoFinal = converterLinkDrive(reg.foto);
@@ -403,7 +388,6 @@
                         const nomeCompleto = reg.nomeCompleto || reg.nomeSocial || "Sem Nome";
                         const matricula = reg.matricula || "---";
 
-                        // Geração limpa do avatar com suporte a Ativo/Inativo
                         let avatarHtml = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
 
                         const card = document.createElement('div');
@@ -414,7 +398,6 @@
                             card.style.background = "#fff5f5";
                         }
 
-                        // Serialização segura do objeto para eventos inline
                         const regJson = JSON.stringify(reg).replace(/'/g, "&#39;");
 
                         card.innerHTML = `
@@ -456,7 +439,6 @@
             
             document.querySelectorAll('.modal-info p')[1].innerHTML = `Status: ${statusTexto}`;
 
-            // 🟢 Avatar correto no modal de prontuário
             const avatarContainer = document.getElementById('modalAvatarContainer');
             avatarContainer.innerHTML = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
             document.getElementById('mNomeCompleto').innerText = reg.nomeCompleto || "Não informado";
@@ -502,8 +484,7 @@
             document.getElementById('telaPrincipalGaleria').style.display = 'none';
             document.getElementById('telaHistoricoIndividual').style.display = 'block';
 
-            // 🟢 Avatar correto no cabeçalho do histórico
-           const avatarHtmlWrapper = `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
+            const avatarHtmlWrapper = `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
 
             const statusBadge = isInativo 
                 ? '<span style="color: #dc2626; font-weight: 700; background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">INATIVO</span>' 
