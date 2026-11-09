@@ -15,7 +15,7 @@
     <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+<style>
         :root {
             --primary-color: #0284c7;
             --primary-dark: #0369a1;
@@ -92,6 +92,22 @@
         .read-field label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
         .read-field span { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
         .section-title { grid-column: 1 / -1; font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; }
+
+        /* Marca d'água de Sigilo Oficial */
+        .marca-dagua-sigilo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: rgba(124, 58, 237, 0.05);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
         /* Estilos da Tela de Histórico de Atendimentos Individual (Ícone Amarelo) */
         #telaHistoricoIndividual { display: none; text-align: left; }
@@ -229,11 +245,10 @@
     text-transform: uppercase;
     letter-spacing: 2px;
 }
-    <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
-        <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
-        <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
-        <div class="modal-card" style="position: relative; overflow: hidden;">
-        <div class="marca-dagua-sigilo">DOCUMENTO PROTEGIDO POR SIGILO</div>       
+        <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
+            <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
+            <div class="modal-card" style="position: relative; overflow: hidden;">
+            <div class="marca-dagua-sigilo">DOCUMENTO PROTEGIDO POR SIGILO</div>       
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
                 <button class="close-modal" onclick="fecharModal()" style="position: static;"><i class="fa-solid fa-xmark"></i></button>
