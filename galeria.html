@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.5.007                            -->
-<!-- Data de atualização: 09/11/2026 - 16:58                                        -->
-<!-- Descrição: Galeria da Dignidade blindada contra travamentos e congelamento.    -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.5.008                            -->
+<!-- Data de atualização: 09/11/2026 - 17:04                                        -->
+<!-- Descrição: Galeria da Dignidade com Operador Responsável e layout responsivo.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -29,7 +29,7 @@
             --border-color: #cbd5e1;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
         
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: fixed; top: 0; left: 0; width: 100%; z-index: 998; }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
@@ -75,23 +75,23 @@
         .btn-amarelo { background-color: var(--warning-color); } 
         .btn-roxo { background-color: var(--secondary-color); } 
 
-        /* MODAL DE PRONTUÁRIO COMPLETO (Com rolagem livre e sem cortes) */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box; }
-        .modal-card { background: white; width: 100%; max-width: 850px; max-height: 88vh; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow-y: auto; padding: 30px 30px 60px 30px; position: relative; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
-        .close-modal { position: absolute; top: 20px; right: 25px; background: none; border: none; font-size: 1.5rem; color: #64748b; cursor: pointer; }
+        /* MODAL DE PRONTUÁRIO RESPONSIVO (Sem cortes nas laterais do celular) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; box-sizing: border-box; }
+        .modal-card { background: white; width: 95%; max-width: 850px; max-height: 88vh; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); overflow-y: auto; padding: 20px; position: relative; box-sizing: border-box; -webkit-overflow-scrolling: touch; margin: auto; }
+        .close-modal { position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem; color: #64748b; cursor: pointer; }
         .close-modal:hover { color: #dc2626; }
         
-        .profile-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; }
-        .modal-avatar { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; flex-shrink: 0; }
+        .profile-header { display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .modal-avatar { width: 85px; height: 85px; border-radius: 50%; overflow: hidden; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background-color: #e2e8f0; flex-shrink: 0; }
         .modal-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .modal-info h3 { margin: 0 0 5px 0; color: #0f172a; font-size: 1.4rem; }
-        .modal-info p { margin: 3px 0; color: #64748b; font-size: 14px; }
+        .modal-info h3 { margin: 0 0 3px 0; color: #0f172a; font-size: 1.2rem; word-break: break-all; }
+        .modal-info p { margin: 2px 0; color: #64748b; font-size: 13px; }
         
-        .read-only-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
-        .read-field { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 8px; }
-        .read-field label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
-        .read-field span { font-size: 0.95rem; font-weight: 500; color: #1e293b; }
-        .section-title { grid-column: 1 / -1; font-size: 1.05rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; }
+        .read-only-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+        .read-field { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 8px; }
+        .read-field label { display: block; font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+        .read-field span { font-size: 0.9rem; font-weight: 500; color: #1e293b; word-break: break-word; }
+        .section-title { grid-column: 1 / -1; font-size: 1rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 4px; margin-top: 15px; margin-bottom: 5px; font-weight: 700; }
 
         /* Estilos da Tela de Histórico de Atendimentos Individual (Ícone Amarelo) */
         #telaHistoricoIndividual { display: none; text-align: left; }
@@ -108,7 +108,7 @@
 </head>
 <body onload="carregarGaleriaDignidade()">
 
-    <!-- Validação de Sessão / Login Obrigatória -->
+    <!-- Validação de Sessão / Login Otimizada -->
     <script src="config.js"></script>
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
@@ -268,6 +268,7 @@
                 <div class="read-field"><label>Possui Documentos</label><span id="mPossuiDocumentos">---</span></div>
                 <div class="read-field"><label>Documentos Faltam</label><span id="mDocumentosFaltam">---</span></div>
                 <div class="read-field"><label>Carteira de Trabalho</label><span id="mCarteiraTrabalho">---</span></div>
+                <div class="read-field"><label>Operador Responsável</label><span id="mOperador">---</span></div>
             </div>
 
             <div style="margin-top: 30px; text-align: right; border-top: 2px solid #e2e8f0; padding-top: 15px;">
@@ -361,7 +362,7 @@
 
                     statsBanner.innerHTML = `Total: ${totalRegistros} registros | ${qtdHomens} (${percHomens}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheres} (${percMulheres}%) Mulheres`;
 
-                    // ORDENAÇÃO ALFABÉTICA BLINDADA
+                    // ORDENAÇÃO ALFABÉTICA PERFEITA POR NOME COMPLETO
                     data.lista.sort((a, b) => {
                         const nomeA = (a.registro && (a.registro.nomeCompleto || a.registro.nomeSocial) ? (a.registro.nomeCompleto || a.registro.nomeSocial) : "").toLowerCase();
                         const nomeB = (b.registro && (b.registro.nomeCompleto || b.registro.nomeSocial) ? (b.registro.nomeCompleto || b.registro.nomeSocial) : "").toLowerCase();
@@ -384,7 +385,6 @@
                             card.style.background = "#fff5f5";
                         }
 
-                        // Substituição segura de aspas para evitar erro de sintaxe no JSON inline
                         const regJson = JSON.stringify(reg).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
 
                         card.innerHTML = `
@@ -415,18 +415,9 @@
             });
         }
 
-        // Funções seguras de abertura via JSON sanitizado
-        function abrirProntuarioFromJson(reg) {
-            abrirProntuario(reg);
-        }
-
-        function abrirHistoricoAssistidoFromJson(reg) {
-            abrirHistoricoAssistido(reg);
-        }
-
-        function imprimirFichaDiretaFromJson(reg) {
-            imprimirFichaDireta(reg);
-        }
+        function abrirProntuarioFromJson(reg) { abrirProntuario(reg); }
+        function abrirHistoricoAssistidoFromJson(reg) { abrirHistoricoAssistido(reg); }
+        function imprimirFichaDiretaFromJson(reg) { imprimirFichaDireta(reg); }
 
         function abrirProntuario(reg) {
             document.getElementById('mMatricula').innerText = "Matrícula: " + (reg.matricula || "---");
@@ -472,6 +463,7 @@
             document.getElementById('mPossuiDocumentos').innerText = reg.possuiDocumentos || "Não informado";
             document.getElementById('mDocumentosFaltam').innerText = reg.documentosFaltam || "Não informado";
             document.getElementById('mCarteiraTrabalho').innerText = reg.carteiraTrabalho || "Não informado";
+            document.getElementById('mOperador').innerText = reg.operador || reg.usuario || "Não informado";
 
             document.getElementById('modalProntuario').style.display = 'flex';
         }
@@ -493,9 +485,9 @@
 
             document.getElementById('cabecalhoAssistidoInd').innerHTML = `
                 ${avatarHtmlWrapper}
-                <div style="flex: 1;">
+                <div style="flex: 1; min-width: 0;">
                     <div style="font-weight: 700; font-size: 1.15rem; color: var(--secondary-color); display: flex; justify-content: space-between; align-items: center;">
-                        ${nomeDec} ${statusBadge}
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nomeDec}</span> ${statusBadge}
                     </div>
                     <div style="font-size: 0.9rem; color: #64748b;">Matrícula: <strong>${matriculaDec}</strong> | Sexo: ${sexoDec}</div>
                 </div>
