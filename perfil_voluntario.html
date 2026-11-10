@@ -2,8 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.7.2                              -->
-<!-- Data de atualização: 10/11/2026 - 05:39                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.8.0                              -->
+<!-- Data de atualização: 10/11/2026 - 06:00                                        -->
+<!-- Descrição: Perfil sincronizado com a base centralizada de voluntários.         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -59,8 +60,7 @@
         .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background-color: #fff; color: var(--text-color); }
         .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
         
-        /* CPF totalmente forçado a ser editável e interativo */
-        #volCpf { background-color: #faf5ff !important; border-color: #d8b4fe !important; font-weight: 600 !important; pointer-events: auto !important; user-select: text !important; }
+        #volCpf { background-color: #faf5ff !important; border-color: #d8b4fe !important; font-weight: 600 !important; pointer-events: auto !important; }
 
         .cargos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 5px; }
         .cargos-grid label { font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -144,7 +144,7 @@
 
     <div class="container">
         <h2><i class="fa-solid fa-id-card-clip"></i> Gestão do Meu Perfil de Voluntário</h2>
-        <p class="subtitle">Seus dados carregados automaticamente. Atualize suas informações ou gere seu Termo Legal em PDF abaixo.</p>
+        <p class="subtitle">Seus dados carregados automaticamente da inscrição aprovada. Atualize suas informações ou gere seu Termo Legal em PDF abaixo.</p>
 
         <form id="formPerfilVoluntario" onsubmit="atualizarPerfilVoluntario(event)">
             <div class="form-grid">
@@ -158,7 +158,6 @@
                 </div>
                 <div class="form-group">
                     <label>CPF (Identificação Única) *</label>
-                    <!-- CPF liberado e editável (sem atributos de bloqueio) -->
                     <input type="text" id="volCpf" class="form-control" placeholder="000.000.000-00" required>
                 </div>
                 <div class="form-group">
@@ -235,7 +234,7 @@
             <p style="text-align: justify; margin-bottom: 4px;">O(A) voluntário(a) atuará nas ações humanitárias promovidas pelo Projeto Banho Solidário em Unaí-MG, colaborando nas áreas de higiene, acolhimento, saúde, alimentação e suporte logístico conforme sua disponibilidade e escolha.</p>
 
             <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">4. CLÁUSULA TERCEIRA - DA ÉTICA E CONDUTA</h4>
-            <p style="text-align: justify; margin-bottom: 4px;">O(A) voluntário(a) compromete-se a zelar pelo sigilo das informações dos assistidos, primando pelo respeito, empatia, ética e respeito aos direitos humanos durante a prestação das atividades.</p>
+            <p style="text-align: justify; margin-bottom: 4px;">O(A) voluntário(a) compromete-se a zelar pelo sigilo das informações dos assistidos, primando pelo respeito, empatia, ética e respeito aos humanos durante a prestação das atividades.</p>
 
             <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">5. CLÁUSULA QUARTA - DA CESSÃO DE DIREITOS DE IMAGEM E VOZ</h4>
             <p style="text-align: justify; margin-bottom: 4px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
@@ -257,6 +256,7 @@
 
     <script>
         let nomeVoluntarioAtual = "Voluntario";
+        let cpfOriginalSessao = "";
 
         function formatarDataBR(dataStr) {
             if (!dataStr) return "---";
@@ -278,7 +278,7 @@
 
             const statusDiv = document.getElementById('mensagemStatus');
             statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "Carregando seus dados da nuvem...";
+            statusDiv.innerText = "Carregando seus dados cadastrados...";
 
             fetch(API_URL, {
                 method: "POST",
@@ -291,15 +291,15 @@
                 if (data.status === "encontrado" && data.registro) {
                     const reg = data.registro;
                     nomeVoluntarioAtual = reg.nome || "Voluntario";
+                    cpfOriginalSessao = reg.cpf || usuarioAtivo.cpf || "";
+
                     document.getElementById('volNome').value = reg.nome || "";
                     document.getElementById('volNomeSocial').value = reg.nomeSocial || "";
                     
-                    // Força total de abertura e limpeza de restrições no campo CPF via JavaScript
                     const campoCpf = document.getElementById('volCpf');
                     campoCpf.value = reg.cpf || "";
                     campoCpf.removeAttribute('readonly');
                     campoCpf.removeAttribute('disabled');
-                    campoCpf.style.pointerEvents = "auto";
 
                     document.getElementById('volTelefone').value = reg.telefone || "";
                     document.getElementById('volEmail').value = reg.email || "";
@@ -317,7 +317,7 @@
                     atualizarCamposImpressao(reg);
                 } else {
                     statusDiv.style.color = "orange";
-                    statusDiv.innerText = "Nenhum cadastro de voluntário localizado. Preencha os campos para salvar.";
+                    statusDiv.innerText = "Nenhum cadastro vinculado encontrado. Preencha e salve suas informações.";
                 }
             })
             .catch(() => {
@@ -351,9 +351,15 @@
             e.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
 
-            const endereco = document.getElementById('volEndereco').value.trim();
-            const nascimento = document.getElementById('volNascimento').value;
+            const nome = document.getElementById('volNome').value.trim();
+            const nomeSocial = document.getElementById('volNomeSocial').value.trim();
             const cpf = document.getElementById('volCpf').value.trim();
+            const telefone = document.getElementById('volTelefone').value.trim();
+            const email = document.getElementById('volEmail').value.trim();
+            const nascimento = document.getElementById('volNascimento').value;
+            const endereco = document.getElementById('volEndereco').value.trim();
+            const disponibilidade = document.getElementById('volDisponibilidade').value.trim();
+
             const cargoBanho = document.getElementById('cargoBanho').checked;
             const cargoJanta = document.getElementById('cargoJanta').checked;
             const cargoCurativos = document.getElementById('cargoCurativos').checked;
@@ -363,17 +369,18 @@
 
             if (!cpf || !endereco || !nascimento || (!cargoBanho && !cargoJanta && !cargoCurativos && !cargoCabelo && !cargoRecepcao && !cargoLogistica)) {
                 statusDiv.style.color = "red";
-                statusDiv.innerText = "Atenção: Os campos CPF, Endereço, Data de Nascimento e ao menos um Cargo são de preenchimento obrigatório!";
+                statusDiv.innerText = "Atenção: CPF, Endereço, Data de Nascimento e ao menos um Cargo são obrigatórios!";
                 return;
             }
 
             const payload = {
                 action: "atualizarVoluntario",
-                nome: document.getElementById('volNome').value.trim(),
-                nomeSocial: document.getElementById('volNomeSocial').value.trim(),
+                identificadorOriginal: cpfOriginalSessao || cpf, // Chave primária robusta para localização na planilha
+                nome: nome,
+                nomeSocial: nomeSocial,
                 cpf: cpf,
-                telefone: document.getElementById('volTelefone').value.trim(),
-                email: document.getElementById('volEmail').value.trim(),
+                telefone: telefone,
+                email: email,
                 nascimento: nascimento,
                 endereco: endereco,
                 higieneBanho: cargoBanho,
@@ -382,11 +389,11 @@
                 corteCabelo: cargoCabelo,
                 recepcaoTriagem: cargoRecepcao,
                 logisticaApoio: cargoLogistica,
-                disponibilidade: document.getElementById('volDisponibilidade').value.trim()
+                disponibilidade: disponibilidade
             };
 
             statusDiv.style.color = "#0284c7";
-            statusDiv.innerText = "Atualizando dados na nuvem...";
+            statusDiv.innerText = "Salvando alterações na nuvem...";
 
             fetch(API_URL, {
                 method: "POST",
@@ -397,17 +404,18 @@
             .then(data => {
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
-                    statusDiv.innerText = "Perfil atualizado com sucesso!";
+                    statusDiv.innerText = "Perfil atualizado e gravado com sucesso!";
+                    cpfOriginalSessao = cpf; // Atualiza a chave de sessão caso o CPF tenha sido modificado
                     atualizarCamposImpressao(payload);
-                    setTimeout(() => { statusDiv.innerText = ""; }, 3000);
+                    setTimeout(() => { statusDiv.innerText = ""; }, 4000);
                 } else {
                     statusDiv.style.color = "red";
-                    statusDiv.innerText = data.message || "Erro ao atualizar perfil.";
+                    statusDiv.innerText = data.message || "Erro ao salvar alterações.";
                 }
             })
             .catch(() => {
                 statusDiv.style.color = "red";
-                statusDiv.innerText = "Erro de conexão com o servidor.";
+                statusDiv.innerText = "Erro de conexão ao salvar na nuvem.";
             });
         }
 
