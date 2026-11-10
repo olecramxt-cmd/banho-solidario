@@ -1,0 +1,140 @@
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
+<!-- Programa: relatorios.html. Versão do Módulo: v.2.5.000                         -->
+<!-- Data de atualização: 17/10/2026 - 04:26                                        -->
+<!-- Descrição: Relatórios e Fichas Oficiais com menu lateral completo (itens 1 a 5)-->
+<!--            e direcionamento correto para o relatório de movimentação.          -->
+<!-- ============================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMAS iPeC - Relatórios e Fichas / Banho Solidário</title>
+    <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0284c7;
+            --primary-dark: #0369a1;
+            --success-color: #16a34a;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #cbd5e1;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .menu-toggle:hover { background: white; color: var(--primary-dark); }
+        .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 25px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
+        .side-menu.active { right: 0; }
+        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0f2fe; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .side-menu-header h3 { color: var(--primary-dark); font-size: 1.2rem; margin: 0; }
+        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        .side-menu-links { display: flex; flex-direction: column; gap: 1rem; }
+        .menu-link-item { background: var(--bg-color); color: var(--primary-dark); padding: 12px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary-color); transition: all 0.3s; }
+        .menu-link-item:hover { background: #e0f2fe; transform: translateX(5px); }
+        .side-menu-sublinks { padding-left: 20px; display: flex; flex-direction: column; gap: 0.5rem; }
+        .menu-sublink-item { font-size: 0.9rem; color: var(--text-color); padding: 8px 12px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .menu-sublink-item:hover { background: #e0f2fe; color: var(--primary-dark); }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
+        .menu-overlay.active { display: block; }
+
+        .container { max-width: 1000px; margin: 30px auto; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 30px; font-size: 0.95rem; }
+        
+        .report-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 20px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s; text-decoration: none; }
+        .btn:hover { background-color: var(--primary-dark); }
+    </style>
+</head>
+<body>
+
+    <!-- Importação do Config de API Centralizada -->
+    <script src="config.js"></script>
+    <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        const ativoLocal = localStorage.getItem('usuario_ativo');
+        if (!autorizado && !ativoLocal) {
+            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+            window.location.href = 'login.html';
+        }
+        const API_URL = CONFIG.API_URL;
+    </script>
+
+    <div class="navbar">
+        <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+        <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Banho Solidário</span>
+    </div>
+
+    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h3>Menu do Sistema</h3>
+            <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-menu-links">
+            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
+                <i class="fa-solid fa-house"></i> Início (Página Inicial)
+            </a>
+            
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
+            <div class="side-menu-sublinks">
+                <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
+                <a href="#" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta</a>
+            </div>
+            
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
+            <div class="side-menu-sublinks">
+                <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
+                <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
+                <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
+            </div>
+
+            <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
+            <div class="side-menu-sublinks">
+                <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
+                <a href="relatorio_atendimentos.html" class="menu-sublink-item" style="background: #e0f2fe; color: var(--primary-dark); font-weight: 600;"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios e Fichas</a>
+            </div>
+            
+            <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
+            <a href="./ebook/" target="_blank" class="menu-link-item"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Relatórios e Fichas Oficiais</h2>
+        <p class="subtitle">Emissão de listagens e documentos de controle do Projeto Banho Solidário.</p>
+
+        <div class="report-card">
+            <div>
+                <strong>Ficha Cadastral Individual do Assistido</strong>
+                <p style="margin: 5px 0 0 0; font-size: 13px; color: #64748b;">Visualizar e imprimir prontuário completo.</p>
+            </div>
+            <a href="ficha_impressao.html" class="btn">Acessar Ficha</a>
+        </div>
+
+        <div class="report-card">
+            <div>
+                <strong>Relatório Geral de Atendimentos (Movimentação)</strong>
+                <p style="margin: 5px 0 0 0; font-size: 13px; color: #64748b;">Estatísticas de banho, janta e curativos.</p>
+            </div>
+            <a href="relatorio_atendimentos.html" class="btn">Ver Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->

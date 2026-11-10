@@ -1,0 +1,466 @@
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.8.0                              -->
+<!-- Data de atualização: 10/11/2026 - 06:00                                        -->
+<!-- Descrição: Perfil sincronizado com a base centralizada de voluntários.         -->
+<!-- ============================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMAS iPeC - Meu Perfil de Voluntário / Banho Solidário</title>
+    <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --secondary-color: #7c3aed;
+            --accent-color: #e0f2fe;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --text-color: #4b5563;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--light-color); color: var(--text-color); padding: 1rem; width: 100%; overflow-x: hidden; }
+        
+        .navbar-top { position: fixed; top: 0; left: 0; width: 100%; background-color: #0f172a; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 998; }
+        .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .menu-toggle:hover { background: white; color: var(--secondary-color); }
+        
+        .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; box-shadow: -5px 0 45px rgba(0,0,0,0.2); transition: right 0.4s ease; z-index: 1000; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; overflow-y: auto; }
+        .side-menu.active { right: 0; }
+        .side-menu-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .side-menu-header h3 { color: var(--secondary-color); font-size: 1.2rem; margin: 0; }
+        .close-menu { background: none; border: none; font-size: 1.5rem; color: var(--text-color); cursor: pointer; }
+        .side-menu-links { display: flex; flex-direction: column; gap: 0.8rem; }
+        .menu-link-item { background: var(--light-color); color: var(--secondary-color); padding: 10px 14px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--secondary-color); transition: all 0.3s; font-size: 0.95rem; }
+        .menu-link-item:hover { background: var(--accent-color); transform: translateX(5px); }
+        .side-menu-sublinks { padding-left: 18px; display: flex; flex-direction: column; gap: 0.4rem; }
+        .menu-sublink-item { font-size: 0.88rem; color: var(--text-color); padding: 7px 10px; background: #f1f5f9; border-radius: 6px; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.2s; border-left: 3px solid transparent; }
+        .menu-sublink-item:hover { background: var(--accent-color); color: var(--secondary-color); border-left-color: var(--secondary-color); }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
+        .menu-overlay.active { display: block; }
+
+        .container { max-width: 900px; width: 100%; margin: 70px auto 30px auto; background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 45px rgba(0,0,0,0.08); }
+        h2 { color: var(--secondary-color); font-size: 1.5rem; display: flex; align-items: center; gap: 10px; margin-bottom: 5px; text-align: center; justify-content: center; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 45px; font-size: 0.95rem; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media(min-width: 768px) {
+            .form-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .form-group.full-width { grid-column: span 2; }
+        }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-weight: 600; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 6px; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background-color: #fff; color: var(--text-color); }
+        .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
+        
+        #volCpf { background-color: #faf5ff !important; border-color: #d8b4fe !important; font-weight: 600 !important; pointer-events: auto !important; }
+
+        .cargos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 5px; }
+        .cargos-grid label { font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        .btn-action-group { display: flex; gap: 15px; margin-top: 20px; }
+        .btn-atualizar { background: var(--secondary-color); color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; flex: 1; }
+        .btn-atualizar:hover { background: #6d28d9; }
+        
+        .btn-imprimir-termo { background: #0ea5e9; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; text-decoration: none; flex: 1; }
+        .btn-imprimir-termo:hover { background: #0284c7; }
+
+        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
+
+        #termoImpressaoContainer { display: none; width: 720px; margin: 0 auto; background: white; padding: 10px; box-sizing: border-box; position: relative; }
+    </style>
+</head>
+<body onload="inicializarPerfilVoluntario()">
+
+    <script src="config.js"></script>
+    <script>
+        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
+        let usuarioAtivo = {};
+        try {
+            usuarioAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
+        } catch(e) { usuarioAtivo = {}; }
+
+        if (!autorizado && !usuarioAtivo.username && !usuarioAtivo.email && !usuarioAtivo.cpf) {
+            sessionStorage.setItem('pbs_destino', 'perfil_voluntario.html');
+            window.location.href = 'login.html';
+        }
+
+        const API_URL = CONFIG.API_URL;
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+
+    <div class="navbar-top">
+        <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
+        <span style="font-weight: bold; font-size: 16px;">SISTEMAS iPeC - Área do Voluntário</span>
+    </div>
+
+    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <nav class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <h3>Menu do Sistema</h3>
+            <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-menu-links">
+            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;"><i class="fa-solid fa-house"></i> Início (Página Inicial)</a>
+            
+            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">1. Voluntários</div>
+            <div class="side-menu-sublinks">
+                <a href="inscricao_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Inscrição</a>
+                <a href="perfil_voluntario.html" class="menu-sublink-item" style="background: var(--accent-color); color: var(--secondary-color); font-weight: 600;"><i class="fa-solid fa-id-card"></i> 1.2- Meu Perfil</a>
+            </div>
+
+            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">2. Assistidos (Área Restrita)</div>
+            <div class="side-menu-sublinks">
+                <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
+                <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
+                <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-users"></i> 2.3- Galeria da Dignidade</a>
+            </div>
+            
+            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">3. Atendimentos & Movimentação</div>
+            <div class="side-menu-sublinks">
+                <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
+                <a href="ficha_impressao.html" class="menu-sublink-item"><i class="fa-solid fa-print"></i> 3.2- Relatórios & Fichas</a>
+            </div>
+
+            <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">4. Administração</div>
+            <div class="side-menu-sublinks">
+                <a href="admin.html" class="menu-sublink-item"><i class="fa-solid fa-shield-halved"></i> 4.1- Gestão de Acessos</a>
+            </div>
+            
+            <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;"><i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2><i class="fa-solid fa-id-card-clip"></i> Gestão do Meu Perfil de Voluntário</h2>
+        <p class="subtitle">Seus dados carregados automaticamente da inscrição aprovada. Atualize suas informações ou gere seu Termo Legal em PDF abaixo.</p>
+
+        <form id="formPerfilVoluntario" onsubmit="atualizarPerfilVoluntario(event)">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="volNome" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Nome Social</label>
+                    <input type="text" id="volNomeSocial" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>CPF (Identificação Única) *</label>
+                    <input type="text" id="volCpf" class="form-control" placeholder="000.000.000-00" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone / WhatsApp *</label>
+                    <input type="text" id="volTelefone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="volEmail" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Data de Nascimento *</label>
+                    <input type="date" id="volNascimento" class="form-control" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Endereço Residencial e Bairro *</label>
+                    <input type="text" id="volEndereco" class="form-control" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Cargos / Funções Pretendidas no Projeto * (Selecione ao menos um)</label>
+                    <div class="cargos-grid">
+                        <label><input type="checkbox" id="cargoBanho" value="Higiene e Banho"> Higiene e Banho</label>
+                        <label><input type="checkbox" id="cargoJanta" value="Alimentação / Janta"> Alimentação / Janta</label>
+                        <label><input type="checkbox" id="cargoCurativos" value="Curativos e Saúde"> Curativos e Saúde</label>
+                        <label><input type="checkbox" id="cargoCabelo" value="Corte de Cabelo"> Corte de Cabelo</label>
+                        <label><input type="checkbox" id="cargoRecepcao" value="Recepção e Triagem"> Recepção e Triagem</label>
+                        <label><input type="checkbox" id="cargoLogistica" value="Logística e Apoio Geral"> Logística e Apoio Geral</label>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label>Disponibilidade de Dias e Horários</label>
+                    <input type="text" id="volDisponibilidade" class="form-control">
+                </div>
+                <div class="form-group full-width">
+                    <div class="btn-action-group">
+                        <button type="submit" class="btn-atualizar"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
+                        <button type="button" class="btn-imprimir-termo" onclick="gerarPdfTermoLegal()"><i class="fa-solid fa-file-pdf"></i> Baixar Termo em PDF</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="mensagemStatus"></div>
+    </div>
+
+    <!-- DOCUMENTO FORMATADO PARA GERAR O PDF -->
+    <div id="termoImpressaoContainer" style="font-family: 'Poppins', sans-serif; color: #1f2937; line-height: 1.4; background: white; padding: 10px;">
+        <div style="text-align: center; border-bottom: 2px solid #7c3aed; padding-bottom: 8px; margin-bottom: 10px;">
+            <img src="Logo2_2.png" alt="Logo Projeto Banho Solidário" style="max-height: 50px; margin-bottom: 3px;">
+            <h2 style="color: #7c3aed; font-size: 1.1rem; margin: 0; text-transform: uppercase;">Projeto Banho Solidário</h2>
+            <p style="font-size: 0.75rem; color: #0ea5e9; font-weight: 600; margin-top: 2px;">"Cada gota, um ato de amor!"</p>
+        </div>
+
+        <h3 style="text-align: center; font-size: 0.95rem; color: #0f172a; margin: 8px 0; text-transform: uppercase;">Termo de Adesão ao Serviço Voluntário</h3>
+        <p style="font-size: 0.7rem; text-align: center; color: #64748b; margin-bottom: 10px;">(Em conformidade com a Lei Federal nº 9.608/1998 e os arts. 5º, inciso XXVIII, e 20 da Lei nº 10.406/2002 - Código Civil)</p>
+
+        <p style="text-align: justify; font-size: 0.78rem; margin-bottom: 10px;">Por este instrumento particular, o(a) voluntário(a) qualificado(a) neste ato e a coordenação do <strong>Projeto Banho Solidário</strong>, desenvolvido no município de Unaí-Minas Gerais, celebram o presente Termo de Adesão ao Serviço Voluntário, regido pelas cláusulas e condições seguintes:</p>
+
+        <div style="background: #f8fafc; border-left: 4px solid #7c3aed; padding: 8px; margin: 8px 0; font-size: 0.75rem;">
+            <p style="margin: 2px 0;"><strong>1. DADOS CADASTRAIS DO(A) VOLUNTÁRIO(A):</strong></p>
+            <p style="margin: 2px 0;"><strong>Nome Completo:</strong> <span id="printNome">---</span></p>
+            <p style="margin: 2px 0;"><strong>Nome Social:</strong> <span id="printNomeSocial">---</span></p>
+            <p style="margin: 2px 0;"><strong>CPF:</strong> <span id="printCpf">---</span> | <strong>Data de Nascimento:</strong> <span id="printNascimento">---</span></p>
+            <p style="margin: 2px 0;"><strong>Telefone / WhatsApp:</strong> <span id="printTelefone">---</span> | <strong>E-mail:</strong> <span id="printEmail">---</span></p>
+            <p style="margin: 2px 0;"><strong>Endereço Residencial:</strong> <span id="printEndereco">---</span></p>
+            <p style="margin: 2px 0;"><strong>Cargos / Funções Pretendidas:</strong> <span id="printCargos">---</span></p>
+            <p style="margin: 2px 0;"><strong>Disponibilidade:</strong> <span id="printDisponibilidade">---</span></p>
+        </div>
+
+        <div style="font-size: 0.72rem; margin-top: 6px;">
+            <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">2. CLÁUSULA PRIMEIRA - DA NATUREZA DO SERVIÇO</h4>
+            <p style="text-align: justify; margin-bottom: 4px;">O serviço voluntário é atividade não remunerada, sem vínculo empregatício, funcional ou encargo trabalhista, previdenciário ou afim, conforme disposto na Lei Federal nº 9.608, de 18 de fevereiro de 1998.</p>
+
+            <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">3. CLÁUSULA SEGUNDA - DOS OBJETIVOS</h4>
+            <p style="text-align: justify; margin-bottom: 4px;">O(A) voluntário(a) atuará nas ações humanitárias promovidas pelo Projeto Banho Solidário em Unaí-MG, colaborando nas áreas de higiene, acolhimento, saúde, alimentação e suporte logístico conforme sua disponibilidade e escolha.</p>
+
+            <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">4. CLÁUSULA TERCEIRA - DA ÉTICA E CONDUTA</h4>
+            <p style="text-align: justify; margin-bottom: 4px;">O(A) voluntário(a) compromete-se a zelar pelo sigilo das informações dos assistidos, primando pelo respeito, empatia, ética e respeito aos humanos durante a prestação das atividades.</p>
+
+            <h4 style="color: #7c3aed; margin-top: 6px; margin-bottom: 2px; font-size: 0.78rem;">5. CLÁUSULA QUARTA - DA CESSÃO DE DIREITOS DE IMAGEM E VOZ</h4>
+            <p style="text-align: justify; margin-bottom: 4px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
+        </div>
+
+        <p style="text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
+
+        <div style="height: 50px;"></div>
+
+        <div style="display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
+            <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 6px;">
+                Assinatura do(a) Voluntário(a)
+            </div>
+            <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 6px;">
+                Coordenação - Projeto Banho Solidário
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let nomeVoluntarioAtual = "Voluntario";
+        let cpfOriginalSessao = "";
+
+        function formatarDataBR(dataStr) {
+            if (!dataStr) return "---";
+            let partes = dataStr.split('T')[0].split('-');
+            if (partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return dataStr;
+        }
+
+        function inicializarPerfilVoluntario() {
+            const identificador = usuarioAtivo.username || usuarioAtivo.email || usuarioAtivo.cpf || usuarioAtivo.usuario || "";
+            if (!identificador) {
+                document.getElementById('mensagemStatus').style.color = "red";
+                document.getElementById('mensagemStatus').innerText = "Identificação de login não encontrada. Redirecionando...";
+                setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                return;
+            }
+
+            const statusDiv = document.getElementById('mensagemStatus');
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "Carregando seus dados cadastrados...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "consultarVoluntario", termo: identificador })
+            })
+            .then(res => res.json())
+            .then(data => {
+                statusDiv.innerText = "";
+                if (data.status === "encontrado" && data.registro) {
+                    const reg = data.registro;
+                    nomeVoluntarioAtual = reg.nome || "Voluntario";
+                    cpfOriginalSessao = reg.cpf || usuarioAtivo.cpf || "";
+
+                    document.getElementById('volNome').value = reg.nome || "";
+                    document.getElementById('volNomeSocial').value = reg.nomeSocial || "";
+                    
+                    const campoCpf = document.getElementById('volCpf');
+                    campoCpf.value = reg.cpf || "";
+                    campoCpf.removeAttribute('readonly');
+                    campoCpf.removeAttribute('disabled');
+
+                    document.getElementById('volTelefone').value = reg.telefone || "";
+                    document.getElementById('volEmail').value = reg.email || "";
+                    document.getElementById('volNascimento').value = reg.nascimento ? reg.nascimento.split('T')[0] : "";
+                    document.getElementById('volEndereco').value = reg.endereco || "";
+                    document.getElementById('volDisponibilidade').value = reg.disponibilidade || "";
+
+                    if (reg.higieneBanho) document.getElementById('cargoBanho').checked = true;
+                    if (reg.alimentacaoJanta) document.getElementById('cargoJanta').checked = true;
+                    if (reg.curativosSaude) document.getElementById('cargoCurativos').checked = true;
+                    if (reg.corteCabelo) document.getElementById('cargoCabelo').checked = true;
+                    if (reg.recepcaoTriagem) document.getElementById('cargoRecepcao').checked = true;
+                    if (reg.logisticaApoio) document.getElementById('cargoLogistica').checked = true;
+
+                    atualizarCamposImpressao(reg);
+                } else {
+                    statusDiv.style.color = "orange";
+                    statusDiv.innerText = "Nenhum cadastro vinculado encontrado. Preencha e salve suas informações.";
+                }
+            })
+            .catch(() => {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro ao carregar dados do perfil.";
+            });
+        }
+
+        function atualizarCamposImpressao(reg) {
+            nomeVoluntarioAtual = reg.nome || "Voluntario";
+            document.getElementById('printNome').innerText = reg.nome || "---";
+            document.getElementById('printNomeSocial').innerText = reg.nomeSocial || "Nenhum";
+            document.getElementById('printCpf').innerText = reg.cpf || "---";
+            document.getElementById('printNascimento').innerText = formatarDataBR(reg.nascimento);
+            document.getElementById('printTelefone').innerText = reg.telefone || "---";
+            document.getElementById('printEmail').innerText = reg.email || "---";
+            document.getElementById('printEndereco').innerText = reg.endereco || "---";
+            document.getElementById('printDisponibilidade').innerText = reg.disponibilidade || "---";
+
+            let cargosArr = [];
+            if (reg.higieneBanho) cargosArr.push("Higiene e Banho");
+            if (reg.alimentacaoJanta) cargosArr.push("Alimentação / Janta");
+            if (reg.curativosSaude) cargosArr.push("Curativos e Saúde");
+            if (reg.corteCabelo) cargosArr.push("Corte de Cabelo");
+            if (reg.recepcaoTriagem) cargosArr.push("Recepção e Triagem");
+            if (reg.logisticaApoio) cargosArr.push("Logística e Apoio Geral");
+            document.getElementById('printCargos').innerText = cargosArr.length > 0 ? cargosArr.join(", ") : "Nenhum cargo selecionado";
+        }
+
+function atualizarPerfilVoluntario(e) {
+            e.preventDefault();
+            const statusDiv = document.getElementById('mensagemStatus');
+
+            const nome = document.getElementById('volNome').value.trim();
+            const nomeSocial = document.getElementById('volNomeSocial').value.trim();
+            const cpf = document.getElementById('volCpf').value.trim();
+            const telefone = document.getElementById('volTelefone').value.trim();
+            const email = document.getElementById('volEmail').value.trim();
+            const nascimento = document.getElementById('volNascimento').value;
+            const endereco = document.getElementById('volEndereco').value.trim();
+            const disponibilidade = document.getElementById('volDisponibilidade').value.trim();
+
+            const cargoBanho = document.getElementById('cargoBanho').checked;
+            const cargoJanta = document.getElementById('cargoJanta').checked;
+            const cargoCurativos = document.getElementById('cargoCurativos').checked;
+            const cargoCabelo = document.getElementById('cargoCabelo').checked;
+            const cargoRecepcao = document.getElementById('cargoRecepcao').checked;
+            const cargoLogistica = document.getElementById('cargoLogistica').checked;
+
+            if (!cpf || !endereco || !nascimento || (!cargoBanho && !cargoJanta && !cargoCurativos && !cargoCabelo && !cargoRecepcao && !cargoLogistica)) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Atenção: CPF, Endereço, Data de Nascimento e ao menos um Cargo são obrigatórios!";
+                return;
+            }
+
+            // Validação estrita de idade mínima (18 anos)
+            const hoje = new Date();
+            const dataNasc = new Date(nascimento + "T00:00:00");
+            let idade = hoje.getFullYear() - dataNasc.getFullYear();
+            const m = hoje.getMonth() - dataNasc.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) {
+                idade--;
+            }
+
+            if (idade < 18) {
+                statusDiv.style.color = "red";
+                statusDiv.innerHTML = "⚠️ <strong>Cadastro Bloqueado:</strong> Menores de 18 anos não podem atuar como voluntários.";
+                alert("Atenção: O Projeto Banho Solidário exige idade mínima de 18 anos completos para atuação voluntária.");
+                return;
+            }
+
+            const identificadorSessao = usuarioAtivo.username || usuarioAtivo.email || usuarioAtivo.cpf || usuarioAtivo.usuario || "";
+
+            const payload = {
+                action: "atualizarVoluntario",
+                identificadorOriginal: cpfOriginalSessao || identificadorSessao || cpf,
+                nome: nome,
+                nomeSocial: nomeSocial,
+                cpf: cpf,
+                telefone: telefone,
+                email: email,
+                nascimento: nascimento,
+                endereco: endereco,
+                higieneBanho: cargoBanho,
+                alimentacaoJanta: cargoJanta,
+                curativosSaude: cargoCurativos,
+                corteCabelo: cargoCabelo,
+                recepcaoTriagem: cargoRecepcao,
+                logisticaApoio: cargoLogistica,
+                disponibilidade: disponibilidade
+            };
+
+            statusDiv.style.color = "#0284c7";
+            statusDiv.innerText = "Salvando alterações na nuvem...";
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "sucesso") {
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = "Perfil atualizado e gravado com sucesso!";
+                    cpfOriginalSessao = cpf;
+                    atualizarCamposImpressao(payload);
+                    setTimeout(() => { statusDiv.innerText = ""; }, 4000);
+                } else {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = data.message || "Erro ao salvar alterações.";
+                }
+            })
+            .catch(() => {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "Erro de conexão ao salvar na nuvem.";
+            });
+        }
+
+        function gerarPdfTermoLegal() {
+            const hoje = new Date();
+            const opcoes = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('dataAtualExtenso').innerText = hoje.toLocaleDateString('pt-BR', opcoes);
+
+            const elemento = document.getElementById('termoImpressaoContainer');
+            elemento.style.display = 'block';
+
+            const nomeSeguro = nomeVoluntarioAtual.replace(/[^a-zA-ZÀ-ÿ0-9]/g, "_");
+            const nomeArquivo = `PBS-${nomeSeguro}.pdf`;
+
+            const opt = {
+                margin:       [5, 5, 5, 5],
+                filename:     nomeArquivo,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().from(elemento).set(opt).save().then(() => {
+                elemento.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
