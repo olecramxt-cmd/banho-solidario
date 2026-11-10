@@ -156,8 +156,8 @@
             <button class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="side-menu-links">
-            <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;" onclick="localStorage.removeItem('usuario_ativo'); sessionStorage.removeItem('pbs_autorizado');">
-                <i class="fa-solid fa-house"></i> Início (Página Inicial)
+            <a href="index.html" class="menu-link-item" style="border-left-color: #ef4444;" onclick="localStorage.clear(); sessionStorage.clear();">
+                <i class="fa-solid fa-right-from-bracket" style="color: #ef4444;"></i> Início (Página Inicial)
             </a>
             
             <div style="font-weight: 600; color: var(--secondary-color); font-size: 0.9rem; margin-top: 5px;">1. Voluntários</div>
@@ -398,8 +398,16 @@
                 carregarVoluntariosAdmin();
             })
             .catch(() => alert("Erro ao excluir registro."));
-        }
-    </script>
+    function sairDoSistema(e) {
+        e.preventDefault();
+        // Limpa todas as credenciais e dados de sessão armazenados
+        localStorage.removeItem('usuario_ativo');
+        sessionStorage.clear();
+        
+        // Redireciona de forma limpa para a tela de login
+        window.location.href = 'login.html';
+    }
+</script>
 </body>
 </html>
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
