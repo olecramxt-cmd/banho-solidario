@@ -373,9 +373,9 @@ function atualizarPerfilVoluntario(e) {
                 return;
             }
 
-            // Validação de Idade Mínima (18 Anos)
+            // Validação estrita de idade mínima (18 anos)
             const hoje = new Date();
-            const dataNasc = new Date(nascimento);
+            const dataNasc = new Date(nascimento + "T00:00:00");
             let idade = hoje.getFullYear() - dataNasc.getFullYear();
             const m = hoje.getMonth() - dataNasc.getMonth();
             if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) {
@@ -384,12 +384,11 @@ function atualizarPerfilVoluntario(e) {
 
             if (idade < 18) {
                 statusDiv.style.color = "red";
-                statusDiv.innerText = "⚠️ Validação Negada: O serviço voluntário é permitido apenas para maiores de 18 anos.";
-                alert("Atenção: Menores de 18 anos não podem se cadastrar como voluntários no projeto.");
+                statusDiv.innerHTML = "⚠️ <strong>Cadastro Bloqueado:</strong> Menores de 18 anos não podem atuar como voluntários.";
+                alert("Atenção: O Projeto Banho Solidário exige idade mínima de 18 anos completos para atuação voluntária.");
                 return;
             }
 
-            // Captura segura do identificador logado
             const identificadorSessao = usuarioAtivo.username || usuarioAtivo.email || usuarioAtivo.cpf || usuarioAtivo.usuario || "";
 
             const payload = {
