@@ -347,7 +347,7 @@
             document.getElementById('printCargos').innerText = cargosArr.length > 0 ? cargosArr.join(", ") : "Nenhum cargo selecionado";
         }
 
-        function atualizarPerfilVoluntario(e) {
+function atualizarPerfilVoluntario(e) {
             e.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
 
@@ -373,9 +373,28 @@
                 return;
             }
 
+            // Validação de Idade Mínima (18 Anos)
+            const hoje = new Date();
+            const dataNasc = new Date(nascimento);
+            let idade = hoje.getFullYear() - dataNasc.getFullYear();
+            const m = hoje.getMonth() - dataNasc.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) {
+                idade--;
+            }
+
+            if (idade < 18) {
+                statusDiv.style.color = "red";
+                statusDiv.innerText = "⚠️ Validação Negada: O serviço voluntário é permitido apenas para maiores de 18 anos.";
+                alert("Atenção: Menores de 18 anos não podem se cadastrar como voluntários no projeto.");
+                return;
+            }
+
+            // Captura segura do identificador logado
+            const identificadorSessao = usuarioAtivo.username || usuarioAtivo.email || usuarioAtivo.cpf || usuarioAtivo.usuario || "";
+
             const payload = {
                 action: "atualizarVoluntario",
-                identificadorOriginal: cpfOriginalSessao || cpf, // Chave primária robusta para localização na planilha
+                identificadorOriginal: cpfOriginalSessao || identificadorSessao || cpf,
                 nome: nome,
                 nomeSocial: nomeSocial,
                 cpf: cpf,
@@ -405,7 +424,7 @@
                 if (data.status === "sucesso") {
                     statusDiv.style.color = "green";
                     statusDiv.innerText = "Perfil atualizado e gravado com sucesso!";
-                    cpfOriginalSessao = cpf; // Atualiza a chave de sessão caso o CPF tenha sido modificado
+                    cpfOriginalSessao = cpf;
                     atualizarCamposImpressao(payload);
                     setTimeout(() => { statusDiv.innerText = ""; }, 4000);
                 } else {
