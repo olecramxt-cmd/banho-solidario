@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.7.0                              -->
-<!-- Data de atualização: 26/10/2026 - 06:58                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.7.1                              -->
+<!-- Data de atualização: 10/11/2026 - 05:35                                        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -58,6 +58,9 @@
         .form-group label { font-weight: 600; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 6px; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background-color: #fff; color: var(--text-color); }
         .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
+        
+        /* Destaque sutil e editável para o CPF */
+        #volCpf { background-color: #faf5ff; border-color: #d8b4fe; font-weight: 600; }
 
         .cargos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-top: 5px; }
         .cargos-grid label { font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; cursor: pointer; }
@@ -154,8 +157,9 @@
                     <input type="text" id="volNomeSocial" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label>CPF (Identificação Única)</label>
-                    <input type="text" id="volCpf" class="form-control" readonly style="background-color: #f1f5f9;">
+                    <label>CPF (Identificação Única) *</label>
+                    <!-- CPF liberado e editável -->
+                    <input type="text" id="volCpf" class="form-control" placeholder="000.000.000-00" required>
                 </div>
                 <div class="form-group">
                     <label>Telefone / WhatsApp *</label>
@@ -237,13 +241,10 @@
             <p style="text-align: justify; margin-bottom: 4px;">Em conformidade com os artigos 5º, inciso XXVIII, alínea 'a', e 20 da Lei nº 10.406/2002 (Código Civil), o(a) voluntário(a) cede e transfere ao Projeto Banho Solidário, a título gratuito, irrevogável e irretratável, os direitos de uso de sua imagem, voz, nome e depoimentos captados durante a realização das atividades voluntárias, para veiculação em quaisquer meios de comunicação oficiais do projeto, resguardando a moralidade e a dignidade institucional.</p>
         </div>
 
-      <!-- DATA DINÂMICA (Sem margens exageradas) -->
         <p style="text-align: center; font-size: 0.78rem;">Unaí - MG, <span id="dataAtualExtenso">-- de -------- de ----</span>.</p>
 
-        <!-- ESPAÇADOR FÍSICO COM ALTURA CONTROLADA (50px) -->
         <div style="height: 50px;"></div>
 
-        <!-- ÚNICO BLOCO DE ASSINATURAS -->
         <div style="display: flex; justify-content: space-between; text-align: center; font-size: 0.75rem;">
             <div style="width: 45%; border-top: 1px solid #4b5563; padding-top: 6px;">
                 Assinatura do(a) Voluntário(a)
@@ -292,7 +293,13 @@
                     nomeVoluntarioAtual = reg.nome || "Voluntario";
                     document.getElementById('volNome').value = reg.nome || "";
                     document.getElementById('volNomeSocial').value = reg.nomeSocial || "";
-                    document.getElementById('volCpf').value = reg.cpf || "";
+                    
+                    // Preenche e assegura que o CPF esteja totalmente aberto para edição
+                    const campoCpf = document.getElementById('volCpf');
+                    campoCpf.value = reg.cpf || "";
+                    campoCpf.removeAttribute('readonly');
+                    campoCpf.removeAttribute('disabled');
+
                     document.getElementById('volTelefone').value = reg.telefone || "";
                     document.getElementById('volEmail').value = reg.email || "";
                     document.getElementById('volNascimento').value = reg.nascimento ? reg.nascimento.split('T')[0] : "";
@@ -345,6 +352,7 @@
 
             const endereco = document.getElementById('volEndereco').value.trim();
             const nascimento = document.getElementById('volNascimento').value;
+            const cpf = document.getElementById('volCpf').value.trim();
             const cargoBanho = document.getElementById('cargoBanho').checked;
             const cargoJanta = document.getElementById('cargoJanta').checked;
             const cargoCurativos = document.getElementById('cargoCurativos').checked;
@@ -352,9 +360,9 @@
             const cargoRecepcao = document.getElementById('cargoRecepcao').checked;
             const cargoLogistica = document.getElementById('cargoLogistica').checked;
 
-            if (!endereco || !nascimento || (!cargoBanho && !cargoJanta && !cargoCurativos && !cargoCabelo && !cargoRecepcao && !cargoLogistica)) {
+            if (!cpf || !endereco || !nascimento || (!cargoBanho && !cargoJanta && !cargoCurativos && !cargoCabelo && !cargoRecepcao && !cargoLogistica)) {
                 statusDiv.style.color = "red";
-                statusDiv.innerText = "Atenção: Os campos Endereço, Data de Nascimento e ao menos um Cargo são de preenchimento obrigatório!";
+                statusDiv.innerText = "Atenção: Os campos CPF, Endereço, Data de Nascimento e ao menos um Cargo são de preenchimento obrigatório!";
                 return;
             }
 
@@ -362,7 +370,7 @@
                 action: "atualizarVoluntario",
                 nome: document.getElementById('volNome').value.trim(),
                 nomeSocial: document.getElementById('volNomeSocial').value.trim(),
-                cpf: document.getElementById('volCpf').value.trim(),
+                cpf: cpf,
                 telefone: document.getElementById('volTelefone').value.trim(),
                 email: document.getElementById('volEmail').value.trim(),
                 nascimento: nascimento,
