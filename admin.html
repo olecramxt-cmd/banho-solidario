@@ -384,7 +384,7 @@
             .catch(() => alert("Erro ao atualizar senha."));
         }
 
-        function excluirVoluntario(username) {
+function excluirVoluntario(username) {
             if (!confirm(`Deseja realmente excluir o usuário [${username}] do sistema?`)) return;
 
             fetch(API_URL, {
@@ -398,16 +398,15 @@
                 carregarVoluntariosAdmin();
             })
             .catch(() => alert("Erro ao excluir registro."));
-    function sairDoSistema(e) {
-        e.preventDefault();
-        // Limpa todas as credenciais e dados de sessão armazenados
-        localStorage.removeItem('usuario_ativo');
-        sessionStorage.clear();
-        
-        // Redireciona de forma limpa para a tela de login
-        window.location.href = 'login.html';
-    }
-</script>
+        }
+
+        function sairDoSistema(e) {
+            if (e) e.preventDefault();
+            localStorage.removeItem('usuario_ativo');
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
 </body>
 </html>
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
