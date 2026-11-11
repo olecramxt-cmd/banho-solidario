@@ -219,14 +219,21 @@
                     <div class="ficha-field" style="grid-column: span 3;"><strong>Operador Responsável</strong> <span id="fOperador">---</span></div>
                 </div>
 
+                <!-- 🟢 CAMINHO EXATO: Inserir a Seção de Observações logo aqui abaixo -->
+                <div class="secao-titulo">5. Observações</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field" style="grid-column: span 3;">
+                        <strong>Observações Registradas</strong> 
+                        <span id="fObservacoes">---</span>
+                    </div>
+                </div>
                 <div class="btn-print-area" style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
-                    <button onclick="window.location.href='galeria.html'" class="btn" style="background-color: #64748b;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
+                <button onclick="window.location.href='galeria.html'" class="btn" style="background-color: #64748b;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
                     <button class="btn btn-success" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Ficha Oficial</button>
                 </div>
             </div>
         </div>
     </div>
-
     <script>
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
