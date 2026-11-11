@@ -105,7 +105,20 @@
         table.tabela-ind { width: 100% !important; border-collapse: collapse !important; font-size: 0.85rem !important; min-width: 700px !important; background: white !important; }
         table.tabela-ind th, table.tabela-ind td { border-bottom: 1px solid #e2e8f0 !important; border-right: 1px solid #f1f5f9 !important; padding: 10px 12px !important; text-align: left !important; vertical-align: middle !important; white-space: nowrap !important; }
         table.tabela-ind th { background-color: #f8fafc !important; color: var(--secondary-color) !important; font-weight: 600 !important; }
-    </style>
+          /* ... (seus códigos CSS anteriores) ... */
+        table.tabela-ind th { background-color: #f8fafc !important; color: var(--secondary-color) !important; font-weight: 600 !important; }
+
+        /* 📱 Garantindo a perfeição nos Dispositivos Móveis */
+        @media (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: 1fr !important; /* Um card por linha no celular */
+                padding: 10px !important;
+            }
+            .gallery-card {
+                padding: 15px !important;
+            }
+        }
+ </style>
 </head>
 <body onload="carregarGaleriaDignidade()">
 
@@ -377,11 +390,21 @@
                         return nomeA.localeCompare(nomeB, 'pt-BR');
                     });
 
-                    data.lista.forEach(item => {
+                        data.lista.forEach(item => {
                         const reg = item.registro || {};
                         const isInativo = String(reg.status || "").trim() === "Inativo";                        
-                        const nomeCompleto = reg.nomeCompleto || reg.nomeSocial || "Sem Nome";
+                        
+                        // 🟢 LÓGICA DO NOME E NOME SOCIAL SOLICITADA
+                        const nomePrincipal = reg.nomeCompleto || reg.nome || "Sem Nome";
+                        const nomeSocialBruto = (reg.nomeSocial || "").trim();
                         const matricula = reg.matricula || "---";
+
+                        let htmlNomeSocial = "";
+                        if (nomeSocialBruto && nomeSocialBruto.toLowerCase() !== "não informado" && nomeSocialBruto !== "---") {
+                            htmlNomeSocial = `<div style="font-size: 0.82rem; color: #7c3aed; font-weight: 600; margin: 2px 0; word-break: break-word;">(${nomeSocialBruto})</div>`;
+                        } else {
+                            htmlNomeSocial = `<div style="font-size: 0.75rem; color: #94a3b8; font-style: italic; margin: 2px 0;">(Nome social: Não informado)</div>`;
+                        }
 
                         let avatarHtml = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
 
@@ -395,10 +418,12 @@
 
                         const regJson = JSON.stringify(reg).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
 
+                        // 🟢 CARD ATUALIZADO COM O NOME SOCIAL LOGO ABAIXO E SUPORTE MÓVEL
                         card.innerHTML = `
                             <div class="gallery-avatar" onclick='abrirProntuarioFromJson(${regJson})'>${avatarHtml}</div>
-                            <div class="gallery-name" title="${nomeCompleto}" onclick='abrirProntuarioFromJson(${regJson})'>${nomeCompleto}</div>
-                            <div class="gallery-matricula">${matricula}</div>
+                            <div class="gallery-name" title="${nomePrincipal}" onclick='abrirProntuarioFromJson(${regJson})'>${nomePrincipal}</div>
+                            ${htmlNomeSocial}
+                            <div class="gallery-matricula" style="margin-top: 4px;">${matricula}</div>
                             
                             ${isInativo ? '<div style="background: #fee2e2; color: #dc2626; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; border: 1px solid #fecaca;"><i class="fa-solid fa-ban"></i> CADASTRO INATIVO</div>' : ''}
 
