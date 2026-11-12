@@ -265,6 +265,7 @@
                 <div class="read-field"><label>Naturalidade</label><span id="mNaturalidade">---</span></div>
                 <div class="read-field"><label>RG</label><span id="mRg">---</span></div>
                 <div class="read-field"><label>CPF</label><span id="mCpf">---</span></div>
+                <div class="read-field"><label>Nº do Cartão SUS</label><span id="mCartaoSus">---</span></div>
                 <div class="read-field"><label>Cor / Raça</label><span id="mCorRaca">---</span></div>
 
                 <div class="section-title">2. Filiação e Contatos</div>
@@ -289,6 +290,7 @@
                 <div class="read-field"><label>Possui Documentos</label><span id="mPossuiDocumentos">---</span></div>
                 <div class="read-field"><label>Documentos Faltam</label><span id="mDocumentosFaltam">---</span></div>
                 <div class="read-field"><label>Carteira de Trabalho</label><span id="mCarteiraTrabalho">---</span></div>
+                <div class="read-field" style="grid-column: 1 / -1;"><label>Observações</label><span id="mObservacoes">---</span></div>
                 <div class="read-field"><label>Operador Responsável</label><span id="mOperador">---</span></div>
             </div>
 
@@ -475,8 +477,8 @@
             document.getElementById('mNaturalidade').innerText = reg.naturalidade || "Não informado";
             document.getElementById('mRg').innerText = reg.rg || "Não informado";
             document.getElementById('mCpf').innerText = reg.cpf || "Não informado";
+            document.getElementById('mCartaoSus').innerText = reg.cartaoSus || "Não informado";
             document.getElementById('mCorRaca').innerText = reg.corRaca || "Não informado";
-
             document.getElementById('mFiliacaoMae').innerText = reg.filiacaoMae || "Não informado";
             document.getElementById('mFiliacaoPai').innerText = reg.filiacaoPai || "Não informado";
             document.getElementById('mEndereco').innerText = reg.endereco || "Não informado";
@@ -496,6 +498,7 @@
             document.getElementById('mPossuiDocumentos').innerText = reg.possuiDocumentos || "Não informado";
             document.getElementById('mDocumentosFaltam').innerText = reg.documentosFaltam || "Não informado";
             document.getElementById('mCarteiraTrabalho').innerText = reg.carteiraTrabalho || "Não informado";
+            document.getElementById('mObservacoes').innerText = reg.observacoes || "Nenhuma observação registrada.";
             document.getElementById('mOperador').innerText = reg.operador || reg.usuario || "Não informado";
 
             document.getElementById('modalProntuario').style.display = 'flex';
