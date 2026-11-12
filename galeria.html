@@ -366,25 +366,49 @@
                 if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
                     grid.innerHTML = "";
                     
-                    const totalRegistros = data.lista.length;
-                    let qtdHomens = 0;
-                    let qtdMulheres = 0;
+// 🟢 FILTRAGEM E SEPARAÇÃO RIGOROSA: ATIVOS VS INATIVOS
+                    let totalAtivos = 0;
+                    let qtdHomensAtivos = 0;
+                    let qtdMulheresAtivos = 0;
+
+                    let totalInativos = 0;
+                    let qtdHomensInativos = 0;
+                    let qtdMulheresInativos = 0;
 
                     data.lista.forEach(item => {
                         const reg = item.registro || {};
+                        const isInativo = String(reg.status || "").trim() === "Inativo";
                         const sexo = (reg.sexo || "").trim().toLowerCase();
-                        if (sexo.includes("masculino") || sexo === "m") {
-                            qtdHomens++;
-                        } else if (sexo.includes("feminino") || sexo === "f") {
-                            qtdMulheres++;
+
+                        const isHomem = sexo.includes("masculino") || sexo === "m";
+                        const isMulher = sexo.includes("feminino") || sexo === "f";
+
+                        if (isInativo) {
+                            totalInativos++;
+                            if (isHomem) qtdHomensInativos++;
+                            if (isMulher) qtdMulheresInativos++;
+                        } else {
+                            totalAtivos++;
+                            if (isHomem) qtdHomensAtivos++;
+                            if (isMulher) qtdMulheresAtivos++;
                         }
                     });
 
-                    const percHomens = totalRegistros > 0 ? ((qtdHomens / totalRegistros) * 100).toFixed(1) : 0;
-                    const percMulheres = totalRegistros > 0 ? ((qtdMulheres / totalRegistros) * 100).toFixed(1) : 0;
+                    // Percentuais dos Ativos
+                    const percHomensAtivos = totalAtivos > 0 ? ((qtdHomensAtivos / totalAtivos) * 100).toFixed(1) : 0;
+                    const percMulheresAtivos = totalAtivos > 0 ? ((qtdMulheresAtivos / totalAtivos) * 100).toFixed(1) : 0;
 
-                    statsBanner.innerHTML = `Total: ${totalRegistros} registros | ${qtdHomens} (${percHomens}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheres} (${percMulheres}%) Mulheres`;
+                    // Percentuais dos Inativos
+                    const percHomensInativos = totalInativos > 0 ? ((qtdHomensInativos / totalInativos) * 100).toFixed(1) : 0;
+                    const percMulheresInativos = totalInativos > 0 ? ((qtdMulheresInativos / totalInativos) * 100).toFixed(1) : 0;
 
+                    // 🟢 MONTAGEM DO BANNER COM O "TOTAL ATIVOS" E A LINHA VERMELHA DE INATIVOS ABAIXO
+                    statsBanner.innerHTML = `
+                        <div>Total Ativos: ${totalAtivos} registros | ${qtdHomensAtivos} (${percHomensAtivos}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheresAtivos} (${percMulheresAtivos}%) Mulheres</div>
+                        <div style="font-size: 0.85rem; color: #dc2626; font-weight: 700; margin-top: 5px; border-top: 1px solid #bae6fd; padding-top: 4px;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Inativos / Óbitos: ${totalInativos} registros | ${qtdHomensInativos} (${percHomensInativos}% dos inativos) Homens &nbsp;&bull;&nbsp; ${qtdMulheresInativos} (${percMulheresInativos}% dos inativos) Mulheres
+                        </div>
+                    `;
                     // ORDENAÇÃO ALFABÉTICA PERFEITA POR NOME COMPLETO
                     data.lista.sort((a, b) => {
                         const nomeA = (a.registro && (a.registro.nomeCompleto || a.registro.nomeSocial) ? (a.registro.nomeCompleto || a.registro.nomeSocial) : "").toLowerCase();
