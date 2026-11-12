@@ -199,6 +199,12 @@
                     <span id="avisoCpf" class="aviso-cpf-invalido">⚠️ CPF inválido (Permitido salvar mesmo incorreto)</span>
                 </div>
 
+                <div class="form-group">
+                    <label>Nº do Cartão SUS</label>
+                    <input type="text" id="cartaoSus" maxlength="18" placeholder="000 0000 0000 0000" oninput="mascaraCartaoSus(this); validarSusDigitado(this.value)">
+                    <span id="avisoSus" class="aviso-cpf-invalido" style="color: var(--danger-color);">⚠️ Cartão SUS inválido (15 dígitos)</span>
+                </div>
+               
                 <div class="form-group"><label>Cor / Raça</label><select id="corRaca"><option value="">Selecione...</option><option value="Branca">Branca</option><option value="Preta">Preta</option><option value="Parda">Parda</option><option value="Amarela">Amarela</option><option value="Indígena">Indígena</option></select></div>
                 <div class="form-group"><label>Telefone para Contato</label><input type="text" id="telefoneContato" placeholder="(38) 9.9999-9999" oninput="mascaraTelefone(this)"></div>
 
@@ -392,7 +398,42 @@
             }
             input.value = valor;
         }
+function mascaraCartaoSus(input) {
+            let valor = input.value.replace(/\D/g, "");
+            if (valor.length > 15) valor = valor.substring(0, 15);
+            // Máscara visual: 000 0000 0000 0000
+            if (valor.length > 11) {
+                valor = valor.replace(/^(\d{3})(\d{4})(\d{4})(\d{4}).*$/, "$1 $2 $3 $4");
+            } else if (valor.length > 7) {
+                valor = valor.replace(/^(\d{3})(\d{4})(\d{0,4}).*$/, "$1 $2 $3");
+            } else if (valor.length > 3) {
+                valor = valor.replace(/^(\d{3})(\d{0,4}).*$/, "$1 $2");
+            }
+            input.value = valor;
+        }
 
+        function validarSusDigitado(cnsStr) {
+            const aviso = document.getElementById('avisoSus');
+            const cartao = cnsStr.replace(/\D/g, '');
+            if (!cartao) {
+                aviso.style.display = 'none';
+                return;
+            }
+            if (cartao.length !== 15) {
+                aviso.style.display = 'block';
+                return;
+            }
+            // Validação matemática oficial do DATASUS (Módulo 11)
+            let soma = 0;
+            for (let i = 0; i < 15; i++) {
+                soma += parseInt(cartao.charAt(i)) * (15 - i);
+            }
+            if (soma % 11 !== 0) {
+                aviso.style.display = 'block';
+                return;
+            }
+            aviso.style.display = 'none';
+        }
 function salvarNovoCadastro(event) {
             event.preventDefault();
             const statusDiv = document.getElementById('mensagemStatus');
@@ -418,6 +459,7 @@ function salvarNovoCadastro(event) {
                 ufNaturalidade: document.getElementById('ufNaturalidade').value,
                 rg: document.getElementById('rg').value,
                 cpf: document.getElementById('cpf').value,
+                cartaoSus: document.getElementById('cartaoSus').value,                
                 corRaca: document.getElementById('corRaca').value,
                 telefoneContato: document.getElementById('telefoneContato').value,
                 filiacaoMae: document.getElementById('filiacaoMae').value,
