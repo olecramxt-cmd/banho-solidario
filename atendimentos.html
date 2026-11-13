@@ -661,18 +661,31 @@
                     statusDiv.style.color = "green";
                     statusDiv.innerText = "Atendimento gravado com sucesso!";
                     
-                    const matAtual = document.getElementById('matriculaAssistido').value.trim();
+                    // 🟢 LIMPEZA TOTAL PÓS-GRAVAÇÃO (Mantendo apenas a data)
                     document.getElementById('formAtendimento').reset();
                     document.getElementById('dataAtendimento').value = new Date().toISOString().split('T')[0];
                     
-                    if (matAtual && assistidoSelecionadoGlobal) {
-                        selecionarAssistido(assistidoSelecionadoGlobal);
-                    } else {
-                        document.getElementById('painelAssistidoSelecionado').innerHTML = "";
-                        document.getElementById('avatarSexoPreview').src = "imagens/AvatarPessoaNeutra.png";
-                    }
+                    // Reseta variáveis globais e painéis visuais de seleção
+                    assistidoSelecionadoGlobal = null;
+                    document.getElementById('painelAssistidoSelecionado').innerHTML = "";
+                    document.getElementById('nomeSocialAssistido').value = "---";
+                    document.getElementById('sexoAssistido').value = "";
+                    document.getElementById('matriculaAssistido').value = "";
+                    
+                    const imgPre = document.getElementById('avatarSexoPreview');
+                    if (imgPre) imgPre.src = "imagens/AvatarPessoaNeutra.png";
+
+                    // Reseta os contadores do histórico e a tabela inferior
+                    document.getElementById('histBanhos').innerText = "0";
+                    document.getElementById('histJantas').innerText = "0";
+                    document.getElementById('histCurativos').innerText = "0";
+                    document.getElementById('tituloHistoricoAssistido').innerText = "Histórico Acumulado do Assistido: Selecione um assistido";
+                    
+                    document.getElementById('tabelaAtendimentos').innerHTML = `<tr><td colspan="8" style="text-align: center; color: #64748b;">Selecione um assistido para visualizar a movimentação recente...</td></tr>`;
+                    atualizarRodapeEstatistico(0, 0, 0, 0);
 
                     setTimeout(() => { statusDiv.innerText = ""; }, 4000);
+                }
                 } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao gravar atendimento.";
