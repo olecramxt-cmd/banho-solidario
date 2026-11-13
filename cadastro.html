@@ -515,46 +515,56 @@ function salvarNovoCadastro(event) {
             statusDiv.innerText = "A gravar novo cadastro na nuvem...";
 
 fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "sucesso") {
-            statusDiv.style.color = "green";
-            statusDiv.innerText = "Cadastro efetuado com sucesso!";
-            document.getElementById('formCadastro').reset();
-            // ... (restante do código de sucesso)
-        } else {
-            // 🟢 É EXATAMENTE AQUI QUE VOCÊ COLA O CÓDIGO EM ANEXO:
-            statusDiv.className = "alerta-piscando"; // Ativa o piscar
-            statusDiv.style.color = "#dc2626";
-            statusDiv.style.fontWeight = "bold";
-            statusDiv.innerText = data.message;
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Reativa o botão em ambos os casos
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-user-plus"></i> Salvar Novo Cadastro';
+                }
 
-            // Função universal para parar de piscar ao primeiro toque na tela (Mobile, Notebook ou PC)
-            const pararAlerta = () => {
-                statusDiv.classList.remove("alerta-piscando");
-                window.removeEventListener('keydown', pararAlerta);
-                window.removeEventListener('click', pararAlerta);
-                window.removeEventListener('touchstart', pararAlerta);
-            };
+                if (data.status === "sucesso") {
+                    statusDiv.className = ""; // Remove classe de alerta se houver
+                    statusDiv.style.color = "green";
+                    statusDiv.innerText = "Cadastro efetuado com sucesso!";
+                    document.getElementById('formCadastro').reset();
+                    
+                    // Restaura a data de registro padrão de hoje
+                    const hojeStr = new Date().toISOString().split('T')[0];
+                    const inputDataReg = document.getElementById('dataRegistro');
+                    if (inputDataReg) inputDataReg.value = hojeStr;
 
-            window.addEventListener('keydown', pararAlerta);
-            window.addEventListener('click', pararAlerta);
-            window.addEventListener('touchstart', pararAlerta);
-        }
-    })
-    .catch(err => {
-        statusDiv.style.color = "red";
-        statusDiv.innerText = "Erro de conexão com o servidor.";
-    });
+                    setTimeout(() => { statusDiv.innerText = ""; }, 4000);
+                } else {
+                    // 🟢 ALERTA PISCANTE COM MATRÍCULA E NOME QUANDO HOUVER DUPLICIDADE
+                    statusDiv.className = "alerta-piscando"; 
+                    statusDiv.style.color = "#dc2626";
+                    statusDiv.style.fontWeight = "bold";
+                    statusDiv.innerText = data.message;
+
+                    // Função universal para parar de piscar ao primeiro toque ou clique (Mobile, Notebook ou PC)
+                    const pararAlerta = () => {
+                        statusDiv.classList.remove("alerta-piscando");
+                        window.removeEventListener('keydown', pararAlerta);
+                        window.removeEventListener('click', pararAlerta);
+                        window.removeEventListener('touchstart', pararAlerta);
+                    };
+
+                    window.addEventListener('keydown', pararAlerta);
+                    window.addEventListener('click', pararAlerta);
+                    window.addEventListener('touchstart', pararAlerta);
+                }
+            })
             .catch(err => {
                 if (btnSubmit) {
                     btnSubmit.disabled = false;
                     btnSubmit.innerHTML = '<i class="fa-solid fa-user-plus"></i> Salvar Novo Cadastro';
                 }
+                statusDiv.className = "";
                 statusDiv.style.color = "red";
                 statusDiv.innerText = "Erro de conexão com a API: " + err.message;
             });
