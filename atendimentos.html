@@ -685,8 +685,7 @@
                     atualizarRodapeEstatistico(0, 0, 0, 0);
 
                     setTimeout(() => { statusDiv.innerText = ""; }, 4000);
-                }
-                } else {
+                } else { // 🟢 CORRIGIDO: Removida a chave excedente, unindo corretamente com o else
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao gravar atendimento.";
                 }
