@@ -385,7 +385,7 @@ function exibirSlide(index) {
                 reiniciarAutomacao();
 
             } else if (midia.tipo === "video") {
-                // Pausa a automação do carretel para dar tempo de assistir ao vídeo
+                // Pausa a automação geral do carretel para o vídeo rodar inteiro
                 videoEstaTocando = true;
                 clearInterval(intervaloCarretel);
 
@@ -393,23 +393,29 @@ function exibirSlide(index) {
                 video.src = midia.url;
                 video.controls = true;
                 video.autoplay = true;
-                video.muted = false; 
-                video.preload = "auto"; // Força o carregamento do arquivo do Drive
+                video.muted = true;  // <--- O segredo: mudo para o navegador permitir autoplay instantâneo
+                video.playsInline = true;
+                video.preload = "auto";
                 video.style.width = "100%";
                 video.style.height = "100%";
                 video.style.objectFit = "contain";
                 video.style.cursor = "pointer";
                 video.onclick = () => abrirModal(index);
 
-                // Segurança caso o vídeo demore a carregar ou dê erro
+                // Força o play via código assim que inserir na tela
+                setTimeout(() => {
+                    video.play().catch(e => console.log("Autoplay evitado pelo navegador:", e));
+                }, 100);
+
+                // Segurança caso dê erro no arquivo
                 video.onerror = () => {
-                    console.warn("Erro ao carregar o vídeo, passando para o próximo...");
+                    console.warn("Erro ao carregar vídeo, avançando...");
                     indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
                     exibirSlide(indiceAtual);
                     iniciarAutomacao();
                 };
 
-                // Quando o vídeo terminar, avança para o próximo slide
+                // Quando o vídeo terminar de tocar (os 36 segundos), avança automaticamente
                 video.onended = () => {
                     indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
                     exibirSlide(indiceAtual);
