@@ -330,6 +330,7 @@
         let listaMidiasGlobal = [];
         let indiceAtual = 0;
         let intervaloCarretel = null;
+        let videoEstaTocando = false; // Controle para pausar o carretel durante vídeos
 
         document.addEventListener("DOMContentLoaded", function() {
             const viewport = document.getElementById('carretelViewport');
@@ -371,6 +372,9 @@
             const midia = listaMidiasGlobal[index];
             viewport.innerHTML = "";
 
+            // Se mudou de slide, limpa qualquer pausa de vídeo anterior
+            videoEstaTocando = false; 
+
             if (midia.tipo === "imagem") {
                 const img = document.createElement('img');
                 img.src = midia.url;
@@ -378,15 +382,31 @@
                 img.title = "Clique para ampliar";
                 img.onclick = () => abrirModal(index);
                 viewport.appendChild(img);
+                
+                // Se for imagem, garante que o timer de 4 segundos roda normal
+                reiniciarAutomacao();
+
             } else if (midia.tipo === "video") {
                 const video = document.createElement('video');
                 video.src = midia.url;
                 video.controls = true;
                 video.autoplay = true;
-                video.muted = true;
-                video.loop = true;
+                video.muted = false; // Permitir som ao tocar no carretel
+                video.loop = false;  // Não fica em loop infinito para poder avançar após terminar
                 video.style.cursor = "pointer";
                 video.onclick = () => abrirModal(index);
+
+                // PAUSA A AUTOMAÇÃO ENQUANTO O VÍDEO ESTIVER TOCANDO
+                videoEstaTocando = true;
+                clearInterval(intervaloCarretel);
+
+                // Quando o vídeo terminar, avança automaticamente para o próximo slide
+                video.onended = () => {
+                    indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
+                    exibirSlide(indiceAtual);
+                    iniciarAutomacao();
+                };
+
                 viewport.appendChild(video);
             }
 
@@ -401,7 +421,7 @@
             listaMidiasGlobal.forEach((_, index) => {
                 const dot = document.createElement('button');
                 dot.className = `dot ${index === 0 ? 'active' : ''}`;
-                dot.title = `Ir para a foto ${index + 1}`;
+                dot.title = `Ir para a mídia ${index + 1}`;
                 dot.onclick = () => {
                     indiceAtual = index;
                     exibirSlide(indiceAtual);
@@ -423,10 +443,14 @@
         }
 
         function iniciarAutomacao() {
-            intervaloCarretel = setInterval(() => {
-                indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
-                exibirSlide(indiceAtual);
-            }, 4000); // Passa automaticamente a cada 4 segundos
+            clearInterval(intervaloCarretel);
+            // Só liga o temporizador automático se NÃO houver um vídeo tocando no momento
+            if (!videoEstaTocando) {
+                intervaloCarretel = setInterval(() => {
+                    indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
+                    exibirSlide(indiceAtual);
+                }, 4000); // 4 segundos para as fotos
+            }
         }
 
         function reiniciarAutomacao() {
@@ -440,6 +464,9 @@
             if (!modalConteudo) return;
             modalConteudo.innerHTML = "";
 
+            // Pausa a automação geral do carretel ao abrir o modal de ampliação
+            clearInterval(intervaloCarretel);
+
             if (midia.tipo === "imagem") {
                 modalConteudo.innerHTML = `<img src="${midia.url}" class="img-fluid rounded shadow" style="max-height: 85vh; object-fit: contain;">`;
             } else if (midia.tipo === "video") {
@@ -448,6 +475,11 @@
 
             const modal = new bootstrap.Modal(document.getElementById('modalAmpliar'));
             modal.show();
+
+            // Retoma a automação quando fechar o modal
+            document.getElementById('modalAmpliar').addEventListener('hidden.bs.modal', function () {
+                iniciarAutomacao();
+            }, { once: true });
         }
     </script>
 </body>
