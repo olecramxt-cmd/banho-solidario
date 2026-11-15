@@ -1,21 +1,3 @@
-<!-- ============================================================================== -->
-<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
-<!-- ============================================================================== -->
-<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: index.html. Versão do Módulo: v.3.3.000                              -->
-<!-- Data de atualização: 15/11/2026 - 09:40                                        -->
-<!-- Descrição: Página inicial com carretel automático, bolinhas e lightbox.        -->
-<!-- ============================================================================== -->
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projeto Banho Solidário - Unaí-MG</title>
-    <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <!-- Bootstrap JS para funcionamento do Modal -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -152,4 +134,143 @@
             const modal = new bootstrap.Modal(document.getElementById('modalAmpliar'));
             modal.show();
         }
+    </script><!-- Bootstrap JS para funcionamento do Modal -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 1º PRIMEIRO: Carrega o arquivo de configuração -->
+    <script src="config.js"></script>
+    
+    <!-- 2º SEGUNDO: O script do carretel que usa a configuração -->
+    <script>
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        let listaMidiasGlobal = [];
+        let indiceAtual = 0;
+        let intervaloCarretel = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const viewport = document.getElementById('carretelViewport');
+            if (!viewport) return;
+
+            // Validação estrita da URL do Config
+            const urlApi = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
+            if (!urlApi) {
+                viewport.innerHTML = `<div style="color: red; text-align: center; padding: 20px;">Erro: Arquivo config.js não carregou a API_URL.</div>`;
+                return;
+            }
+
+            // Requisição POST para o Apps Script
+            fetch(urlApi, {
+                method: "POST",
+                redirect: "follow",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "listarMidiasCarretel" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "sucesso" && data.midias && data.midias.length > 0) {
+                    listaMidiasGlobal = data.midias;
+                    criarBolinhas();
+                    exibirSlide(indiceAtual);
+                    iniciarAutomacao();
+                } else {
+                    viewport.innerHTML = `<div style="color: #64748b; text-align: center; padding: 20px;">Nenhuma mídia encontrada na pasta do Drive.</div>`;
+                }
+            })
+            .catch(err => {
+                console.error("Erro no Carretel:", err);
+                viewport.innerHTML = `<div style="color: red; text-align: center; padding: 20px;">Erro ao conectar com o servidor de mídias.</div>`;
+            });
+        });
+
+        function exibirSlide(index) {
+            const viewport = document.getElementById('carretelViewport');
+            if (!viewport || listaMidiasGlobal.length === 0) return;
+
+            const midia = listaMidiasGlobal[index];
+            viewport.innerHTML = "";
+
+            if (midia.tipo === "imagem") {
+                const img = document.createElement('img');
+                img.src = midia.url;
+                img.alt = midia.nome || "Foto do Projeto";
+                img.title = "Clique para ampliar";
+                img.onclick = () => abrirModal(index);
+                viewport.appendChild(img);
+            } else if (midia.tipo === "video") {
+                const video = document.createElement('video');
+                video.src = midia.url;
+                video.controls = true;
+                video.autoplay = true;
+                video.muted = true;
+                video.loop = true;
+                video.style.cursor = "pointer";
+                video.onclick = () => abrirModal(index);
+                viewport.appendChild(video);
+            }
+
+            atualizarBolinhas(index);
+        }
+
+        function criarBolinhas() {
+            const dotsContainer = document.getElementById('carretelDots');
+            if (!dotsContainer) return;
+            dotsContainer.innerHTML = "";
+
+            listaMidiasGlobal.forEach((_, index) => {
+                const dot = document.createElement('button');
+                dot.className = `dot ${index === 0 ? 'active' : ''}`;
+                dot.title = `Ir para a foto ${index + 1}`;
+                dot.onclick = () => {
+                    indiceAtual = index;
+                    exibirSlide(indiceAtual);
+                    reiniciarAutomacao();
+                };
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function atualizarBolinhas(index) {
+            const dots = document.querySelectorAll('.carretel-dots .dot');
+            dots.forEach((dot, idx) => {
+                if (idx === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function iniciarAutomacao() {
+            intervaloCarretel = setInterval(() => {
+                indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
+                exibirSlide(indiceAtual);
+            }, 4000); // Passa a cada 4 segundos automaticamente
+        }
+
+        function reiniciarAutomacao() {
+            clearInterval(intervaloCarretel);
+            iniciarAutomacao();
+        }
+
+        function abrirModal(index) {
+            const midia = listaMidiasGlobal[index];
+            const modalConteudo = document.getElementById('modalConteudo');
+            modalConteudo.innerHTML = "";
+
+            if (midia.tipo === "imagem") {
+                modalConteudo.innerHTML = `<img src="${midia.url}" class="img-fluid rounded shadow" style="max-height: 85vh; object-fit: contain;">`;
+            } else if (midia.tipo === "video") {
+                modalConteudo.innerHTML = `<video src="${midia.url}" class="img-fluid rounded shadow" controls autoplay style="max-height: 85vh;"></video>`;
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('modalAmpliar'));
+            modal.show();
+        }
     </script>
+    </body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
