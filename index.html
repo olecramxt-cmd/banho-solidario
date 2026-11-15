@@ -347,6 +347,39 @@
                 faixa.innerHTML = `<div style="text-align: center; width: 100%; padding: 10px; color: red;">Erro ao conectar com o servidor de mídias.</div>`;
             });
         });
+
+        <!-- Seção do Carretel de Mídias -->
+<section id="carretel-midias" class="py-5 bg-light text-center">
+    <div class="container">
+        <h2 class="mb-4">Como Tudo Começou</h2>
+        
+        <!-- Janela de Exibição da Mídia -->
+        <div class="carretel-container position-relative overflow-hidden rounded shadow-lg mx-auto" style="max-width: 800px; height: 450px; background: #000;">
+            <div id="carretel-slides" class="w-100 h-100 d-flex align-items-center justify-content-center cursor-pointer" title="Clique para ampliar">
+                <!-- As mídias entram aqui via JavaScript -->
+            </div>
+        </div>
+
+        <!-- Indicadores em Bolinhas (Dots) -->
+        <div id="carretel-dots" class="d-flex justify-content-center gap-2 mt-3">
+            <!-- As bolinhas serão geradas automaticamente pelo script -->
+        </div>
+    </div>
+</section>
+
+<!-- Modal de Ampliação (Lightbox) -->
+<div id="modal-ampliar" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body text-center position-relative p-0">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 z-3" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                <div id="modal-conteudo-midia">
+                    <!-- Conteúdo ampliado injetado dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
     </script>
 </body>
 </html>
