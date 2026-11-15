@@ -288,7 +288,7 @@
         <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
 
-    <!-- 🟢 SCRIPT DE CONFIGURAÇÃO E CARREGAMENTO DO CARRETEL DE MÍDIAS -->
+<!-- 🟢 SCRIPT DE CONFIGURAÇÃO E CARREGAMENTO DO CARRETEL DE MÍDIAS -->
     <script src="config.js"></script>
     <script>
         function toggleMenu() {
@@ -308,6 +308,7 @@
 
             fetch(urlApi, {
                 method: "POST",
+                redirect: "follow",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "listarMidiasCarretel" })
             })
@@ -317,13 +318,12 @@
                     faixa.innerHTML = "";
                     data.midias.forEach(midia => {
                         const itemDiv = document.createElement('div');
-                        // Define formato horizontal por padrão para as mídias do Drive
                         itemDiv.className = "carretel-item horizontal";
 
                         if (midia.tipo === "imagem") {
                             const img = document.createElement('img');
                             img.src = midia.url;
-                            img.alt = midia.nome;
+                            img.alt = midia.nome || "Foto do Projeto";
                             img.loading = "lazy";
                             itemDiv.appendChild(img);
                         } else if (midia.tipo === "video") {
@@ -343,6 +343,7 @@
                 }
             })
             .catch(err => {
+                console.error("Erro no Carretel:", err);
                 faixa.innerHTML = `<div style="text-align: center; width: 100%; padding: 10px; color: red;">Erro ao conectar com o servidor de mídias.</div>`;
             });
         });
