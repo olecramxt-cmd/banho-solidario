@@ -385,7 +385,7 @@ function exibirSlide(index) {
                 reiniciarAutomacao();
 
             } else if (midia.tipo === "video") {
-                // Pausa a automação do carretel para o vídeo tocar
+                // Pausa a automação para focar no vídeo
                 videoEstaTocando = true;
                 clearInterval(intervaloCarretel);
 
@@ -393,7 +393,7 @@ function exibirSlide(index) {
                 video.src = midia.url;
                 video.controls = true;
                 video.autoplay = true;
-                video.muted = true; // Obrigatório para rodar automático nos navegadores
+                video.muted = true;
                 video.playsInline = true;
                 video.preload = "auto";
                 video.style.width = "100%";
@@ -402,18 +402,31 @@ function exibirSlide(index) {
                 video.style.cursor = "pointer";
                 video.onclick = () => abrirModal(index);
 
-                // Garante que o vídeo seja inserido e executado sem pressa
                 viewport.appendChild(video);
 
-                // Tenta reproduzir após o elemento estar fixado no DOM
-                setTimeout(() => {
-                    video.play().catch(err => {
-                        console.log("Autoplay bloqueado pelo navegador, aguardando interação:", err);
-                    });
-                }, 300);
+                // Mecanismo de segurança: Se o vídeo do Drive travar e não iniciar em 8 segundos, avança sozinho para não prender o site
+                const tempoLimiteVideo = setTimeout(() => {
+                    if (video.paused && video.currentTime === 0) {
+                        console.warn("Vídeo demorou a responder do Drive, pulando para o próximo slide...");
+                        indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
+                        exibirSlide(indiceAtual);
+                        iniciarAutomacao();
+                    }
+                }, 8000);
 
-                // Quando o vídeo terminar os 36 segundos, avança para o próximo slide
+                // Tenta reproduzir
+                video.play().catch(err => {
+                    console.log("Aguardando interação do usuário para play:", err);
+                });
+
+                // Quando o vídeo começar a rodar, limpa o limite de segurança
+                video.onplaying = () => {
+                    clearTimeout(tempoLimiteVideo);
+                };
+
+                // Quando o vídeo terminar, avança para o próximo slide
                 video.onended = () => {
+                    clearTimeout(tempoLimiteVideo);
                     indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
                     exibirSlide(indiceAtual);
                     iniciarAutomacao();
