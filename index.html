@@ -385,7 +385,7 @@ function exibirSlide(index) {
                 reiniciarAutomacao();
 
             } else if (midia.tipo === "video") {
-                // Pausa a automação geral do carretel para o vídeo rodar inteiro
+                // Pausa a automação do carretel para o vídeo tocar
                 videoEstaTocando = true;
                 clearInterval(intervaloCarretel);
 
@@ -393,7 +393,7 @@ function exibirSlide(index) {
                 video.src = midia.url;
                 video.controls = true;
                 video.autoplay = true;
-                video.muted = true;  // <--- O segredo: mudo para o navegador permitir autoplay instantâneo
+                video.muted = true; // Obrigatório para rodar automático nos navegadores
                 video.playsInline = true;
                 video.preload = "auto";
                 video.style.width = "100%";
@@ -402,27 +402,22 @@ function exibirSlide(index) {
                 video.style.cursor = "pointer";
                 video.onclick = () => abrirModal(index);
 
-                // Força o play via código assim que inserir na tela
+                // Garante que o vídeo seja inserido e executado sem pressa
+                viewport.appendChild(video);
+
+                // Tenta reproduzir após o elemento estar fixado no DOM
                 setTimeout(() => {
-                    video.play().catch(e => console.log("Autoplay evitado pelo navegador:", e));
-                }, 100);
+                    video.play().catch(err => {
+                        console.log("Autoplay bloqueado pelo navegador, aguardando interação:", err);
+                    });
+                }, 300);
 
-                // Segurança caso dê erro no arquivo
-                video.onerror = () => {
-                    console.warn("Erro ao carregar vídeo, avançando...");
-                    indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
-                    exibirSlide(indiceAtual);
-                    iniciarAutomacao();
-                };
-
-                // Quando o vídeo terminar de tocar (os 36 segundos), avança automaticamente
+                // Quando o vídeo terminar os 36 segundos, avança para o próximo slide
                 video.onended = () => {
                     indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
                     exibirSlide(indiceAtual);
                     iniciarAutomacao();
                 };
-
-                viewport.appendChild(video);
             }
 
             atualizarBolinhas(index);
