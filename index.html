@@ -73,6 +73,60 @@
         footer a:hover { text-decoration: underline; }
         @media(max-width: 900px) { .grid-results-3x3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); } }
         @media(max-width: 768px) { section { padding: 1.5rem; } .banner-img { max-height: 250px; } }
+/* 🟢 ESTILOS DO CARRETEL AUTOMÁTICO DE MÍDIAS */
+        .carretel-container {
+            width: 100%;
+            margin: 10px 0 30px 0;
+            padding: 20px;
+            background: #faf5ff;
+            border-radius: 12px;
+            border: 1px solid #e9d5ff;
+        }
+        .carretel-titulo {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .carretel-faixa {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 5px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .carretel-faixa::-webkit-scrollbar { height: 8px; }
+        .carretel-faixa::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .carretel-item {
+            flex: 0 0 auto;
+            scroll-snap-align: center;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Padrão para fotos/vídeos horizontais e verticais */
+        .carretel-item.horizontal { width: 300px; height: 200px; }
+        .carretel-item.vertical { width: 180px; height: 320px; }
+        
+        .carretel-item img, .carretel-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -117,9 +171,6 @@
                     <i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo
                 </a>
 
-                <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
-                <i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)
-            </a>
                 <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
                 <i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)
             </a>
@@ -173,15 +224,14 @@
         </section>
 
         <!-- 🟢 CARRETEL AUTOMÁTICO DE MÍDIAS DO GOOGLE DRIVE -->
-    <div class="carretel-container">
-        <div class="carretel-titulo">
-            <i class="fa-solid fa-photo-film"></i> Momentos & Ações do Banho Solidário
+        <div class="carretel-container">
+            <div class="carretel-titulo">
+                <i class="fa-solid fa-photo-film"></i> Momentos & Ações do Banho Solidário
+            </div>
+            <div class="carretel-faixa" id="faixaCarretelMidias">
+                <div style="text-align: center; width: 100%; padding: 20px; color: #64748b;">Carregando mídias do Google Drive...</div>
+            </div>
         </div>
-        
-        <div class="carretel-faixa" id="faixaCarretelMidias">
-            <div style="text-align: center; width: 100%; padding: 20px; color: #64748b;">Carregando mídias do Google Drive...</div>
-        </div>
-    </div>
         
         <section>
             <h2><i class="fa-solid fa-chart-line"></i> Resultados Concretos (2024 - 2025)</h2>
@@ -299,8 +349,66 @@ document.addEventListener("DOMContentLoaded", function() {
             faixa.innerHTML = `<div style="text-align: center; width: 100%; padding: 20px; color: red;">Erro ao carregar mídias da nuvem.</div>`;
         });
     }
-        
+ 
+    <script src="config.js"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // 🟢 CARREGAR AUTOMATICAMENTE AS MÍDIAS DA PASTA DO DRIVE
+        document.addEventListener("DOMContentLoaded", function() {
+            const faixa = document.getElementById('faixaCarretelMidias');
+            if (!faixa) return;
+
+            const urlApi = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
+            if (!urlApi) {
+                faixa.innerHTML = `<div style="text-align: center; width: 100%; padding: 10px; color: red;">API_URL não configurada.</div>`;
+                return;
+            }
+
+            fetch(urlApi, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "listarMidiasCarretel" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "sucesso" && data.midias && data.midias.length > 0) {
+                    faixa.innerHTML = "";
+                    data.midias.forEach(midia => {
+                        const itemDiv = document.createElement('div');
+                        // Define formato horizontal por padrão para imagens/vídeos genéricos
+                        itemDiv.className = "carretel-item horizontal";
+
+                        if (midia.tipo === "imagem") {
+                            const img = document.createElement('img');
+                            img.src = midia.url;
+                            img.alt = midia.nome;
+                            img.loading = "lazy";
+                            itemDiv.appendChild(img);
+                        } else if (midia.tipo === "video") {
+                            const video = document.createElement('video');
+                            video.controls = true;
+                            video.preload = "metadata";
+                            const source = document.createElement('source');
+                            source.src = midia.url;
+                            source.type = "video/mp4";
+                            video.appendChild(source);
+                            itemDiv.appendChild(video);
+                        }
+                        faixa.appendChild(itemDiv);
+                    });
+                } else {
+                    faixa.innerHTML = `<div style="text-align: center; width: 100%; padding: 10px; color: #64748b;">Nenhuma mídia encontrada na pasta do Drive.</div>`;
+                }
+            })
+            .catch(err => {
+                faixa.innerHTML = `<div style="text-align: center; width: 100%; padding: 10px; color: red;">Erro ao conectar com o servidor de mídias.</div>`;
+            });
+        });
     </script>
-</body>
+ </body>
 </html>
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
