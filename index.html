@@ -284,72 +284,12 @@
         </section>
     </div>
 
-    <footer>
+<footer>
         <p>&copy; 2026 Projeto Banho Solidário - Unaí-MG.</p>
         <p><small>© <a href="mailto:olecramxt@gmail.com">Prof. Esp. Marcelo Xavier Travassos</a> - SISTEMAS iPeC.</small></p>
     </footer>
 
-    <script>
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-document.addEventListener("DOMContentLoaded", function() {
-        carregarCarretelAutomatico();
-    });
-
-    function carregarCarretelAutomatico() {
-        const faixa = document.getElementById('faixaCarretelMidias');
-        if (!faixa) return;
-
-        // Supondo que CONFIG.API_URL esteja configurado no index.js/config.js
-        const urlApi = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
-        if (!urlApi) return;
-
-        fetch(urlApi, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "listarMidiasCarretel" })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === "sucesso" && data.midias && data.midias.length > 0) {
-                faixa.innerHTML = ""; // Limpa o carregando
-                
-                data.midias.forEach(midia => {
-                    const itemDiv = document.createElement('div');
-                    // Como o Drive não define vertical/horizontal automaticamente pelo link, 
-                    // definimos uma classe padrão ou alternada. Vamos usar horizontal por segurança ou detecção.
-                    itemDiv.className = "carretel-item horizontal"; 
-
-                    if (midia.tipo === "imagem") {
-                        const img = document.createElement('img');
-                        img.src = midia.url;
-                        img.alt = midia.nome;
-                        img.loading = "lazy";
-                        itemDiv.appendChild(img);
-                    } else if (midia.tipo === "video") {
-                        const video = document.createElement('video');
-                        video.controls = true;
-                        video.preload = "metadata";
-                        const source = document.createElement('source');
-                        source.src = midia.url;
-                        source.type = "video/mp4";
-                        video.appendChild(source);
-                        itemDiv.appendChild(video);
-                    }
-
-                    faixa.appendChild(itemDiv);
-                });
-            } else {
-                faixa.innerHTML = `<div style="text-align: center; width: 100%; padding: 20px; color: #64748b;">Nenhuma mídia encontrada na pasta do Drive.</div>`;
-            }
-        })
-        .catch(err => {
-            faixa.innerHTML = `<div style="text-align: center; width: 100%; padding: 20px; color: red;">Erro ao carregar mídias da nuvem.</div>`;
-        });
-    }
- 
+    <!-- 🟢 SCRIPT DE CONFIGURAÇÃO E CARREGAMENTO DO CARRETEL DE MÍDIAS -->
     <script src="config.js"></script>
     <script>
         function toggleMenu() {
@@ -357,7 +297,6 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        // 🟢 CARREGAR AUTOMATICAMENTE AS MÍDIAS DA PASTA DO DRIVE
         document.addEventListener("DOMContentLoaded", function() {
             const faixa = document.getElementById('faixaCarretelMidias');
             if (!faixa) return;
@@ -379,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     faixa.innerHTML = "";
                     data.midias.forEach(midia => {
                         const itemDiv = document.createElement('div');
-                        // Define formato horizontal por padrão para imagens/vídeos genéricos
+                        // Define formato horizontal por padrão para imagens/vídeos do Drive
                         itemDiv.className = "carretel-item horizontal";
 
                         if (midia.tipo === "imagem") {
@@ -409,6 +348,6 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     </script>
- </body>
+</body>
 </html>
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
