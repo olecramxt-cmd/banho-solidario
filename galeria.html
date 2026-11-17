@@ -109,7 +109,18 @@
         .modal-info h3 { margin: 0 0 3px 0 !important; color: #0f172a !important; font-size: 1.2rem !important; word-break: break-all !important; }
         .modal-info p { margin: 2px 0 !important; color: #64748b !important; font-size: 13px !important; }
         
-        .read-only-grid { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important; gap: 12px !important; }
+  .read-only-grid { 
+    display: grid !important; 
+    grid-template-columns: 1fr !important; /* 🟢 No celular, cada campo ocupa 100% da largura em coluna única */
+    gap: 12px !important; 
+}
+
+/* 🟢 Em telas maiores (tablets e computadores), volta a usar várias colunas lado a lado */
+@media (min-width: 768px) {
+    .read-only-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    }
+}
         .read-field { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; padding: 8px 12px !important; border-radius: 8px !important; }
         .read-field label { display: block !important; font-size: 0.7rem !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; margin-bottom: 2px !important; }
         .read-field span { font-size: 0.9rem !important; font-weight: 500 !important; color: #1e293b !important; word-break: break-word !important; }
