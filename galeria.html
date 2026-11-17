@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.5.019                            -->
-<!-- Data de atualização: 17/11/2026 - 03:39                                        -->
-<!-- Descrição: Código original com barra de rolagem horizontal discreta no ícone roxo.-->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.5.021                            -->
+<!-- Data de atualização: 17/11/2026 - 14:55                                        -->
+<!-- Descrição: Correção de sintaxe CSS e ajuste robusto do wrapper do botão roxo.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -16,7 +16,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-<style>
         :root {
             --primary-color: #0284c7;
             --primary-dark: #0369a1;
@@ -69,36 +68,38 @@
         .gallery-matricula { font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 15px; }
 
         /* Botões de Ação Direta nos Cards */
-        .acoes-card { display: flex; gap: 8px; justify-content: center; margin-top: auto; width: 100%; }
+        .acoes-card { display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: auto; width: 100%; }
         .btn-acao { border: none; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: opacity 0.2s; text-decoration: none; flex-shrink: 0; }
         .btn-acao:hover { opacity: 0.85; }
         .btn-azul { background-color: var(--primary-color); }   
         .btn-amarelo { background-color: var(--warning-color); } 
         
-        /* 🟢 ÁREA DO ÍCONE ROXO COM ROLAGEM HORIZONTAL E VERTICAL ELEGANTE */
+        /* 🟢 ÁREA DO ÍCONE ROXO COM ROLAGEM HORIZONTAL E VERTICAL ELEGANTE E VISÍVEL */
         .wrapper-btn-roxo {
             display: inline-flex;
             overflow-x: auto;
             overflow-y: auto;
-            max-width: 100%;
-            max-height: 48px;
-            padding-bottom: 3px;
+            max-width: 44px;
+            max-height: 44px;
+            padding: 2px;
             -webkit-overflow-scrolling: touch;
+            align-items: center;
+            justify-content: center;
         }
         .wrapper-btn-roxo::-webkit-scrollbar {
             width: 4px;
             height: 4px;
         }
         .wrapper-btn-roxo::-webkit-scrollbar-track {
-            background: rgba(124, 58, 237, 0.05);
+            background: rgba(124, 58, 237, 0.08);
             border-radius: 4px;
         }
         .wrapper-btn-roxo::-webkit-scrollbar-thumb {
-            background: rgba(124, 58, 237, 0.4);
+            background: rgba(124, 58, 237, 0.5);
             border-radius: 4px;
         }
         .wrapper-btn-roxo::-webkit-scrollbar-thumb:hover {
-            background: rgba(124, 58, 237, 0.7);
+            background: rgba(124, 58, 237, 0.8);
         }
         .btn-roxo { background-color: var(--secondary-color); } 
 
@@ -120,7 +121,6 @@
         .read-field span { font-size: 0.9rem !important; font-weight: 500 !important; color: #1e293b !important; word-break: break-word !important; }
         .section-title { grid-column: 1 / -1 !important; font-size: 1rem !important; color: var(--primary-dark) !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 4px !important; margin-top: 15px !important; margin-bottom: 5px !important; font-weight: 700 !important; }
 
-        /* 🟢 CONTAINER DE ROLAGEM HORIZONTAL E VERTICAL GARANTIDA PARA OS BOTÕES DE IMPRESSÃO / RODAPÉ */
         .wrapper-botoes-rodape {
             display: flex;
             gap: 10px;
@@ -129,7 +129,7 @@
             max-width: 100%;
             padding: 5px 2px 10px 2px;
             -webkit-overflow-scrolling: touch;
-            min-width: 320px; /* Força a ativação da barra horizontal em telas estreitas */
+            min-width: 320px;
         }
         .wrapper-botoes-rodape::-webkit-scrollbar {
             height: 6px;
@@ -344,11 +344,12 @@
                 <div class="read-field"><label>Operador Responsável</label><span id="mOperador">---</span></div>
             </div>
 
-                <div style="margin-top: 30px; border-top: 2px solid #e2e8f0; padding-top: 15px;">
+            <div style="margin-top: 30px; border-top: 2px solid #e2e8f0; padding-top: 15px;">
                 <div class="wrapper-botoes-rodape">
                     <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 20px; font-weight: 600; white-space: nowrap;"><i class="fa-solid fa-check"></i> Fechar Prontuário</button>
                 </div>
             </div>
+        </div>
     </div>
 
     <script>
@@ -672,8 +673,6 @@
                 fecharModal();
             }
         }
-
-        
     </script>
 </body>
 </html>
