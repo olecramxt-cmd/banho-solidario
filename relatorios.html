@@ -2,10 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorios.html. Versão do Módulo: v.2.5.000                         -->
-<!-- Data de atualização: 17/10/2026 - 04:26                                        -->
-<!-- Descrição: Relatórios e Fichas Oficiais com menu lateral completo (itens 1 a 5)-->
-<!--            e direcionamento correto para o relatório de movimentação.          -->
+<!-- Programa: relatorios.html. Versão do Módulo: v.2.5.001                         -->
+<!-- Data de atualização: 17/11/2026 - 19:08                                        -->
+<!-- Descrição: Relatórios e Fichas com validação estrita de permissão 3.2.          -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -26,7 +25,7 @@
             --text-color: #334155;
             --border-color: #cbd5e1;
         }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        body { visibility: hidden; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
         .menu-toggle:hover { background: white; color: var(--primary-dark); }
@@ -55,15 +54,34 @@
 </head>
 <body>
 
-    <!-- Importação do Config de API Centralizada -->
     <script src="config.js"></script>
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
-        if (!autorizado && !ativoLocal) {
+        const sessionAutorizado = sessionStorage.getItem('pbs_usuario_nome');
+
+        if (!autorizado && !ativoLocal && !sessionAutorizado) {
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
+
+        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 3.2 (Relatórios e Fichas)
+        try {
+            const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
+            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
+            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
+            
+            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("3.2")) {
+                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [3.2 - Relatórios e Fichas].");
+                window.location.href = 'index.html';
+            }
+        } catch(permErr) {
+            console.error("Erro ao validar permissões:", permErr);
+        }
+
+        // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
+        document.body.style.visibility = "visible";
+
         const API_URL = CONFIG.API_URL;
     </script>
 
@@ -104,7 +122,7 @@
             </div>
             
             <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
-                        <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
+            <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
                 <i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)
             </a>
 
