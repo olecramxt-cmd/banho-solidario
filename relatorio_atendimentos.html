@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.002             -->
-<!-- Data de atualização: 28/10/2026 - 07:02                                        -->
-<!-- Descrição: Correção definitiva da formatação de hora exata e estabilidade geral. -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.003             -->
+<!-- Data de atualização: 17/11/2026 - 18:50                                        -->
+<!-- Descrição: Relatórios com validação estrita de permissão 3.2.                  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -29,7 +29,7 @@
             --border-color: #cbd5e1;
         }
         * { box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
+        body { visibility: hidden; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); width: 100%; }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
         .menu-toggle:hover { background: white; color: var(--primary-dark); }
@@ -117,10 +117,30 @@
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
         const ativoLocal = localStorage.getItem('usuario_ativo');
-        if (!autorizado && !ativoLocal) {
+        const sessionAutorizado = sessionStorage.getItem('pbs_usuario_nome');
+
+        if (!autorizado && !ativoLocal && !sessionAutorizado) {
             sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
             window.location.href = 'login.html';
         }
+
+        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 3.2 (Relatórios & Fichas)
+        try {
+            const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
+            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
+            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
+            
+            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("3.2")) {
+                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [3.2 - Relatórios & Fichas].");
+                window.location.href = 'index.html';
+            }
+        } catch(permErr) {
+            console.error("Erro ao validar permissões:", permErr);
+        }
+
+        // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
+        document.body.style.visibility = "visible";
+
         const API_URL = CONFIG.API_URL;
     </script>
 
@@ -395,29 +415,25 @@
             });
         }
 
-// Função de formatação corrigida para interceptar o formato ISO da API e aplicar o fuso
         function formatarDataDdMmAaHhMm(dataStr) {
             if (!dataStr) return "---";
             try {
                 let dataLimpa = String(dataStr).trim();
                 let d = new Date(dataStr);
 
-                // Se for uma data válida (ex: formato ISO retornado pela API do Sheets)
                 if (!isNaN(d.getTime())) {
                     let dd = String(d.getUTCDate()).padStart(2, '0');
                     let mm = String(d.getUTCMonth() + 1).padStart(2, '0');
                     let aa = String(d.getUTCFullYear()).slice(-2);
                     
-                    // Pega a hora UTC enviada pela API e aplica o ajuste de -8 horas
                     let h = d.getUTCHours() - 8;
-                    if (h < 0) h += 24; // Se cruzar para o dia anterior
+                    if (h < 0) h += 24;
                     
                     let min = String(d.getUTCMinutes()).padStart(2, '0');
                     
                     return `${dd}/${mm}/${aa} - ${String(h).padStart(2, '0')}:${min}`;
                 }
 
-                // Fallback caso venha como texto bruto com barras
                 if (dataLimpa.includes('/')) {
                     let partes = dataLimpa.split(' ');
                     let dataPt = partes[0].split('/');
@@ -442,6 +458,7 @@
                 return dataStr;
             }
         }
+
         function processarEAtualizarTudo() {
             const anoSelecionado = document.getElementById('filtroAno').value;
             const mesSelecionado = document.getElementById('filtroMes').value;
