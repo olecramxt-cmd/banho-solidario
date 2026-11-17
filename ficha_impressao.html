@@ -2,27 +2,70 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.3.002                    -->
-<!-- Data de atualização: 17/11/2026 - 15:35                                        -->
-<!-- Descrição: Impressão automática invisível com retorno automático à Galeria.    -->
+<!-- Programa: ficha_impressao.html. Versão do Módulo: v.3.3.003                    -->
+<!-- Data de atualização: 17/11/2026 - 15:37                                        -->
+<!-- Descrição: Ficha completa com carregamento de dados e impressão automática.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMAS iPeC - Impressão Direta / Banho Solidário</title>
+    <title>SISTEMAS iPeC - Consulta Cadastral e Impressão / Banho Solidário</title>
     <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; color: #334155; margin: 0; padding: 0; }
-        /* 🟢 Oculta totalmente qualquer elemento visual na tela para o usuário */
-        #fichaImpressaoArea { display: none !important; }
-        .navbar, .container, .side-menu, .menu-overlay { display: none !important; }
+        :root {
+            --primary-color: #0284c7;
+            --primary-dark: #0369a1;
+            --success-color: #16a34a;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #cbd5e1;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        .navbar, .side-menu, .menu-overlay, .btn-print-area, .btn-voltar-topo { display: none !important; }
+
+        .container { max-width: 900px; margin: 10px auto; background: var(--card-bg); padding: 20px; }
+        
+        #fichaImpressaoArea { display: block; position: relative; background: white; padding: 30px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
+        
+        .watermark-diagonal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 34px;
+            font-weight: 800;
+            color: rgba(124, 58, 237, 0.12);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+            text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        .ficha-conteudo { position: relative; z-index: 1; }
+        .ficha-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid #0f172a; padding-bottom: 15px; margin-bottom: 20px; }
+        .ficha-avatar { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background: #f1f5f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .ficha-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .secao-titulo { font-size: 1rem; color: var(--primary-dark); border-bottom: 2px solid #e0f2fe; padding-bottom: 4px; margin: 15px 0 10px 0; font-weight: 700; }
+        .ficha-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12px; }
+        .ficha-field { background: rgba(248, 250, 252, 0.85); padding: 6px 8px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .ficha-field strong { color: var(--primary-dark); display: block; font-size: 10px; margin-bottom: 2px; text-transform: uppercase; }
+
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
+            #fichaImpressaoArea { border: none; padding: 0; margin: 0; }
+        }
     </style>
 </head>
-<body onload="inicializarImpressaoInvisivel()">
+<body onload="inicializarConsultaFicha()">
 
     <script src="config.js"></script>
     <script>
@@ -33,75 +76,89 @@
         }
     </script>
 
-    <!-- Estrutura oculta apenas para manter a integridade do DOM caso precise popular -->
-    <div id="fichaImpressaoArea">
-        <div id="lblNomeFicha"></div>
-        <div id="lblMatriculaFicha"></div>
-        <div id="lblDataCadFicha"></div>
-        <div id="lblStatusFicha"></div>
-        <div id="avatarFichaContainer"></div>
-        <div id="fNomeComp"></div>
-        <div id="fSocial"></div>
-        <div id="fNasc"></div>
-        <div id="fIdade"></div>
-        <div id="fSexo"></div>
-        <div id="fEscolaridade"></div>
-        <div id="fNaturalidade"></div>
-        <div id="fRg"></div>
-        <div id="fCpf"></div>
-        <div id="fCartaoSus"></div>
-        <div id="fCorRaca"></div>
-        <div id="fMae"></div>
-        <div id="fPai"></div>
-        <div id="fEndereco"></div>
-        <div id="fCidade"></div>
-        <div id="fTelefone"></div>
-        <div id="fResidenciaUnai"></div>
-        <div id="fTipoUsuario"></div>
-        <div id="fTempoRua"></div>
-        <div id="fTempoUnai"></div>
-        <div id="fMotivos"></div>
-        <div id="fOutrosMotivos"></div>
-        <div id="fPassouAtend"></div>
-        <div id="fRecebeAuxilio"></div>
-        <div id="fQualBeneficio"></div>
-        <div id="fPossuiDocs"></div>
-        <div id="fDocsFaltam"></div>
-        <div id="fCarteiraTrabalho"></div>
-        <div id="fObservacoes"></div>
-        <div id="fOperador"></div>
+    <div class="container">
+        <div id="fichaImpressaoArea">
+            <div class="watermark-diagonal">DOCUMENTO PROTEGIDO POR SIGILO</div>
+            
+            <div class="ficha-conteudo">
+                <div class="ficha-header">
+                    <div class="ficha-avatar" id="avatarFichaContainer">
+                        <i class="fa-solid fa-user" style="font-size: 2rem; color: #0284c7;"></i>
+                    </div>
+                    <div>
+                        <h3 id="lblNomeFicha" style="margin: 0 0 5px 0; color: #0f172a; font-size: 1.2rem;">Nome Completo</h3>
+                        <p id="lblMatriculaFicha" style="margin: 2px 0; font-weight: 600; color: var(--primary-color);">Matrícula: ---</p>
+                        <p id="lblDataCadFicha" style="margin: 2px 0; font-size: 12px; color: #64748b;">Data do Cadastro: --/--/----</p>
+                        <p id="lblStatusFicha" style="margin: 4px 0 0 0; font-weight: 600; font-size: 12px;"></p>
+                    </div>
+                </div>
+
+                <div class="secao-titulo">1. Dados Pessoais e Identificação</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field"><strong>Nome Completo</strong> <span id="fNomeComp">---</span></div>
+                    <div class="ficha-field"><strong>Nome Social</strong> <span id="fSocial">---</span></div>
+                    <div class="ficha-field"><strong>Data de Nascimento</strong> <span id="fNasc">---</span></div>
+                    <div class="ficha-field"><strong>Idade</strong> <span id="fIdade">---</span></div>
+                    <div class="ficha-field"><strong>Sexo</strong> <span id="fSexo">---</span></div>
+                    <div class="ficha-field"><strong>Escolaridade</strong> <span id="fEscolaridade">---</span></div>
+                    <div class="ficha-field"><strong>Naturalidade</strong> <span id="fNaturalidade">---</span></div>
+                    <div class="ficha-field"><strong>RG</strong> <span id="fRg">---</span></div>
+                    <div class="ficha-field"><strong>CPF</strong> <span id="fCpf">---</span></div>
+                    <div class="ficha-field"><strong>Nº do Cartão SUS</strong> <span id="fCartaoSus">---</span></div>
+                    <div class="ficha-field" style="grid-column: span 3;"><strong>Cor / Raça</strong> <span id="fCorRaca">---</span></div>
+                </div>
+
+                <div class="secao-titulo">2. Filiação e Contatos</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field"><strong>Filiação (Mãe)</strong> <span id="fMae">---</span></div>
+                    <div class="ficha-field"><strong>Filiação (Pai)</strong> <span id="fPai">---</span></div>
+                    <div class="ficha-field"><strong>Endereço</strong> <span id="fEndereco">---</span></div>
+                    <div class="ficha-field"><strong>Cidade</strong> <span id="fCidade">---</span></div>
+                    <div class="ficha-field"><strong>Telefone / Contato</strong> <span id="fTelefone">---</span></div>
+                    <div class="ficha-field"><strong>Residência em Unaí</strong> <span id="fResidenciaUnai">---</span></div>
+                </div>
+
+                <div class="secao-titulo">3. Perfil Social e Permanência na Rua</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field"><strong>Tipo de Usuário</strong> <span id="fTipoUsuario">---</span></div>
+                    <div class="ficha-field"><strong>Tempo de Rua</strong> <span id="fTempoRua">---</span></div>
+                    <div class="ficha-field"><strong>Tempo de Unaí</strong> <span id="fTempoUnai">---</span></div>
+                    <div class="ficha-field" style="grid-column: span 3;"><strong>Motivos Permanência</strong> <span id="fMotivos">---</span></div>
+                    <div class="ficha-field" style="grid-column: span 3;"><strong>Outros Motivos</strong> <span id="fOutrosMotivos">---</span></div>
+                </div>
+
+                <div class="secao-titulo">4. Atendimentos, Benefícios e Documentação</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field"><strong>Passou Atendimento</strong> <span id="fPassouAtend">---</span></div>
+                    <div class="ficha-field"><strong>Recebe Auxílio</strong> <span id="fRecebeAuxilio">---</span></div>
+                    <div class="ficha-field"><strong>Qual Benefício</strong> <span id="fQualBeneficio">---</span></div>
+                    <div class="ficha-field"><strong>Possui Documentos</strong> <span id="fPossuiDocs">---</span></div>
+                    <div class="ficha-field"><strong>Documentos Faltam</strong> <span id="fDocsFaltam">---</span></div>
+                    <div class="ficha-field"><strong>Carteira de Trabalho</strong> <span id="fCarteiraTrabalho">---</span></div>
+                    <div class="ficha-field" style="grid-column: span 3;"><strong>Operador Responsável</strong> <span id="fOperador">---</span></div>
+                </div>
+
+                <div class="secao-titulo">5. Observações</div>
+                <div class="ficha-grid">
+                    <div class="ficha-field" style="grid-column: span 3;">
+                        <strong>Observações Registradas</strong> 
+                        <span id="fObservacoes">---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        function inicializarImpressaoInvisivel() {
+        function inicializarConsultaFicha() {
             const assistidoSalvo = localStorage.getItem('assistido_imprimir');
             if (assistidoSalvo) {
                 try {
                     const reg = JSON.parse(assistidoSalvo);
                     localStorage.removeItem('assistido_imprimir');
-                    
-                    // Preenche silenciosamente (necessário para o motor de impressão compilar o documento)
-                    popularDados Invisivel(reg);
-
-                    // Configura o retorno automático para a Galeria assim que a impressão fechar ou concluir
-                    window.onafterprint = function() {
-                        window.location.href = 'galeria.html';
-                    };
-
-                    // Fallback de segurança para navegadores móveis que fecham a janela ou perdem o foco
-                    window.onfocus = function() {
-                        setTimeout(function() {
-                            window.location.href = 'galeria.html';
-                        }, 500);
-                    };
-
-                    // Dispara a impressão imediatamente após um breve instante para montagem
-                    setTimeout(function() {
-                        window.print();
-                    }, 400);
-
+                    exibirFichaImpressao(reg);
                 } catch(e) {
-                    console.error("Erro na impressão direta:", e);
+                    console.error("Erro ao processar impressão direta.");
                     window.location.href = 'galeria.html';
                 }
             } else {
@@ -109,17 +166,123 @@
             }
         }
 
-        function popularDadosInvisivel(reg) {
-            // Função de população interna para garantir que o documento existe caso o navegador exija
+        function converterLinkDriveFicha(url) {
+            if (!url) return "";
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+            return url;
+        }
+
+        function formatarDataAmigavelFicha(dataStr) {
+            if (!dataStr) return "Data não informada";
+            try {
+                let d = new Date(dataStr);
+                if (isNaN(d.getTime())) return dataStr;
+                let dia = String(d.getDate()).padStart(2, '0');
+                let mes = String(d.getMonth() + 1).padStart(2, '0');
+                let ano = d.getFullYear();
+                let hora = String(d.getHours()).padStart(2, '0');
+                let min = String(d.getMinutes()).padStart(2, '0');
+                return `${dia}/${mes}/${ano} - ${hora}:${min}`;
+            } catch(e) {
+                return dataStr;
+            }
+        }
+
+        function exibirFichaImpressao(reg) {
             const nomeComp = reg.nomeCompleto || reg.nome || "Não informado";
             const matricula = reg.matricula || reg.mat || "---";
+            const dataCad = reg.dataHora || reg.carimbo || reg.dataCadastro || "";
             const operador = reg.operador || reg.usuario || "Sistema";
+            const isInativo = String(reg.status || "").trim() === "Inativo";
+
+            document.getElementById('lblNomeFicha').innerText = nomeComp;
+            document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + matricula;
+            document.getElementById('lblDataCadFicha').innerText = "Data do Cadastro: " + formatarDataAmigavelFicha(dataCad) + " | Operador: " + operador;
+
+            document.getElementById('lblStatusFicha').innerHTML = isInativo 
+                ? '<span style="color: #dc2626; font-weight: bold;"><i class="fa-solid fa-ban"></i> Status: Inativo no Sistema</span>' 
+                : '<span style="color: #16a34a; font-weight: bold;"><i class="fa-solid fa-check"></i> Status: Ativo no Sistema</span>';
+
+            const avatarContainer = document.getElementById('avatarFichaContainer');
+            const urlFoto = reg.foto || reg.urlFoto || reg.imagem || "";
+            const urlFinal = converterLinkDriveFicha(urlFoto);
+            const sexoLower = (reg.sexo || "").trim().toLowerCase();
             
-            if(document.getElementById('lblNomeFicha')) document.getElementById('lblNomeFicha').innerText = nomeComp;
-            if(document.getElementById('lblMatriculaFicha')) document.getElementById('lblMatriculaFicha').innerText = "Matrícula: " + matricula;
-            if(document.getElementById('fNomeComp')) document.getElementById('fNomeComp').innerText = nomeComp;
-            if(document.getElementById('fCpf')) document.getElementById('fCpf').innerText = reg.cpf || "---";
-            if(document.getElementById('fOperador')) document.getElementById('fOperador').innerText = operador;
+            let imgPadrao = "imagens/AvatarPessoaNeutra.png";
+            if (sexoLower.includes("masculino") || sexoLower === "m") {
+                imgPadrao = "imagens/AvatarHomem.png";
+            } else if (sexoLower.includes("feminino") || sexoLower === "f") {
+                imgPadrao = "imagens/AvatarMulher.png";
+            }
+
+            let conteudoInterno = "";
+            if (urlFinal) {
+                conteudoInterno = `<img src="${urlFinal}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='${imgPadrao}';">`;
+            } else {
+                conteudoInterno = `<img src="${imgPadrao}" alt="Avatar Padrão" style="width: 100%; height: 100%; object-fit: cover;">`;
+            }
+
+            if (isInativo) {
+                avatarContainer.innerHTML = `<div style="position: relative; width: 100%; height: 100%;">
+                    <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%;">${conteudoInterno}</div>
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
+                        <i class="fa-solid fa-ban" style="font-size: 1.5rem; color: #dc2626;" title="Cadastro Inativo"></i>
+                    </div>
+                </div>`;
+            } else {
+                avatarContainer.innerHTML = conteudoInterno;
+            }
+
+            document.getElementById('fNomeComp').innerText = nomeComp;
+            document.getElementById('fSocial').innerText = reg.nomeSocial || reg.social || "Não informado";
+            document.getElementById('fNasc').innerText = reg.dataNascimento || reg.nascimento || reg.dataNasc || "Não informado";
+            document.getElementById('fIdade').innerText = reg.idade || "Não informado";
+            document.getElementById('fSexo').innerText = reg.sexo || reg.genero || "Não informado";
+            document.getElementById('fEscolaridade').innerText = reg.escolaridade || reg.instrucao || "Não informado";
+            document.getElementById('fNaturalidade').innerText = reg.naturalidade || reg.nat || "Não informado";
+            document.getElementById('fRg').innerText = reg.rg || "Não informado";
+            document.getElementById('fCpf').innerText = reg.cpf || "Não informado";
+            document.getElementById('fCartaoSus').innerText = reg.cartaoSus || "Não informado";
+            document.getElementById('fCorRaca').innerText = reg.corRaca || reg.raca || "Não informado";
+
+            document.getElementById('fMae').innerText = reg.filiacaoMae || reg.mae || "Não informado";
+            document.getElementById('fPai').innerText = reg.filiacaoPai || reg.pai || "Não informado";
+            document.getElementById('fEndereco').innerText = reg.endereco || reg.end || "Não informado";
+            document.getElementById('fCidade').innerText = reg.cidade || "Unaí-MG";
+            document.getElementById('fTelefone').innerText = reg.telefone || reg.tel || reg.celular || "Não informado";
+            document.getElementById('fResidenciaUnai').innerText = reg.residenciaUnaí || reg.residenciaUnai || "Não informado";
+
+            document.getElementById('fTipoUsuario').innerText = reg.tipoUsuario || reg.tipo || "Não informado";
+            document.getElementById('fTempoRua').innerText = reg.tempoRua || reg.rua || "Não informado";
+            document.getElementById('fTempoUnai').innerText = reg.tempoUnaí || reg.tempoUnai || "Não informado";
+            document.getElementById('fMotivos').innerText = reg.motivosPermanencia || reg.motivos || "Não informado";
+            document.getElementById('fOutrosMotivos').innerText = reg.outrosMotivos || reg.outroMotivo || "Não informado";
+
+            document.getElementById('fPassouAtend').innerText = reg.passouAtendimento || reg.atendimentoAntigo || "Não informado";
+            document.getElementById('fRecebeAuxilio').innerText = reg.recebeAuxilio || reg.auxilio || "Não";
+            document.getElementById('fQualBeneficio').innerText = reg.qualBeneficio || reg.beneficio || "Não informado";
+            document.getElementById('fPossuiDocs').innerText = reg.possuiDocumentos || reg.documentos || "Sim";
+            document.getElementById('fDocsFaltam').innerText = reg.documentosFaltam || reg.faltaDoc || "Não informado";
+            document.getElementById('fCarteiraTrabalho').innerText = reg.carteiraTrabalho || reg.carteira || "Sim";
+            document.getElementById('fObservacoes').innerText = reg.observacoes || reg.obs || "Nenhuma observação registrada.";
+            document.getElementById('fOperador').innerText = operador;
+
+            // Configura o retorno automático para a Galeria assim que a impressão fechar ou concluir
+            window.onafterprint = function() {
+                window.location.href = 'galeria.html';
+            };
+
+            window.onfocus = function() {
+                setTimeout(function() {
+                    window.location.href = 'galeria.html';
+                }, 800);
+            };
+
+            // Dispara a impressão imediatamente após preencher os dados visuais
+            setTimeout(function() {
+                window.print();
+            }, 600);
         }
     </script>
 </body>
