@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.3.0.006                           -->
-<!-- Data de atualização: 04/11/2026                                                -->
-<!-- Descrição: Correção do mapeamento de campos vazios e reset do campo UF.        -->
+<!-- Programa: consulta.html. Versão do Módulo: v.3.0.007                           -->
+<!-- Data de atualização: 17/11/2026                                                -->
+<!-- Descrição: Consulta com validação restrita de permissão do módulo 2.2.        -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -27,7 +27,7 @@
             --text-color: #334155;
             --border-color: #cbd5e1;
         }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        body { visibility: hidden; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
         .menu-toggle:hover { background: white; color: var(--primary-dark); }
@@ -110,6 +110,23 @@
             window.location.href = 'login.html';
         }
 
+        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 2.2
+        try {
+            const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
+            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
+            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
+            
+            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.2")) {
+                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.2 - Consulta de Assistidos].");
+                window.location.href = 'index.html';
+            }
+        } catch(permErr) {
+            console.error("Erro ao validar permissões:", permErr);
+        }
+
+        // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
+        document.body.style.visibility = "visible";
+
         let operadorLogado = "Voluntário / Operador"; 
         try {
             if (ativoLocal) {
@@ -174,7 +191,7 @@
             </div>
             
             <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
-                <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
+            <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
                 <i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)
             </a>
 
@@ -429,7 +446,8 @@
             }
             aviso.style.display = 'none';
         }
-function mascaraCartaoSus(input) {
+
+        function mascaraCartaoSus(input) {
             let valor = input.value.replace(/\D/g, "");
             if (valor.length > 15) valor = valor.substring(0, 15);
             if (valor.length > 11) {
@@ -463,6 +481,7 @@ function mascaraCartaoSus(input) {
             }
             aviso.style.display = 'none';
         }
+
         function mascaraCpf(input) {
             let valor = input.value.replace(/\D/g, "");
             if (valor.length > 11) valor = valor.substring(0, 11);
@@ -619,7 +638,7 @@ function mascaraCartaoSus(input) {
             atualizarAvatarPreview();
         }
 
-function preencherFormularioCompleto(reg, linha) {
+        function preencherFormularioCompleto(reg, linha) {
             document.getElementById('listaResultadosContainer').style.display = "none";
             const containerRes = document.getElementById('resultadoContainer');
             containerRes.style.display = "block";
@@ -679,7 +698,6 @@ function preencherFormularioCompleto(reg, linha) {
             document.getElementById('passouAtendimento').value = reg.passouAtendimento || "";
             document.getElementById('recebeAuxilio').value = reg.recebeAuxilio || "Não";
             
-            // 🟢 Garante campos limpos se estiverem vazios na nuvem
             document.getElementById('qualBeneficio').value = reg.qualBeneficio || "";
             document.getElementById('possuiDocumentos').value = reg.possuiDocumentos || "Sim";
             document.getElementById('documentosFaltam').value = reg.documentosFaltam || "";
@@ -781,7 +799,6 @@ function preencherFormularioCompleto(reg, linha) {
             }
         });
 
-        // 🟢 Função do IBGE com limpeza automática caso o campo de naturalidade seja esvaziado
         async function buscarUfPorCidade() {
             const cidadeInput = document.getElementById('naturalidade').value.trim();
             const ufInput = document.getElementById('ufNaturalidade');
