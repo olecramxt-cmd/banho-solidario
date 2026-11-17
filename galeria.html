@@ -2,15 +2,15 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.5.014                            -->
-<!-- Data de atualização: 17/11/2026 - 03:00                                        -->
-<!-- Descrição: Correção definitiva de largura e overflow no modal mobile.          -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.5.015                            -->
+<!-- Data de atualização: 17/11/2026 - 03:15                                        -->
+<!-- Descrição: Correção de largura estática em modo vertical (retrato) para mobile. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SISTEMAS iPeC - Galeria da Dignidade / Banho Solidário</title>
     <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,9 +29,9 @@
             --border-color: #cbd5e1;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+        html, body { width: 100% !important; overflow-x: hidden !important; background-color: var(--bg-color); color: var(--text-color); }
         
-        .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: fixed; top: 0; left: 0; width: 100%; z-index: 998; }
+        .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: fixed; top: 0; left: 0; width: 100%; z-index: 998; box-sizing: border-box; }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
         .menu-toggle:hover { background: white; color: var(--primary-dark); }
         
@@ -49,19 +49,19 @@
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
         .menu-overlay.active { display: block; }
 
-        .container { max-width: 1200px; margin: 90px auto 30px auto; padding: 0 20px; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); box-sizing: border-box; width: 100%; }
-        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: #64748b; margin-bottom: 15px; font-size: 0.95rem; }
-        .stats-banner { text-align: center; color: var(--primary-dark); font-weight: 600; font-size: 1rem; margin-bottom: 25px; background: #e0f2fe; padding: 12px; border-radius: 10px; border: 1px solid #bae6fd; }
+        .container { max-width: 1200px; margin: 90px auto 30px auto; padding: 0 15px; background: white; padding: 1.5rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); box-sizing: border-box; width: 100%; overflow: hidden; }
+        h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; font-size: 1.5rem; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 15px; font-size: 0.9rem; }
+        .stats-banner { text-align: center; color: var(--primary-dark); font-weight: 600; font-size: 0.9rem; margin-bottom: 25px; background: #e0f2fe; padding: 10px; border-radius: 10px; border: 1px solid #bae6fd; box-sizing: border-box; width: 100%; }
         
         #mensagemStatus { text-align: center; font-weight: bold; margin: 20px 0; }
 
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; box-sizing: border-box; }
         
         .gallery-card { 
             background: white; 
             border-radius: 12px; 
-            padding: 18px; 
+            padding: 15px; 
             text-align: center; 
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08); 
             display: flex; 
@@ -69,40 +69,42 @@
             align-items: center; 
             border: 1px solid #e2e8f0; 
             transition: transform 0.2s; 
-            width: 100%; 
-            box-sizing: border-box; 
+            width: 100% !important; 
+            box-sizing: border-box !important; 
+            overflow: hidden;
         }
         .gallery-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.12); border-color: var(--primary-color); }
         
-        .gallery-avatar { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background: #e2e8f0; cursor: pointer; flex-shrink: 0; }
+        .gallery-avatar { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background: #e2e8f0; cursor: pointer; flex-shrink: 0; }
         .gallery-avatar img { width: 100%; height: 100%; object-fit: cover; }
         
-        .gallery-name { font-weight: 600; font-size: 1rem; color: #0f172a; margin-bottom: 2px; cursor: pointer; }
+        .gallery-name { font-weight: 600; font-size: 0.95rem; color: #0f172a; margin-bottom: 2px; cursor: pointer; word-break: break-word; }
         .gallery-name:hover { color: var(--primary-color); }
-        .gallery-matricula { font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 15px; }
+        .gallery-matricula { font-size: 0.8rem; color: #64748b; font-weight: 500; margin-bottom: 12px; }
 
         .acoes-card { 
             display: flex; 
-            gap: 8px; 
+            gap: 6px; 
             justify-content: center; 
             margin-top: auto; 
-            width: 100%; 
+            width: 100% !important; 
             flex-wrap: wrap; 
+            box-sizing: border-box;
         }
-        .btn-acao { border: none; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: opacity 0.2s; text-decoration: none; }
+        .btn-acao { border: none; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: opacity 0.2s; text-decoration: none; }
         .btn-acao:hover { opacity: 0.85; }
         .btn-azul { background-color: var(--primary-color); }   
         .btn-amarelo { background-color: var(--warning-color); } 
         .btn-roxo { background-color: var(--secondary-color); } 
 
-/* MODAL DE PRONTUÁRIO 100% BLINDADO PARA MOBILE */
+        /* 🟢 MODAL 100% TRAVADO PARA MODO VERTICAL (RETRATO) */
         .modal-overlay { 
             position: fixed !important; 
             top: 0 !important; 
             left: 0 !important; 
             width: 100vw !important; 
             height: 100vh !important; 
-            background: rgba(0,0,0,0.7) !important; 
+            background: rgba(0,0,0,0.6) !important; 
             backdrop-filter: blur(4px); 
             display: none; 
             justify-content: center !important; 
@@ -111,6 +113,7 @@
             padding: 0 !important; 
             margin: 0 !important;
             box-sizing: border-box !important; 
+            overflow: hidden !important;
         }
         
         .modal-card { 
@@ -123,7 +126,7 @@
             box-shadow: none !important; 
             overflow-y: auto !important; 
             overflow-x: hidden !important; 
-            padding: 15px 12px 80px 12px !important; 
+            padding: 15px 10px 80px 10px !important; 
             position: relative !important; 
             box-sizing: border-box !important; 
             -webkit-overflow-scrolling: touch !important; 
@@ -144,22 +147,23 @@
             }
         }
 
-        .close-modal { position: absolute !important; top: 15px !important; right: 20px !important; background: none !important; border: none !important; font-size: 1.5rem !important; color: #64748b !important; cursor: pointer !important; z-index: 10 !important; }
+        .close-modal { position: absolute !important; top: 12px !important; right: 15px !important; background: none !important; border: none !important; font-size: 1.4rem !important; color: #64748b !important; cursor: pointer !important; z-index: 10 !important; }
         .close-modal:hover { color: #dc2626 !important; }
         
-        .profile-header { display: flex !important; align-items: center !important; gap: 15px !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 15px !important; margin-bottom: 20px !important; flex-wrap: wrap !important; width: 100% !important; box-sizing: border-box !important; }
-        .modal-avatar { width: 85px !important; height: 85px !important; border-radius: 50% !important; overflow: hidden !important; border: 3px solid var(--primary-color) !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: #e2e8f0 !important; flex-shrink: 0 !important; }
+        .profile-header { display: flex !important; align-items: center !important; gap: 12px !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 12px !important; margin-bottom: 15px !important; flex-wrap: wrap !important; width: 100% !important; box-sizing: border-box !important; }
+        .modal-avatar { width: 75px !important; height: 75px !important; border-radius: 50% !important; overflow: hidden !important; border: 3px solid var(--primary-color) !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: #e2e8f0 !important; flex-shrink: 0 !important; }
         .modal-avatar img { width: 100% !important; height: 100% !important; object-fit: cover !important; }
-        .modal-info h3 { margin: 0 0 3px 0 !important; color: #0f172a !important; font-size: 1.1rem !important; word-break: break-word !important; }
-        .modal-info p { margin: 2px 0 !important; color: #64748b !important; font-size: 12px !important; word-break: break-word !important; }
+        .modal-info h3 { margin: 0 0 2px 0 !important; color: #0f172a !important; font-size: 1.05rem !important; word-break: break-word !important; }
+        .modal-info p { margin: 1px 0 !important; color: #64748b !important; font-size: 12px !important; word-break: break-word !important; }
         
-        /* 🟢 FORÇANDO COLUNA ÚNICA ABSOLUTA EM TELAS MENORES QUE 768px */
+        /* 🟢 GRID FORÇADO EM COLUNA ÚNICA EM MODO VERTICAL */
         .read-only-grid { 
             display: flex !important; 
             flex-direction: column !important; 
             gap: 10px !important; 
             width: 100% !important;
             box-sizing: border-box !important;
+            overflow-x: hidden !important;
         }
 
         @media (min-width: 768px) {
@@ -172,25 +176,26 @@
         .read-field { 
             background: #f8fafc !important; 
             border: 1px solid #e2e8f0 !important; 
-            padding: 10px 14px !important; 
+            padding: 8px 12px !important; 
             border-radius: 8px !important; 
             width: 100% !important; 
             box-sizing: border-box !important; 
             overflow: hidden !important;
         }
-        .read-field label { display: block !important; font-size: 0.7rem !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; margin-bottom: 2px !important; }
-        .read-field span { font-size: 0.9rem !important; font-weight: 500 !important; color: #1e293b !important; word-break: break-word !important; overflow-wrap: break-word !important; }
-        .section-title { width: 100% !important; font-size: 0.95rem !important; color: var(--primary-dark) !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 4px !important; margin-top: 15px !important; margin-bottom: 5px !important; font-weight: 700 !important; box-sizing: border-box !important; }
-        #telaHistoricoIndividual { display: none; text-align: left; width: 100%; }
-        .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
+        .read-field label { display: block !important; font-size: 0.65rem !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; margin-bottom: 2px !important; }
+        .read-field span { font-size: 0.85rem !important; font-weight: 500 !important; color: #1e293b !important; word-break: break-word !important; overflow-wrap: break-word !important; }
+        .section-title { width: 100% !important; font-size: 0.9rem !important; color: var(--primary-dark) !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 4px !important; margin-top: 12px !important; margin-bottom: 4px !important; font-weight: 700 !important; box-sizing: border-box !important; }
+
+        #telaHistoricoIndividual { display: none; text-align: left; width: 100%; box-sizing: border-box; }
+        .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         @media(min-width: 768px) { .stats-grid-ind { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
-        .stat-card-ind { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; text-align: center; }
-        .stat-number-ind { font-size: 1.6rem; font-weight: 700; color: var(--secondary-color); }
-        .stat-label-ind { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+        .stat-card-ind { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; text-align: center; width: 100%; box-sizing: border-box; }
+        .stat-number-ind { font-size: 1.4rem; font-weight: 700; color: var(--secondary-color); }
+        .stat-label-ind { font-size: 0.8rem; color: #64748b; font-weight: 500; }
         
-        .table-responsive-ind { width: 100% !important; overflow-x: scroll !important; -webkit-overflow-scrolling: touch !important; margin-top: 1rem !important; border-radius: 8px !important; border: 1px solid #e2e8f0 !important; background: white !important; }
-        table.tabela-ind { width: 100% !important; border-collapse: collapse !important; font-size: 0.85rem !important; min-width: 700px !important; background: white !important; }
-        table.tabela-ind th, table.tabela-ind td { border-bottom: 1px solid #e2e8f0 !important; border-right: 1px solid #f1f5f9 !important; padding: 10px 12px !important; text-align: left !important; vertical-align: middle !important; white-space: nowrap !important; }
+        .table-responsive-ind { width: 100% !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; margin-top: 1rem !important; border-radius: 8px !important; border: 1px solid #e2e8f0 !important; background: white !important; box-sizing: border-box !important; }
+        table.tabela-ind { width: 100% !important; border-collapse: collapse !important; font-size: 0.8rem !important; min-width: 600px !important; background: white !important; }
+        table.tabela-ind th, table.tabela-ind td { border-bottom: 1px solid #e2e8f0 !important; border-right: 1px solid #f1f5f9 !important; padding: 8px 10px !important; text-align: left !important; vertical-align: middle !important; white-space: nowrap !important; }
         table.tabela-ind th { background-color: #f8fafc !important; color: var(--secondary-color) !important; font-weight: 600 !important; }
 
         @media (max-width: 600px) {
@@ -199,7 +204,7 @@
                 padding: 0 !important;
             }
             .container {
-                padding: 1rem 10px !important;
+                padding: 1rem 8px !important;
             }
         }
     </style>
@@ -219,7 +224,7 @@
 
     <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
-        <span style="font-weight: bold; font-size: 18px; color: white;">SISTEMAS iPeC - Galeria da Dignidade</span>
+        <span style="font-weight: bold; font-size: 16px; color: white;">SISTEMAS iPeC - Galeria</span>
     </div>
 
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -278,7 +283,7 @@
         <div id="telaHistoricoIndividual">
             <button onclick="voltarParaGaleria()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; margin-bottom: 20px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
             
-            <div id="cabecalhoAssistidoInd" style="display: flex; align-items: center; gap: 15px; background: var(--accent-color); padding: 15px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--secondary-color);"></div>
+            <div id="cabecalhoAssistidoInd" style="display: flex; align-items: center; gap: 12px; background: var(--accent-color); padding: 12px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--secondary-color); width: 100%; box-sizing: border-box;"></div>
 
             <div class="stats-grid-ind">
                 <div class="stat-card-ind">
@@ -295,7 +300,7 @@
                 </div>
             </div>
 
-            <h3 style="font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 1rem;"><i class="fa-solid fa-list-check"></i> Movimentação Recente do Assistido</h3>
+            <h3 style="font-size: 1.1rem; color: var(--secondary-color); margin-bottom: 1rem;"><i class="fa-solid fa-list-check"></i> Movimentação Recente do Assistido</h3>
             <div class="table-responsive-ind">
                 <table class="tabela-ind">
                     <thead>
@@ -320,9 +325,9 @@
 
     <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
         <div class="modal-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; width: 100%;">
-                <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
-                <button class="close-modal" onclick="fecharModal()" style="position: static;"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; width: 100%; box-sizing: border-box;">
+                <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 12px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+                <button class="close-modal" onclick="fecharModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <div class="profile-header">
@@ -330,7 +335,7 @@
                 <div class="modal-info">
                     <h3 id="mMatricula">MATRÍCULA</h3>
                     <p id="mDataCadastro">Data do Cadastro: --/--/----</p>
-                    <p>Modo: <span style="color: var(--primary-dark); font-weight: bold;">Prontuário de Leitura Instantânea</span></p>
+                    <p>Modo: <span style="color: var(--primary-dark); font-weight: bold;">Prontuário Instantâneo</span></p>
                 </div>
             </div>
 
@@ -374,8 +379,8 @@
                 <div class="read-field"><label>Operador Responsável</label><span id="mOperador">---</span></div>
             </div>
 
-            <div style="margin-top: 30px; text-align: right; border-top: 2px solid #e2e8f0; padding-top: 15px; width: 100%;">
-                <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: auto; padding: 0 20px; font-weight: 600;"><i class="fa-solid fa-check"></i> Fechar Prontuário</button>
+            <div style="margin-top: 25px; text-align: right; border-top: 2px solid #e2e8f0; padding-top: 12px; width: 100%; box-sizing: border-box;">
+                <button onclick="fecharModal()" class="btn-acao btn-azul" style="width: 100%; padding: 0 20px; font-weight: 600;"><i class="fa-solid fa-check"></i> Fechar Prontuário</button>
             </div>
         </div>
     </div>
@@ -417,7 +422,7 @@
                     return `<div style="position: relative; width: 100%; height: 100%;">
                         <div style="filter: grayscale(100%) opacity(0.4); width: 100%; height: 100%;">${conteudoInterno}</div>
                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(239, 68, 68, 0.15); border: 2px dashed #dc2626; border-radius: 50%;">
-                            <i class="fa-solid fa-ban" style="font-size: 1.8rem; color: #dc2626;" title="Cadastro Inativo"></i>
+                            <i class="fa-solid fa-ban" style="font-size: 1.5rem; color: #dc2626;" title="Cadastro Inativo"></i>
                         </div>
                     </div>`;
                 }
@@ -480,9 +485,9 @@
                     const percMulheresInativos = totalInativos > 0 ? ((qtdMulheresInativos / totalInativos) * 100).toFixed(1) : 0;
 
                     statsBanner.innerHTML = `
-                        <div>Total Ativos: ${totalAtivos} registros | ${qtdHomensAtivos} (${percHomensAtivos}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheresAtivos} (${percMulheresAtivos}%) Mulheres</div>
-                        <div style="font-size: 0.85rem; color: #dc2626; font-weight: 700; margin-top: 5px; border-top: 1px solid #bae6fd; padding-top: 4px;">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Inativos / Óbitos: ${totalInativos} registros | ${qtdHomensInativos} (${percHomensInativos}% dos inativos) Homens &nbsp;&bull;&nbsp; ${qtdMulheresInativos} (${percMulheresInativos}% dos inativos) Mulheres
+                        <div>Total Ativos: ${totalAtivos} | ${qtdHomensAtivos} (${percHomensAtivos}%) Homens &bull; ${qtdMulheresAtivos} (${percMulheresAtivos}%) Mulheres</div>
+                        <div style="font-size: 0.8rem; color: #dc2626; font-weight: 700; margin-top: 4px; border-top: 1px solid #bae6fd; padding-top: 3px;">
+                            Inativos / Óbitos: ${totalInativos} | ${qtdHomensInativos} Homens &bull; ${qtdMulheresInativos} Mulheres
                         </div>
                     `;
 
@@ -502,9 +507,9 @@
 
                         let htmlNomeSocial = "";
                         if (nomeSocialBruto && nomeSocialBruto.toLowerCase() !== "não informado" && nomeSocialBruto !== "---") {
-                            htmlNomeSocial = `<div style="font-size: 0.82rem; color: #7c3aed; font-weight: 600; margin: 2px 0; word-break: break-word;">(${nomeSocialBruto})</div>`;
+                            htmlNomeSocial = `<div style="font-size: 0.78rem; color: #7c3aed; font-weight: 600; margin: 2px 0; word-break: break-word;">(${nomeSocialBruto})</div>`;
                         } else {
-                            htmlNomeSocial = `<div style="font-size: 0.75rem; color: #94a3b8; font-style: italic; margin: 2px 0;">(Nome social: Não informado)</div>`;
+                            htmlNomeSocial = `<div style="font-size: 0.72rem; color: #94a3b8; font-style: italic; margin: 2px 0;">(Nome social: Não informado)</div>`;
                         }
 
                         let avatarHtml = gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;");
@@ -525,12 +530,12 @@
                             ${htmlNomeSocial}
                             <div class="gallery-matricula" style="margin-top: 4px;">${matricula}</div>
                             
-                            ${isInativo ? '<div style="background: #fee2e2; color: #dc2626; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; border: 1px solid #fecaca;"><i class="fa-solid fa-ban"></i> CADASTRO INATIVO</div>' : ''}
+                            ${isInativo ? '<div style="background: #fee2e2; color: #dc2626; font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-bottom: 8px; border: 1px solid #fecaca;"><i class="fa-solid fa-ban"></i> INATIVO</div>' : ''}
 
                             <div class="acoes-card">
-                                <button type="button" class="btn-acao btn-azul" title="Prontuário Completo (Leitura)" onclick='abrirProntuarioFromJson(${regJson})'><i class="fa-solid fa-address-card"></i></button>
-                                <button type="button" class="btn-acao btn-amarelo" title="Histórico de Atendimentos" onclick='abrirHistoricoAssistidoFromJson(${regJson})'><i class="fa-solid fa-list-check"></i></button>
-                                <button type="button" class="btn-acao btn-roxo" title="Impressão Direta da Ficha" onclick='imprimirFichaDiretaFromJson(${regJson})'><i class="fa-solid fa-print"></i></button>
+                                <button type="button" class="btn-acao btn-azul" title="Prontuário Completo" onclick='abrirProntuarioFromJson(${regJson})'><i class="fa-solid fa-address-card"></i></button>
+                                <button type="button" class="btn-acao btn-amarelo" title="Histórico" onclick='abrirHistoricoAssistidoFromJson(${regJson})'><i class="fa-solid fa-list-check"></i></button>
+                                <button type="button" class="btn-acao btn-roxo" title="Impressão" onclick='imprimirFichaDiretaFromJson(${regJson})'><i class="fa-solid fa-print"></i></button>
                             </div>              
                         `;
                         grid.appendChild(card);
@@ -611,19 +616,19 @@
             document.getElementById('telaPrincipalGaleria').style.display = 'none';
             document.getElementById('telaHistoricoIndividual').style.display = 'block';
 
-            const avatarHtmlWrapper = `<div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
+            const avatarHtmlWrapper = `<div style="width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid var(--secondary-color); flex-shrink: 0; background: #e2e8f0;">${gerarHtmlAvatar(reg, "width: 100%; height: 100%; object-fit: cover;")}</div>`;
 
             const statusBadge = isInativo 
-                ? '<span style="color: #dc2626; font-weight: 700; background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">INATIVO</span>' 
-                : '<span style="color: #16a34a; font-weight: 700; background: #dcfce7; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">ATIVO</span>';
+                ? '<span style="color: #dc2626; font-weight: 700; background: #fee2e2; padding: 2px 5px; border-radius: 4px; font-size: 0.75rem;">INATIVO</span>' 
+                : '<span style="color: #16a34a; font-weight: 700; background: #dcfce7; padding: 2px 5px; border-radius: 4px; font-size: 0.75rem;">ATIVO</span>';
 
             document.getElementById('cabecalhoAssistidoInd').innerHTML = `
                 ${avatarHtmlWrapper}
                 <div style="flex: 1; min-width: 0;">
-                    <div style="font-weight: 700; font-size: 1.15rem; color: var(--secondary-color); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-weight: 700; font-size: 1.05rem; color: var(--secondary-color); display: flex; justify-content: space-between; align-items: center;">
                         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nomeDec}</span> ${statusBadge}
                     </div>
-                    <div style="font-size: 0.9rem; color: #64748b;">Matrícula: <strong>${matriculaDec}</strong> | Sexo: ${sexoDec}</div>
+                    <div style="font-size: 0.82rem; color: #64748b;">Matrícula: <strong>${matriculaDec}</strong> | Sexo: ${sexoDec}</div>
                 </div>
             `;
 
