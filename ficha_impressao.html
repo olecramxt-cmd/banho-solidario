@@ -360,19 +360,7 @@ function exibirFichaImpressao(reg) {
             document.getElementById('fCarteiraTrabalho').innerText = reg.carteiraTrabalho || reg.carteira || "Sim";
             document.getElementById('fOperador').innerText = operador;
         }
-            window.onload = function() {
-            const dadosStr = localStorage.getItem('assistido_imprimir');
-            if (dadosStr) {
-                const reg = JSON.parse(dadosStr);
-                // (Aqui preenche os campos do formulário...)
-                
-                // 🟢 ADICIONE ESTAS DUAS LINHAS NO FINAL DO ONLOAD:
-                setTimeout(function() {
-                    window.print(); // Abre automaticamente a tela de impressão / Salvar como PDF
-                }, 500); // Aguarda meio segundo para carregar as imagens/avatar antes de abrir
-            }
-        };
-        
+
     </script>
 </body>
 </html>
