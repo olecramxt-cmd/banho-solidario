@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.5.018                            -->
-<!-- Data de atualização: 17/11/2026 - 03:32                                        -->
-<!-- Descrição: Versão anterior restaurada com rolagem horizontal exclusiva no modal. -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.5.011                            -->
+<!-- Data de atualização: 09/11/2026 - 17:28                                        -->
+<!-- Descrição: Galeria com rolagem forçada em modo !important para mobile.         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -31,12 +31,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); }
         
-        /* 🟢 BARRA DE ROLAGEM HORIZONTAL ELEGANTE E DISCRETA EXCLUSIVA PARA O MODAL */
-        .modal-card::-webkit-scrollbar { height: 6px; width: 6px; }
-        .modal-card::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); border-radius: 4px; }
-        .modal-card::-webkit-scrollbar-thumb { background: rgba(2, 132, 199, 0.4); border-radius: 4px; }
-        .modal-card::-webkit-scrollbar-thumb:hover { background: rgba(2, 132, 199, 0.7); }
-
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: fixed; top: 0; left: 0; width: 100%; z-index: 998; }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
         .menu-toggle:hover { background: white; color: var(--primary-dark); }
@@ -55,29 +49,15 @@
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: none; z-index: 999; }
         .menu-overlay.active { display: block; }
 
-        .container { max-width: 1200px; margin: 90px auto 30px auto; padding: 0 20px; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); box-sizing: border-box; width: 100%; }
+        .container { max-width: 1200px; margin: 90px auto 30px auto; padding: 0 20px; background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
         h2 { color: var(--primary-dark); text-align: center; margin-bottom: 5px; }
         .subtitle { text-align: center; color: #64748b; margin-bottom: 15px; font-size: 0.95rem; }
         .stats-banner { text-align: center; color: var(--primary-dark); font-weight: 600; font-size: 1rem; margin-bottom: 25px; background: #e0f2fe; padding: 12px; border-radius: 10px; border: 1px solid #bae6fd; }
         
         #mensagemStatus { text-align: center; font-weight: bold; margin: 20px 0; }
 
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; }
-        
-        .gallery-card { 
-            background: white; 
-            border-radius: 12px; 
-            padding: 18px; 
-            text-align: center; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            border: 1px solid #e2e8f0; 
-            transition: transform 0.2s; 
-            width: 100%; 
-            box-sizing: border-box; 
-        }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .gallery-card { background: white; border-radius: 12px; padding: 18px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08); display: flex; flex-direction: column; align-items: center; border: 1px solid #e2e8f0; transition: transform 0.2s; }
         .gallery-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.12); border-color: var(--primary-color); }
         
         .gallery-avatar { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; margin: 0 auto 10px auto; border: 3px solid var(--primary-color); display: flex; align-items: center; justify-content: center; background: #e2e8f0; cursor: pointer; flex-shrink: 0; }
@@ -87,60 +67,33 @@
         .gallery-name:hover { color: var(--primary-color); }
         .gallery-matricula { font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 15px; }
 
-        .acoes-card { 
-            display: flex; 
-            gap: 8px; 
-            justify-content: center; 
-            margin-top: auto; 
-            width: 100%; 
-            flex-wrap: wrap; 
-        }
+        /* Botões de Ação Direta nos Cards */
+        .acoes-card { display: flex; gap: 8px; justify-content: center; margin-top: auto; width: 100%; }
         .btn-acao { border: none; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: opacity 0.2s; text-decoration: none; }
         .btn-acao:hover { opacity: 0.85; }
         .btn-azul { background-color: var(--primary-color); }   
         .btn-amarelo { background-color: var(--warning-color); } 
         .btn-roxo { background-color: var(--secondary-color); } 
 
-        /* MODAL COM ROLAGEM HORIZONTAL EXCLUSIVA PARA O PRONTUÁRIO */
+        /* MODAL DE PRONTUÁRIO TOTALMENTE FORÇADO CONTRA CORTE */
         .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.6) !important; backdrop-filter: blur(4px); display: none; justify-content: center !important; align-items: center !important; z-index: 9999 !important; padding: 10px !important; box-sizing: border-box !important; }
-        
-        .modal-card { 
-            background: white !important; 
-            width: 100% !important; 
-            max-width: 850px !important; 
-            max-height: 90vh !important; 
-            border-radius: 16px !important; 
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2) !important; 
-            overflow-y: auto !important; 
-            overflow-x: auto !important; /* 🟢 ATIVA A ROLAGEM HORIZONTAL SUAVE APENAS AQUI */
-            padding: 25px 20px 80px 20px !important; 
-            position: relative !important; 
-            box-sizing: border-box !important; 
-            -webkit-overflow-scrolling: touch !important; 
-            margin: auto !important; 
-        }
-
+        .modal-card { background: white !important; width: 100% !important; max-width: 850px !important; max-height: 90vh !important; border-radius: 16px !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2) !important; overflow-y: auto !important; padding: 25px 20px 80px 20px !important; position: relative !important; box-sizing: border-box !important; -webkit-overflow-scrolling: touch !important; margin: auto !important; }
         .close-modal { position: absolute !important; top: 15px !important; right: 20px !important; background: none !important; border: none !important; font-size: 1.5rem !important; color: #64748b !important; cursor: pointer !important; z-index: 10 !important; }
         .close-modal:hover { color: #dc2626 !important; }
         
-        .profile-header { display: flex !important; align-items: center !important; gap: 15px !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 15px !important; margin-bottom: 20px !important; flex-wrap: wrap !important; min-width: 320px !important; }
+        .profile-header { display: flex !important; align-items: center !important; gap: 15px !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 15px !important; margin-bottom: 20px !important; flex-wrap: wrap !important; }
         .modal-avatar { width: 85px !important; height: 85px !important; border-radius: 50% !important; overflow: hidden !important; border: 3px solid var(--primary-color) !important; display: flex !important; align-items: center !important; justify-content: center !important; background-color: #e2e8f0 !important; flex-shrink: 0 !important; }
         .modal-avatar img { width: 100% !important; height: 100% !important; object-fit: cover !important; }
         .modal-info h3 { margin: 0 0 3px 0 !important; color: #0f172a !important; font-size: 1.2rem !important; word-break: break-all !important; }
         .modal-info p { margin: 2px 0 !important; color: #64748b !important; font-size: 13px !important; }
         
-        .read-only-grid { 
-            display: grid !important; 
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important; 
-            gap: 12px !important; 
-            min-width: 500px !important; /* 🟢 Garante a largura mínima para acionar a barra horizontal charmosa em modo retrato */
-        }
-
+        .read-only-grid { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important; gap: 12px !important; }
         .read-field { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; padding: 8px 12px !important; border-radius: 8px !important; }
         .read-field label { display: block !important; font-size: 0.7rem !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; margin-bottom: 2px !important; }
         .read-field span { font-size: 0.9rem !important; font-weight: 500 !important; color: #1e293b !important; word-break: break-word !important; }
         .section-title { grid-column: 1 / -1 !important; font-size: 1rem !important; color: var(--primary-dark) !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 4px !important; margin-top: 15px !important; margin-bottom: 5px !important; font-weight: 700 !important; }
 
+        /* Estilos da Tela de Histórico Individual com Rolagem Horizontal Forçada !important */
         #telaHistoricoIndividual { display: none; text-align: left; width: 100%; }
         .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
         @media(min-width: 768px) { .stats-grid-ind { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
@@ -152,20 +105,24 @@
         table.tabela-ind { width: 100% !important; border-collapse: collapse !important; font-size: 0.85rem !important; min-width: 700px !important; background: white !important; }
         table.tabela-ind th, table.tabela-ind td { border-bottom: 1px solid #e2e8f0 !important; border-right: 1px solid #f1f5f9 !important; padding: 10px 12px !important; text-align: left !important; vertical-align: middle !important; white-space: nowrap !important; }
         table.tabela-ind th { background-color: #f8fafc !important; color: var(--secondary-color) !important; font-weight: 600 !important; }
+          /* ... (seus códigos CSS anteriores) ... */
+        table.tabela-ind th { background-color: #f8fafc !important; color: var(--secondary-color) !important; font-weight: 600 !important; }
 
+        /* 📱 Garantindo a perfeição nos Dispositivos Móveis */
         @media (max-width: 600px) {
             .gallery-grid {
-                grid-template-columns: 1fr !important;
-                padding: 0 !important;
+                grid-template-columns: 1fr !important; /* Um card por linha no celular */
+                padding: 10px !important;
             }
-            .container {
-                padding: 1rem 10px !important;
+            .gallery-card {
+                padding: 15px !important;
             }
         }
-    </style>
+ </style>
 </head>
 <body onload="carregarGaleriaDignidade()">
 
+    <!-- Validação de Sessão / Login Otimizada -->
     <script src="config.js"></script>
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
@@ -196,8 +153,8 @@
             
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
-                <a href="inscricao_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Inscrição</a>
-                <a href="perfil_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-id-card"></i> 1.2- Meu Perfil</a>
+                <a href="cadastro_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
+                <a href="consulta_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta</a>
             </div>
             
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
@@ -210,12 +167,12 @@
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">3. Atendimentos & Movimentação</div>
             <div class="side-menu-sublinks">
                 <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
-                <a href="relatorio_atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-print"></i> 3.2- Relatórios & Fichas</a>
+                <a href="relatorio_atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-file-pdf"></i> 3.2- Relatórios & Fichas</a>
             </div>
             
             <a href="./admin.html" class="menu-link-item" style="margin-top: 10px;"><i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo</a>
 
-            <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
+                <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
                 <i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)
             </a>
 
@@ -225,6 +182,7 @@
         </div>
     </nav>
 
+    <!-- CONTAINER PRINCIPAL -->
     <div class="container" id="containerPrincipal">
         <div id="telaPrincipalGaleria">
             <h2>Galeria da Dignidade</h2>
@@ -235,6 +193,7 @@
             <div class="gallery-grid" id="galleryGrid"></div>
         </div>
 
+        <!-- TELA DE HISTÓRICO DE ATENDIMENTOS (ABERTA PELO ÍCONE AMARELO) -->
         <div id="telaHistoricoIndividual">
             <button onclick="voltarParaGaleria()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; margin-bottom: 20px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
             
@@ -278,6 +237,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE PRONTUÁRIO COMPLETO (ABERTO PELO ÍCONE AZUL OU FOTO) -->
     <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -406,6 +366,7 @@
                 if (data.status === "encontrado" && data.lista && data.lista.length > 0) {
                     grid.innerHTML = "";
                     
+// 🟢 FILTRAGEM E SEPARAÇÃO RIGOROSA: ATIVOS VS INATIVOS
                     let totalAtivos = 0;
                     let qtdHomensAtivos = 0;
                     let qtdMulheresAtivos = 0;
@@ -433,29 +394,33 @@
                         }
                     });
 
+                    // Percentuais dos Ativos
                     const percHomensAtivos = totalAtivos > 0 ? ((qtdHomensAtivos / totalAtivos) * 100).toFixed(1) : 0;
                     const percMulheresAtivos = totalAtivos > 0 ? ((qtdMulheresAtivos / totalAtivos) * 100).toFixed(1) : 0;
 
+                    // Percentuais dos Inativos
                     const percHomensInativos = totalInativos > 0 ? ((qtdHomensInativos / totalInativos) * 100).toFixed(1) : 0;
                     const percMulheresInativos = totalInativos > 0 ? ((qtdMulheresInativos / totalInativos) * 100).toFixed(1) : 0;
 
+                    // 🟢 MONTAGEM DO BANNER COM O "TOTAL ATIVOS" E A LINHA VERMELHA DE INATIVOS ABAIXO
                     statsBanner.innerHTML = `
                         <div>Total Ativos: ${totalAtivos} registros | ${qtdHomensAtivos} (${percHomensAtivos}%) Homens &nbsp;&bull;&nbsp; ${qtdMulheresAtivos} (${percMulheresAtivos}%) Mulheres</div>
                         <div style="font-size: 0.85rem; color: #dc2626; font-weight: 700; margin-top: 5px; border-top: 1px solid #bae6fd; padding-top: 4px;">
                             <i class="fa-solid fa-triangle-exclamation"></i> Inativos / Óbitos: ${totalInativos} registros | ${qtdHomensInativos} (${percHomensInativos}% dos inativos) Homens &nbsp;&bull;&nbsp; ${qtdMulheresInativos} (${percMulheresInativos}% dos inativos) Mulheres
                         </div>
                     `;
-
+                    // ORDENAÇÃO ALFABÉTICA PERFEITA POR NOME COMPLETO
                     data.lista.sort((a, b) => {
                         const nomeA = (a.registro && (a.registro.nomeCompleto || a.registro.nomeSocial) ? (a.registro.nomeCompleto || a.registro.nomeSocial) : "").toLowerCase();
                         const nomeB = (b.registro && (b.registro.nomeCompleto || b.registro.nomeSocial) ? (b.registro.nomeCompleto || b.registro.nomeSocial) : "").toLowerCase();
                         return nomeA.localeCompare(nomeB, 'pt-BR');
                     });
 
-                    data.lista.forEach(item => {
+                        data.lista.forEach(item => {
                         const reg = item.registro || {};
                         const isInativo = String(reg.status || "").trim() === "Inativo";                        
                         
+                        // 🟢 LÓGICA DO NOME E NOME SOCIAL SOLICITADA
                         const nomePrincipal = reg.nomeCompleto || reg.nome || "Sem Nome";
                         const nomeSocialBruto = (reg.nomeSocial || "").trim();
                         const matricula = reg.matricula || "---";
@@ -479,6 +444,7 @@
 
                         const regJson = JSON.stringify(reg).replace(/'/g, "&#39;").replace(/"/g, '&quot;');
 
+                        // 🟢 CARD ATUALIZADO COM O NOME SOCIAL LOGO ABAIXO E SUPORTE MÓVEL
                         card.innerHTML = `
                             <div class="gallery-avatar" onclick='abrirProntuarioFromJson(${regJson})'>${avatarHtml}</div>
                             <div class="gallery-name" title="${nomePrincipal}" onclick='abrirProntuarioFromJson(${regJson})'>${nomePrincipal}</div>
