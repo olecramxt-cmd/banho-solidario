@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.6.002                              -->
-<!-- Data de atualização: 17/11/2026 - 16:55                                        -->
-<!-- Descrição: Painel administrativo com botão Sair reposicionado para mobile.     -->
+<!-- Programa: admin.html. Versão do Módulo: v.2.7.000                              -->
+<!-- Data de atualização: 17/11/2026 - 18:42                                        -->
+<!-- Descrição: Painel administrativo com controle modular de permissões por usuário.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -60,6 +60,11 @@
         .form-group label { font-weight: 600; font-size: 0.9rem; color: var(--dark-color); margin-bottom: 6px; }
         .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background: #fff; }
         .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
+
+        /* Estilo das caixas de permissões modulares */
+        .permissoes-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+        .permissoes-box label { font-weight: 500; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--dark-color); }
+        .permissoes-box input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--secondary-color); cursor: pointer; }
 
         .btn-salvar { background: var(--secondary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; height: 48px; width: 100%; margin-top: auto; }
         .btn-salvar:hover { background: #6d28d9; }
@@ -196,7 +201,7 @@
 
     <div class="container">
         <div class="header-flex">
-            <h2><i class="fa-solid fa-users-gear"></i> Painel de Gestão de Voluntários</h2>
+            <h2><i class="fa-solid fa-users-gear"></i> Painel de Gestão de Voluntários & Acessos</h2>
             <button class="btn-logout" onclick="sairDoSistema(event)"><i class="fa-solid fa-right-from-bracket"></i> Sair do Sistema</button>
         </div>
 
@@ -228,8 +233,22 @@
                     <label>Link da Foto (URL ou ./imagens/...)</label>
                     <input type="text" id="fotoUrl" class="form-control" placeholder="./imagens/foto.png">
                 </div>
-                <div class="form-group" style="display: flex; align-items: flex-end;">
-                    <button type="submit" class="btn-salvar"><i class="fa-solid fa-user-plus"></i> Salvar Voluntário</button>
+                
+                <!-- 🟢 CAIXAS DE PERMISSÕES MODULARES -->
+                <div class="form-group full-width">
+                    <label>Módulos com Acesso Permitido ao Usuário:</label>
+                    <div class="permissoes-box">
+                        <label><input type="checkbox" value="1.1" id="perm_1_1"> 1.1 - Painel Administrativo</label>
+                        <label><input type="checkbox" value="2.1" id="perm_2_1"> 2.1 - Cadastro de Assistidos</label>
+                        <label><input type="checkbox" value="2.2" id="perm_2_2"> 2.2 - Consulta de Assistidos</label>
+                        <label><input type="checkbox" value="2.3" id="perm_2_3"> 2.3 - Galeria da Dignidade</label>
+                        <label><input type="checkbox" value="3.1" id="perm_3_1"> 3.1 - Registro de Atendimentos</label>
+                        <label><input type="checkbox" value="3.2" id="perm_3_2"> 3.2 - Relatórios e Fichas</label>
+                    </div>
+                </div>
+
+                <div class="form-group full-width" style="display: flex; align-items: flex-end; margin-top: 5px;">
+                    <button type="submit" class="btn-salvar"><i class="fa-solid fa-user-plus"></i> Salvar Voluntário & Permissões</button>
                 </div>
             </div>
         </form>
@@ -245,11 +264,12 @@
                         <th>Nome</th>
                         <th>Usuário</th>
                         <th>Perfil</th>
+                        <th>Permissões Ativas</th>
                         <th style="width: 130px; text-align: center;">Ações</th>
                     </tr>
                 </thead>
                 <tbody id="tabelaVoluntarios">
-                    <tr><td colspan="5" style="text-align: center; color: #0284c7;">Carregando voluntários da nuvem...</td></tr>
+                    <tr><td colspan="6" style="text-align: center; color: #0284c7;">Carregando voluntários da nuvem...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -270,7 +290,7 @@
 
         function carregarVoluntariosAdmin() {
             const tbody = document.getElementById('tabelaVoluntarios');
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #0284c7;">Consultando base de dados...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #0284c7;">Consultando base de dados...</td></tr>`;
 
             fetch(API_URL, {
                 method: "POST",
@@ -289,6 +309,7 @@
                         }
 
                         const perfilFormatado = (String(op.tipo).trim().toLowerCase() === "admin" || String(op.tipo).trim().toLowerCase() === "administrador") ? "Administrador" : "Comum";
+                        const permissoesAtivas = op.permissoes || "Nenhuma";
 
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
@@ -296,6 +317,7 @@
                             <td><strong>${op.nome || '---'}</strong></td>
                             <td>${op.username || '---'}</td>
                             <td>${perfilFormatado}</td>
+                            <td><code style="background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-size: 0.8rem; color: #7c3aed;">${permissoesAtivas}</code></td>
                             <td style="text-align: center;">
                                 <button class="btn-acao btn-editar" title="Editar Registro" onclick='prepararEdicao(${JSON.stringify(op)})'><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button class="btn-acao btn-senha" title="Alterar Senha" onclick='prepararAlterarSenha("${op.username}")'><i class="fa-solid fa-key"></i></button>
@@ -305,11 +327,11 @@
                         tbody.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Nenhum voluntário encontrado.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">Nenhum voluntário encontrado.</td></tr>`;
                 }
             })
             .catch(err => {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Erro de conexão com o servidor.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">Erro de conexão com o servidor.</td></tr>`;
             });
         }
 
@@ -323,6 +345,12 @@
             const foto = document.getElementById('fotoUrl').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
 
+            // 🟢 CAPTURA AS PERMISSÕES MARCADAS NOS CHECKBOXES
+            let checkboxes = document.querySelectorAll('.permissoes-box input[type="checkbox"]:checked');
+            let listaPerm = [];
+            checkboxes.forEach(cb => listaPerm.push(cb.value));
+            let permissoesStr = listaPerm.join(", ");
+
             const acaoServer = (modo === "editar") ? "atualizar" : "cadastrar";
             const payload = {
                 action: acaoServer,
@@ -331,6 +359,7 @@
                 senha: senha,
                 tipo: tipo,
                 foto: foto,
+                permissoes: permissoesStr,
                 usernameOriginal: document.getElementById('usernameOriginal').value
             };
 
@@ -349,6 +378,10 @@
                     statusDiv.innerText = data.message || "Operação realizada com sucesso!";
                     document.getElementById('formVoluntario').reset();
                     document.getElementById('modoOperacao').value = "inserir";
+                    
+                    // Limpa todos os checkboxes após salvar
+                    document.querySelectorAll('.permissoes-box input[type="checkbox"]').forEach(cb => cb.checked = false);
+
                     carregarVoluntariosAdmin();
                     setTimeout(() => { statusDiv.innerText = ""; }, 3000);
                 } else {
@@ -370,6 +403,13 @@
             document.getElementById('senha').value = op.senha || "";
             document.getElementById('tipoPerfil').value = (String(op.tipo).trim().toLowerCase() === "admin" || String(op.tipo).trim().toLowerCase() === "administrador") ? "admin" : "comum";
             document.getElementById('fotoUrl').value = op.foto || "";
+
+            // 🟢 MARCA OS CHECKBOXES DE ACORDO COM AS PERMISSÕES SALVAS DO USUÁRIO
+            const permissoesUsuario = String(op.permissoes || "");
+            document.querySelectorAll('.permissoes-box input[type="checkbox"]').forEach(cb => {
+                cb.checked = permissoesUsuario.includes(cb.value);
+            });
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
