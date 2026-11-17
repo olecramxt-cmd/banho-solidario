@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.7.000                              -->
-<!-- Data de atualização: 17/11/2026 - 18:42                                        -->
-<!-- Descrição: Painel administrativo com controle modular de permissões por usuário.-->
+<!-- Programa: admin.html. Versão do Módulo: v.2.7.001                              -->
+<!-- Data de atualização: 17/11/2026 - 20:04                                        -->
+<!-- Descrição: Painel administrativo com separação correta entre Fotos e Permissões.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -61,7 +61,6 @@
         .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background: #fff; }
         .form-control:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
 
-        /* Estilo das caixas de permissões modulares */
         .permissoes-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
         .permissoes-box label { font-weight: 500; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--dark-color); }
         .permissoes-box input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--secondary-color); cursor: pointer; }
@@ -234,7 +233,6 @@
                     <input type="text" id="fotoUrl" class="form-control" placeholder="./imagens/foto.png">
                 </div>
                 
-                <!-- 🟢 CAIXAS DE PERMISSÕES MODULARES -->
                 <div class="form-group full-width">
                     <label>Módulos com Acesso Permitido ao Usuário:</label>
                     <div class="permissoes-box">
@@ -257,22 +255,22 @@
         <h3 class="section-title" style="margin-top: 30px;"><i class="fa-solid fa-list-ul"></i> Voluntários Cadastrados</h3>
 
         <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 70px; text-align: center;">Foto</th>
-                            <th>Nome</th>
-                            <th>Usuário</th>
-                            <th>Perfil</th>
-                            <th>Permissões Ativas</th> <!-- Coluna E -->
-                            <th style="width: 130px; text-align: center;">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaVoluntarios">
-                        <!-- Preenchido via JS -->
-                    </tbody>
-                </table>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 70px; text-align: center;">Foto</th>
+                        <th>Nome</th>
+                        <th>Usuário</th>
+                        <th>Perfil</th>
+                        <th>Permissões Ativas</th>
+                        <th style="width: 130px; text-align: center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaVoluntarios">
+                    <tr><td colspan="6" style="text-align: center; color: #0284c7;">Carregando voluntários da nuvem...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -309,15 +307,15 @@
                         }
 
                         const perfilFormatado = (String(op.tipo).trim().toLowerCase() === "admin" || String(op.tipo).trim().toLowerCase() === "administrador") ? "Administrador" : "Comum";
-                        const permissoesAtivas = op.permissoes || "Nenhuma";
+                        const permissoesAtivas = op.permissoes ? String(op.permissoes).trim() : "Nenhuma";
 
-                    const tr = document.createElement('tr');
+                        const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td style="text-align: center;">${avatarHtml}</td>
                             <td><strong>${op.nome || '---'}</strong></td>
                             <td>${op.username || '---'}</td>
                             <td>${perfilFormatado}</td>
-                            <td><code style="background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-size: 0.8rem; color: #7c3aed;">${op.permissoes || 'Nenhuma'}</code></td>
+                            <td><code style="background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-size: 0.8rem; color: #7c3aed;">${permissoesAtivas}</code></td>
                             <td style="text-align: center;">
                                 <button class="btn-acao btn-editar" title="Editar Registro" onclick='prepararEdicao(${JSON.stringify(op)})'><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button class="btn-acao btn-senha" title="Alterar Senha" onclick='prepararAlterarSenha("${op.username}")'><i class="fa-solid fa-key"></i></button>
@@ -345,7 +343,6 @@
             const foto = document.getElementById('fotoUrl').value.trim();
             const statusDiv = document.getElementById('mensagemStatus');
 
-            // 🟢 CAPTURA AS PERMISSÕES MARCADAS NOS CHECKBOXES
             let checkboxes = document.querySelectorAll('.permissoes-box input[type="checkbox"]:checked');
             let listaPerm = [];
             checkboxes.forEach(cb => listaPerm.push(cb.value));
@@ -379,7 +376,6 @@
                     document.getElementById('formVoluntario').reset();
                     document.getElementById('modoOperacao').value = "inserir";
                     
-                    // Limpa todos os checkboxes após salvar
                     document.querySelectorAll('.permissoes-box input[type="checkbox"]').forEach(cb => cb.checked = false);
 
                     carregarVoluntariosAdmin();
@@ -404,7 +400,6 @@
             document.getElementById('tipoPerfil').value = (String(op.tipo).trim().toLowerCase() === "admin" || String(op.tipo).trim().toLowerCase() === "administrador") ? "admin" : "comum";
             document.getElementById('fotoUrl').value = op.foto || "";
 
-            // 🟢 MARCA OS CHECKBOXES DE ACORDO COM AS PERMISSÕES SALVAS DO USUÁRIO
             const permissoesUsuario = String(op.permissoes || "");
             document.querySelectorAll('.permissoes-box input[type="checkbox"]').forEach(cb => {
                 cb.checked = permissoesUsuario.includes(cb.value);
