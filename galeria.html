@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.5.012                            -->
-<!-- Data de atualização: 17/11/2026 - 02:45                                        -->
-<!-- Descrição: Galeria com correção de margens e botões responsivos para mobile.   -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.5.013                            -->
+<!-- Data de atualização: 17/11/2026 - 02:52                                        -->
+<!-- Descrição: Galeria com grid de prontuário 100% responsivo para mobile.         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -58,7 +58,6 @@
 
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; width: 100%; }
         
-        /* 🟢 AJUSTES RESPONSIVOS APLICADOS NO CARD E NOS BOTÕES */
         .gallery-card { 
             background: white; 
             border-radius: 12px; 
@@ -82,14 +81,13 @@
         .gallery-name:hover { color: var(--primary-color); }
         .gallery-matricula { font-size: 0.85rem; color: #64748b; font-weight: 500; margin-bottom: 15px; }
 
-        /* Botões de Ação Direta nos Cards com ajuste para celular */
         .acoes-card { 
             display: flex; 
             gap: 8px; 
             justify-content: center; 
             margin-top: auto; 
             width: 100%; 
-            flex-wrap: wrap; /* Garante que os botões quebrem linha se necessário sem vazar */
+            flex-wrap: wrap; 
         }
         .btn-acao { border: none; width: 38px; height: 38px; border-radius: 8px; cursor: pointer; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; transition: opacity 0.2s; text-decoration: none; }
         .btn-acao:hover { opacity: 0.85; }
@@ -97,9 +95,9 @@
         .btn-amarelo { background-color: var(--warning-color); } 
         .btn-roxo { background-color: var(--secondary-color); } 
 
-        /* MODAL DE PRONTUÁRIO TOTALMENTE FORÇADO CONTRA CORTE */
-        .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.6) !important; backdrop-filter: blur(4px); display: none; justify-content: center !important; align-items: center !important; z-index: 9999 !important; padding: 10px !important; box-sizing: border-box !important; }
-        .modal-card { background: white !important; width: 100% !important; max-width: 850px !important; max-height: 90vh !important; border-radius: 16px !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2) !important; overflow-y: auto !important; padding: 25px 20px 80px 20px !important; position: relative !important; box-sizing: border-box !important; -webkit-overflow-scrolling: touch !important; margin: auto !important; }
+        /* MODAL DE PRONTUÁRIO OTIMIZADO PARA MOBILE */
+        .modal-overlay { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.6) !important; backdrop-filter: blur(4px); display: none; justify-content: center !important; align-items: center !important; z-index: 9999 !important; padding: 5px !important; box-sizing: border-box !important; }
+        .modal-card { background: white !important; width: 100% !important; max-width: 850px !important; max-height: 92vh !important; border-radius: 16px !important; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2) !important; overflow-y: auto !important; padding: 15px 10px 60px 10px !important; position: relative !important; box-sizing: border-box !important; -webkit-overflow-scrolling: touch !important; margin: auto !important; }
         .close-modal { position: absolute !important; top: 15px !important; right: 20px !important; background: none !important; border: none !important; font-size: 1.5rem !important; color: #64748b !important; cursor: pointer !important; z-index: 10 !important; }
         .close-modal:hover { color: #dc2626 !important; }
         
@@ -109,24 +107,25 @@
         .modal-info h3 { margin: 0 0 3px 0 !important; color: #0f172a !important; font-size: 1.2rem !important; word-break: break-all !important; }
         .modal-info p { margin: 2px 0 !important; color: #64748b !important; font-size: 13px !important; }
         
-  .read-only-grid { 
-    display: grid !important; 
-    grid-template-columns: 1fr !important; /* 🟢 No celular, cada campo ocupa 100% da largura em coluna única */
-    gap: 12px !important; 
-}
+        /* 🟢 CORREÇÃO CRUCIAL PARA O PRONTUÁRIO NÃO VAZAR NO CELULAR */
+        .read-only-grid { 
+            display: grid !important; 
+            grid-template-columns: 1fr !important; /* Coluna única no celular */
+            gap: 12px !important; 
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        @media (min-width: 768px) {
+            .read-only-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+            }
+        }
 
-/* 🟢 Em telas maiores (tablets e computadores), volta a usar várias colunas lado a lado */
-@media (min-width: 768px) {
-    .read-only-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
-    }
-}
-        .read-field { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; padding: 8px 12px !important; border-radius: 8px !important; }
+        .read-field { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; padding: 8px 12px !important; border-radius: 8px !important; width: 100% !important; box-sizing: border-box !important; }
         .read-field label { display: block !important; font-size: 0.7rem !important; font-weight: 700 !important; color: #64748b !important; text-transform: uppercase !important; margin-bottom: 2px !important; }
         .read-field span { font-size: 0.9rem !important; font-weight: 500 !important; color: #1e293b !important; word-break: break-word !important; }
         .section-title { grid-column: 1 / -1 !important; font-size: 1rem !important; color: var(--primary-dark) !important; border-bottom: 2px solid #e2e8f0 !important; padding-bottom: 4px !important; margin-top: 15px !important; margin-bottom: 5px !important; font-weight: 700 !important; }
 
-        /* Estilos da Tela de Histórico Individual com Rolagem Horizontal Forçada !important */
         #telaHistoricoIndividual { display: none; text-align: left; width: 100%; }
         .stats-grid-ind { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
         @media(min-width: 768px) { .stats-grid-ind { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
@@ -139,7 +138,6 @@
         table.tabela-ind th, table.tabela-ind td { border-bottom: 1px solid #e2e8f0 !important; border-right: 1px solid #f1f5f9 !important; padding: 10px 12px !important; text-align: left !important; vertical-align: middle !important; white-space: nowrap !important; }
         table.tabela-ind th { background-color: #f8fafc !important; color: var(--secondary-color) !important; font-weight: 600 !important; }
 
-        /* 📱 Garantindo a perfeição nos Dispositivos Móveis */
         @media (max-width: 600px) {
             .gallery-grid {
                 grid-template-columns: 1fr !important;
@@ -153,7 +151,6 @@
 </head>
 <body onload="carregarGaleriaDignidade()">
 
-    <!-- Validação de Sessão / Login Otimizada -->
     <script src="config.js"></script>
     <script>
         const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
@@ -213,7 +210,6 @@
         </div>
     </nav>
 
-    <!-- CONTAINER PRINCIPAL -->
     <div class="container" id="containerPrincipal">
         <div id="telaPrincipalGaleria">
             <h2>Galeria da Dignidade</h2>
@@ -224,7 +220,6 @@
             <div class="gallery-grid" id="galleryGrid"></div>
         </div>
 
-        <!-- TELA DE HISTÓRICO DE ATENDIMENTOS -->
         <div id="telaHistoricoIndividual">
             <button onclick="voltarParaGaleria()" class="btn-acao btn-azul" style="width: auto; padding: 0 15px; margin-bottom: 20px; font-weight: 600;"><i class="fa-solid fa-arrow-left"></i> Voltar para a Galeria</button>
             
@@ -268,7 +263,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE PRONTUÁRIO COMPLETO -->
     <div class="modal-overlay" id="modalProntuario" onclick="fecharModalFora(event)">
         <div class="modal-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
