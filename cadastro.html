@@ -65,6 +65,7 @@
 
     <script src="config.js"></script>
     <script>
+        localStorage.removeItem('usuario_ativo'); // Teste forçado de bloqueio
         // 1. Recupera as credenciais de sessão e operador ativo
         const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
         
