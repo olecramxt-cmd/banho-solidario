@@ -158,9 +158,43 @@
         // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
         document.body.style.visibility = "visible";
 
+<script>
         const API_URL = CONFIG.API_URL;
+
+        // 1. Lê os dados do operador logado no armazenamento local do navegador
+        let operadorAtivo = {};
+        try {
+            operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
+        } catch (e) { 
+            operadorAtivo = {}; 
+        }
+
+        const usernameLogado = String(operadorAtivo.username || operadorAtivo.usuario || "").trim();
+        const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
+        const permissoesUser = String(operadorAtivo.permissoes || "");
+
+        // 2. Se não houver nenhum usuário logado, manda direto para a tela de login
+        if (!usernameLogado) {
+            alert("Acesso Negado: Você precisa fazer login no sistema para acessar esta área.");
+            sessionStorage.setItem('pbs_destino', 'atendimentos.html');
+            window.location.href = 'login.html';
+        } else {
+            // 3. Validação rigorosa de permissão do Módulo 3.1 (Registro de Atendimentos)
+            const ehAdmin = (tipoUser === "admin" || tipoUser === "administrador");
+            const temPermissao = permissoesUser.includes("3.1");
+
+            if (!ehAdmin && !temPermissao) {
+                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [3.1 - Registro de Atendimentos].");
+                window.location.href = 'index.html';
+            } else {
+                // 4. Passou em todas as validações, revela a página instantaneamente
+                document.body.style.visibility = "visible";
+            }
+        }
+
         let listaGeralAssistidos = [];
         let assistidoSelecionadoGlobal = null;
+        // ... (continua o restante das funções do sistema)
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
