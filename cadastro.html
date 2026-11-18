@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.007                           -->
+<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.008                           -->
 <!-- Data de atualização: 18/11/2026                                                -->
-<!-- Descrição: Cadastro com bloqueio de login imediato, menu lateral corrigido.    -->
+<!-- Descrição: Cadastro de assistidos com validação simples e direta de login/permissão. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- 🟢 BLOQUEIO DE LOGIN IMEDIATO (Executado antes de renderizar a página) -->
+    <!-- 🟢 VERIFICAÇÃO SIMPLES E DIRETA DE LOGIN E PERMISSÃO ANTES DE EXIBIR A TELA -->
     <script>
         (function() {
             let operadorAtivo = {};
@@ -30,21 +30,21 @@
             const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
             const permissoesUser = String(operadorAtivo.permissoes || "");
 
-            // Se não estiver logado, bloqueia e redireciona imediatamente
+            // 1. Se não houver usuário logado, vai direto para o login
             if (!usernameLogado) {
                 alert("Acesso Negado: Você precisa fazer login no sistema para acessar esta área.");
                 window.location.replace('login.html');
-                throw new Error("Acesso não autorizado.");
+                throw new Error("Não autorizado.");
             }
 
-            // Verifica permissão específica do módulo 2.1
+            // 2. Se houver usuário, verifica a autorização para o módulo 2.1 (Cadastro)
             const ehAdmin = (tipoUser === "admin" || tipoUser === "administrador");
             const temPermissao = permissoesUser.includes("2.1");
 
             if (!ehAdmin && !temPermissao) {
                 alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.1 - Cadastro de Assistidos].");
                 window.location.replace('index.html');
-                throw new Error("Permissão negada.");
+                throw new Error("Sem permissão.");
             }
         })();
     </script>
@@ -84,6 +84,14 @@
         .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
         .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
         .section-title { grid-column: 1 / -1; font-size: 1.1rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; font-weight: 700; }
+        .actions-bar { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-success { background-color: var(--success-color); }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover { background-color: #b91c1c; }
+        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body onload="inicializarCadastro()">
