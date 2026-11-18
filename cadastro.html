@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.006                           -->
+<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.007                           -->
 <!-- Data de atualização: 18/11/2026                                                -->
-<!-- Descrição: Cadastro com verificação estrita de login, menu corrigido e perm 2.1.-->
+<!-- Descrição: Cadastro com bloqueio de login imediato, menu lateral corrigido.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -15,6 +15,40 @@
     <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 🟢 BLOQUEIO DE LOGIN IMEDIATO (Executado antes de renderizar a página) -->
+    <script>
+        (function() {
+            let operadorAtivo = {};
+            try {
+                operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
+            } catch (e) {
+                operadorAtivo = {};
+            }
+
+            const usernameLogado = String(operadorAtivo.username || operadorAtivo.usuario || "").trim();
+            const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
+            const permissoesUser = String(operadorAtivo.permissoes || "");
+
+            // Se não estiver logado, bloqueia e redireciona imediatamente
+            if (!usernameLogado) {
+                alert("Acesso Negado: Você precisa fazer login no sistema para acessar esta área.");
+                window.location.replace('login.html');
+                throw new Error("Acesso não autorizado.");
+            }
+
+            // Verifica permissão específica do módulo 2.1
+            const ehAdmin = (tipoUser === "admin" || tipoUser === "administrador");
+            const temPermissao = permissoesUser.includes("2.1");
+
+            if (!ehAdmin && !temPermissao) {
+                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.1 - Cadastro de Assistidos].");
+                window.location.replace('index.html');
+                throw new Error("Permissão negada.");
+            }
+        })();
+    </script>
+
     <style>
         :root {
             --primary-color: #0284c7;
@@ -26,8 +60,7 @@
             --text-color: #334155;
             --border-color: #cbd5e1;
         }
-        /* Oculta a página até que a verificação de login seja concluída com sucesso */
-        body { visibility: hidden; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
         .menu-toggle:hover { background: white; color: var(--primary-dark); }
@@ -51,52 +84,13 @@
         .form-group label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
         .form-group input, .form-group select { padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; }
         .section-title { grid-column: 1 / -1; font-size: 1.1rem; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; font-weight: 700; }
-        .actions-bar { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; grid-column: 1 / -1; }
-        .btn { background-color: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: background 0.2s; }
-        .btn:hover { background-color: var(--primary-dark); }
-        .btn-success { background-color: var(--success-color); }
-        .btn-success:hover { background-color: #15803d; }
-        .btn-danger { background-color: var(--danger-color); }
-        .btn-danger:hover { background-color: #b91c1c; }
-        #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body onload="inicializarCadastro()">
 
     <script src="config.js"></script>
     <script>
-        localStorage.removeItem('usuario_ativo'); // Teste forçado de bloqueio
-        // 1. Recupera as credenciais de sessão e operador ativo
         const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
-        
-        let operadorAtivo = {};
-        try {
-            operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
-        } catch (e) {
-            operadorAtivo = {};
-        }
-
-        const usernameLogado = String(operadorAtivo.username || operadorAtivo.usuario || "").trim();
-        const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
-        const permissoesUser = String(operadorAtivo.permissoes || "");
-
-        // 2. Validação rigorosa: Se não estiver logado, redireciona para o login.html
-        if (!usernameLogado) {
-            alert("Acesso Negado: Você precisa fazer login no sistema para acessar esta área.");
-            window.location.href = 'login.html';
-        } else {
-            // Verifica permissão específica do módulo 2.1 (Cadastro de Assistidos)
-            const ehAdmin = (tipoUser === "admin" || tipoUser === "administrador");
-            const temPermissao = permissoesUser.includes("2.1");
-
-            if (!ehAdmin && !temPermissao) {
-                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.1 - Cadastro de Assistidos].");
-                window.location.href = 'index.html';
-            } else {
-                // Sucesso: Torna o corpo visível imediatamente
-                document.body.style.visibility = "visible";
-            }
-        }
 
         window.toggleMenu = function() {
             const sideMenu = document.getElementById('sideMenu');
