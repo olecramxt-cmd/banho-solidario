@@ -4,7 +4,7 @@
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
 <!-- Programa: cadastro.html. Versão do Módulo: v.3.0.006                           -->
 <!-- Data de atualização: 18/11/2026                                                -->
-<!-- Descrição: Cadastro de assistidos com menu lateral corrigido e permissão 2.1.  -->
+<!-- Descrição: Cadastro com verificação estrita de login, menu corrigido e perm 2.1.-->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -26,6 +26,7 @@
             --text-color: #334155;
             --border-color: #cbd5e1;
         }
+        /* Oculta a página até que a verificação de login seja concluída com sucesso */
         body { visibility: hidden; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
@@ -58,13 +59,44 @@
         .btn-danger { background-color: var(--danger-color); }
         .btn-danger:hover { background-color: #b91c1c; }
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
-        .aviso-cpf-invalido { color: var(--danger-color); font-size: 12px; margin-top: 3px; display: none; font-weight: 600; }
     </style>
 </head>
-<body>
+<body onload="inicializarCadastro()">
 
     <script src="config.js"></script>
     <script>
+        // 1. Recupera as credenciais de sessão e operador ativo
+        const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
+        
+        let operadorAtivo = {};
+        try {
+            operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
+        } catch (e) {
+            operadorAtivo = {};
+        }
+
+        const usernameLogado = String(operadorAtivo.username || operadorAtivo.usuario || "").trim();
+        const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
+        const permissoesUser = String(operadorAtivo.permissoes || "");
+
+        // 2. Validação rigorosa: Se não estiver logado, redireciona para o login.html
+        if (!usernameLogado) {
+            alert("Acesso Negado: Você precisa fazer login no sistema para acessar esta área.");
+            window.location.href = 'login.html';
+        } else {
+            // Verifica permissão específica do módulo 2.1 (Cadastro de Assistidos)
+            const ehAdmin = (tipoUser === "admin" || tipoUser === "administrador");
+            const temPermissao = permissoesUser.includes("2.1");
+
+            if (!ehAdmin && !temPermissao) {
+                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.1 - Cadastro de Assistidos].");
+                window.location.href = 'index.html';
+            } else {
+                // Sucesso: Torna o corpo visível imediatamente
+                document.body.style.visibility = "visible";
+            }
+        }
+
         window.toggleMenu = function() {
             const sideMenu = document.getElementById('sideMenu');
             const overlay = document.getElementById('overlay');
@@ -74,30 +106,13 @@
             }
         };
 
-        const autorizado = sessionStorage.getItem('pbs_autorizado') === 'true';
-        const ativoLocal = localStorage.getItem('usuario_ativo');
-        const sessionAutorizado = sessionStorage.getItem('pbs_usuario_nome');
-
-        if (!autorizado && !ativoLocal && !sessionAutorizado) {
-            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
-            window.location.href = 'login.html';
-        }
-
-        // Validação estrita de permissão do módulo 2.1
-        try {
-            const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
-            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
-            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
-            
-            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.1")) {
-                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.1 - Cadastro de Assistidos].");
-                window.location.href = 'index.html';
+        function inicializarCadastro() {
+            const hoje = new Date().toISOString().split('T')[0];
+            const inputData = document.getElementById('dataRegistro');
+            if (inputData && !inputData.value) {
+                inputData.value = hoje;
             }
-        } catch(permErr) {
-            console.error("Erro ao validar permissões:", permErr);
         }
-
-        document.body.style.visibility = "visible";
     </script>
 
     <div class="navbar">
