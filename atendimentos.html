@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.16.006                      -->
-<!-- Data de atualização: 18/11/2026 - 16:15                                        -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.16.005                      -->
+<!-- Data de atualização: 17/11/2026 - 18:40                                        -->
 <!-- Descrição: Atendimentos com validação estrita de permissão 3.1.                -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
@@ -120,35 +120,45 @@
 
     <script src="config.js"></script>
     <script>
-        // 🟢 VALIDAÇÃO IMEDIATA E ROBUSTA DE SESSÃO E PERMISSÃO (MÓDULO 3.1)
+        const autorizadoLocal = localStorage.getItem('pbs_autorizado') === 'true';
+        const autorizadoSession = sessionStorage.getItem('pbs_autorizado') === 'true';
+        
         let operadorAtivo = {};
         try {
             operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
-        } catch (e) { 
-            operadorAtivo = {}; 
+        } catch (e) { operadorAtivo = {}; }
+
+        const temOperador = Boolean(operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario);
+
+        if (temOperador) {
+            localStorage.setItem('pbs_autorizado', 'true');
+            sessionStorage.setItem('pbs_autorizado', 'true');
         }
 
-        const usernameLogado = String(operadorAtivo.username || operadorAtivo.usuario || "").trim();
-        const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
-        const permissoesUser = String(operadorAtivo.permissoes || "");
+        const estaAutorizado = localStorage.getItem('pbs_autorizado') === 'true' || sessionStorage.getItem('pbs_autorizado') === 'true';
 
-        if (!usernameLogado) {
-            alert("Acesso Negado: Você precisa fazer login no sistema para acessar esta área.");
+        if (!estaAutorizado || !temOperador) {
+            sessionStorage.setItem('pbs_destino', 'atendimentos.html');
             window.location.href = 'login.html';
-        } else {
-            const ehAdmin = (tipoUser === "admin" || tipoUser === "administrador");
-            const temPermissao = permissoesUser.includes("3.1");
+        }
 
-            if (!ehAdmin && !temPermissao) {
+        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 3.1 (Registro de Atendimentos)
+        try {
+            const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
+            const permissoesUser = String(operadorAtivo.permissoes || "");
+            
+            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("3.1")) {
                 alert("Acesso Negado: Você não tem permissão para utilizar o módulo [3.1 - Registro de Atendimentos].");
                 window.location.href = 'index.html';
-            } else {
-                // Sucesso: Libera a visualização da página imediatamente
-                document.body.style.visibility = "visible";
             }
+        } catch(permErr) {
+            console.error("Erro ao validar permissões:", permErr);
         }
 
-        const API_URL = typeof CONFIG !== 'undefined' ? CONFIG.API_URL : "";
+        // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
+        document.body.style.visibility = "visible";
+
+        const API_URL = CONFIG.API_URL;
         let listaGeralAssistidos = [];
         let assistidoSelecionadoGlobal = null;
 
