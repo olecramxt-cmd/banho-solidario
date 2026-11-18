@@ -118,50 +118,11 @@
 </head>
 <body onload="inicializarAtendimentos()">
 
-    <script src="config.js"></script>
+<script src="config.js"></script>
     <script>
-        const autorizadoLocal = localStorage.getItem('pbs_autorizado') === 'true';
-        const autorizadoSession = sessionStorage.getItem('pbs_autorizado') === 'true';
+        // 1. Inicializa de forma segura as variáveis de sessão e operador
+        const API_URL = typeof CONFIG !== 'undefined' ? CONFIG.API_URL : "";
         
-        let operadorAtivo = {};
-        try {
-            operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
-        } catch (e) { operadorAtivo = {}; }
-
-        const temOperador = Boolean(operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario);
-
-        if (temOperador) {
-            localStorage.setItem('pbs_autorizado', 'true');
-            sessionStorage.setItem('pbs_autorizado', 'true');
-        }
-
-        const estaAutorizado = localStorage.getItem('pbs_autorizado') === 'true' || sessionStorage.getItem('pbs_autorizado') === 'true';
-
-        if (!estaAutorizado || !temOperador) {
-            sessionStorage.setItem('pbs_destino', 'atendimentos.html');
-            window.location.href = 'login.html';
-        }
-
-        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 3.1 (Registro de Atendimentos)
-        try {
-            const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
-            const permissoesUser = String(operadorAtivo.permissoes || "");
-            
-            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("3.1")) {
-                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [3.1 - Registro de Atendimentos].");
-                window.location.href = 'index.html';
-            }
-        } catch(permErr) {
-            console.error("Erro ao validar permissões:", permErr);
-        }
-
-        // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
-        document.body.style.visibility = "visible";
-
-<script>
-        const API_URL = CONFIG.API_URL;
-
-        // 1. Lê os dados do operador logado no armazenamento local do navegador
         let operadorAtivo = {};
         try {
             operadorAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
@@ -173,13 +134,11 @@
         const tipoUser = String(operadorAtivo.tipo || "").trim().toLowerCase();
         const permissoesUser = String(operadorAtivo.permissoes || "");
 
-        // 2. Se não houver nenhum usuário logado, manda direto para a tela de login
+        // 2. Validação unificada e imediata
         if (!usernameLogado) {
             alert("Acesso Negado: Você precisa fazer login no sistema para acessar esta área.");
-            sessionStorage.setItem('pbs_destino', 'atendimentos.html');
             window.location.href = 'login.html';
         } else {
-            // 3. Validação rigorosa de permissão do Módulo 3.1 (Registro de Atendimentos)
             const ehAdmin = (tipoUser === "admin" || tipoUser === "administrador");
             const temPermissao = permissoesUser.includes("3.1");
 
@@ -187,15 +146,13 @@
                 alert("Acesso Negado: Você não tem permissão para utilizar o módulo [3.1 - Registro de Atendimentos].");
                 window.location.href = 'index.html';
             } else {
-                // 4. Passou em todas as validações, revela a página instantaneamente
+                // 3. Sucesso total: Revela o conteúdo da página imediatamente
                 document.body.style.visibility = "visible";
             }
         }
 
         let listaGeralAssistidos = [];
         let assistidoSelecionadoGlobal = null;
-        // ... (continua o restante das funções do sistema)
-
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
