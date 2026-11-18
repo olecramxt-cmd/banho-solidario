@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.005                           -->
+<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.010                           -->
 <!-- Data de atualização: 18/11/2026                                                -->
-<!-- Descrição: Cadastro original e funcional de assistidos.                        -->
+<!-- Descrição: Cadastro com leitura blindada de sessão e menu corrigido.          -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -64,6 +64,17 @@
 
     <script src="config.js"></script>
     <script>
+        // 🟢 LEITURA BLINDADA DE SESSÃO (Compatível com qualquer chave gravada pelo login.html)
+        const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
+        
+        let operadorAtivo = {};
+        try {
+            const rawUser = localStorage.getItem('usuario_ativo') || localStorage.getItem('pbs_usuario_logado') || sessionStorage.getItem('usuario_ativo');
+            operadorAtivo = rawUser ? JSON.parse(rawUser) : {};
+        } catch (e) {
+            operadorAtivo = {};
+        }
+
         window.toggleMenu = function() {
             const sideMenu = document.getElementById('sideMenu');
             const overlay = document.getElementById('overlay');
@@ -80,8 +91,6 @@
                 inputData.value = hoje;
             }
         }
-
-        const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
     </script>
 
     <div class="navbar">
@@ -123,7 +132,7 @@
             <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 5px;">
                 <i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)
             </a>
-            <a href="./E-book Manual do Voluntariado/index.html" target="_blank" class="menu-link-item" style="margin-top: 5px;">
+            <a href="./E-book Manual do Voluntariado/index.html" target="_blank" class="link-item" style="margin-top: 5px;">
                 <i class="fa-solid fa-book-bookmark" style="color: var(--secondary-color);"></i> 6. Manual do Voluntariado
             </a>
         </div>
