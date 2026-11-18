@@ -391,7 +391,7 @@
             });
         }
 
-        function prepararEdicao(op) {
+function prepararEdicao(op) {
             document.getElementById('modoOperacao').value = "editar";
             document.getElementById('usernameOriginal').value = op.username;
             document.getElementById('nomeCompleto').value = op.nome || "";
@@ -400,7 +400,12 @@
             document.getElementById('tipoPerfil').value = (String(op.tipo).trim().toLowerCase() === "admin" || String(op.tipo).trim().toLowerCase() === "administrador") ? "admin" : "comum";
             document.getElementById('fotoUrl').value = op.foto || "";
 
-            const permissoesUsuario = String(op.permissoes || "");
+            // 🟢 Garante que se a permissão contiver uma data (T), ela é ignorada e tratada como vazia
+            let permissoesUsuario = String(op.permissoes || "");
+            if (permissoesUsuario.includes("T") || permissoesUsuario.includes("2026-")) {
+                permissoesUsuario = "";
+            }
+
             document.querySelectorAll('.permissoes-box input[type="checkbox"]').forEach(cb => {
                 cb.checked = permissoesUsuario.includes(cb.value);
             });
