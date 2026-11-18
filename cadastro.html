@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.005                           -->
-<!-- Data de atualização: 17/11/2026                                                -->
-<!-- Descrição: Cadastro de assistidos com validação estrita de permissão 2.1.     -->
+<!-- Programa: cadastro.html. Versão do Módulo: v.3.0.006                           -->
+<!-- Data de atualização: 18/11/2026                                                -->
+<!-- Descrição: Cadastro de assistidos com menu lateral corrigido e permissão 2.1.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -59,26 +59,6 @@
         .btn-danger:hover { background-color: #b91c1c; }
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: bold; }
         .aviso-cpf-invalido { color: var(--danger-color); font-size: 12px; margin-top: 3px; display: none; font-weight: 600; }
-
-        @keyframes pulseSalvar {
-            0% { transform: scale(1); background-color: #ffffff; }
-            50% { transform: scale(1.01); background-color: #dcfce7; }
-            100% { transform: scale(1); background-color: #ffffff; }
-        }
-        .animar-salvamento { animation: pulseSalvar 0.6s ease; }
-        
-        @keyframes piscarAlerta {
-            0% { opacity: 1; background-color: #fee2e2; }
-            50% { opacity: 0.3; background-color: #fecaca; }
-            100% { opacity: 1; background-color: #fee2e2; }
-        }
-        .alerta-piscando {
-            animation: piscarAlerta 0.8s infinite ease-in-out;
-            padding: 12px;
-            border-radius: 8px;
-            border: 2px solid #dc2626;
-            white-space: pre-line;
-        }      
     </style>
 </head>
 <body>
@@ -103,7 +83,7 @@
             window.location.href = 'login.html';
         }
 
-        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 2.1
+        // Validação estrita de permissão do módulo 2.1
         try {
             const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
             const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
@@ -117,34 +97,7 @@
             console.error("Erro ao validar permissões:", permErr);
         }
 
-        // 🟢 SE PASSOU NA VALIDAÇÃO, REVELA A PÁGINA
         document.body.style.visibility = "visible";
-
-        let operadorLogado = "Voluntário / Operador"; 
-        try {
-            if (ativoLocal) {
-                try {
-                    const objUser = JSON.parse(ativoLocal);
-                    operadorLogado = objUser.nome || objUser.username || ativoLocal;
-                } catch(parseErr) {
-                    operadorLogado = ativoLocal;
-                }
-            } else if (sessionAutorizado) {
-                operadorLogado = sessionAutorizado;
-            } else {
-                for (let i = 0; i < sessionStorage.length; i++) {
-                    let key = sessionStorage.key(i);
-                    if (key.includes('usuario') || key.includes('nome') || key.includes('operador')) {
-                        let val = sessionStorage.getItem(key);
-                        if (val && val.length < 50) { operadorLogado = val; break; }
-                    }
-                }
-            }
-        } catch(e) {
-            operadorLogado = "Voluntário / Operador";
-        }
-
-        const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
     </script>
 
     <div class="navbar">
@@ -166,8 +119,8 @@
             
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 5px;">1. Voluntários</div>
             <div class="side-menu-sublinks">
-                <a href="#" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Cadastro</a>
-                <a href="#" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 1.2- Consulta</a>
+                <a href="inscricao_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Inscrição</a>
+                <a href="perfil_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-id-card"></i> 1.2- Meu Perfil</a>
             </div>
             
             <div style="font-weight: 600; color: var(--primary-dark); margin-top: 10px;">2. Assistidos (Área Restrita)</div>
@@ -214,4 +167,9 @@
                 </div>
                 
                 <div class="form-group"><label>Sexo</label><select id="sexo"><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option><option value="Outro">Outro</option></select></div>
-                <div
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC. -->
