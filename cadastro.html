@@ -26,7 +26,7 @@
             --text-color: #334155;
             --border-color: #cbd5e1;
         }
-        body { visibility: hidden; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         .navbar { background-color: #0f172a; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
         .menu-toggle { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.8); color: white; font-size: 1.1rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
         .menu-toggle:hover { background: white; color: var(--primary-dark); }
@@ -101,7 +101,7 @@
     </style>
 <body>
 
-<script src="config.js"></script>
+    <script src="config.js"></script>
     <script>
         window.toggleMenu = function() {
             const sideMenu = document.getElementById('sideMenu');
@@ -121,44 +121,31 @@
             window.location.href = 'login.html';
         }
 
-        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 2.1 (Insira aqui)
-        try {
-            const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
-            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
-            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
-            
-            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.1")) {
-                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.1 - Cadastro de Assistidos].");
-                window.location.href = 'index.html';
-            }
-        } catch(permErr) {
-            console.error("Erro ao validar permissões:", permErr);
-        }
-
-        // 🟢 SE PASSOU NA VALIDAÇÃO, REVELA A PÁGINA (Aqui está o seu código!)
-        document.body.style.visibility = "visible";
-
         let operadorLogado = "Voluntário / Operador"; 
-        // ... (o restante do código continua igual daqui para baixo)
+        try {
+            if (ativoLocal) {
+                try {
+                    const objUser = JSON.parse(ativoLocal);
+                    operadorLogado = objUser.nome || objUser.username || ativoLocal;
+                } catch(parseErr) {
+                    operadorLogado = ativoLocal;
+                }
+            } else if (sessionAutorizado) {
+                operadorLogado = sessionAutorizado;
+            } else {
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    let key = sessionStorage.key(i);
+                    if (key.includes('usuario') || key.includes('nome') || key.includes('operador')) {
+                        let val = sessionStorage.getItem(key);
+                        if (val && val.length < 50) { operadorLogado = val; break; }
+                    }
+                }
+            }
+        } catch(e) {
+            operadorLogado = "Voluntário / Operador";
         }
 
         const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
-
-            // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 2.1
-        try {
-            const usuarioAtivoObj = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
-            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
-            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
-            
-            // Se não for admin e não tiver a permissão "2.1" na lista, bloqueia o acesso
-            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.1")) {
-                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.1 - Cadastro de Assistidos].");
-                window.location.href = 'index.html';
-            }
-        } catch(permErr) {
-            console.error("Erro ao validar permissões:", permErr);
-        }
-        
     </script>
 
     <div class="navbar">
