@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.7.001                              -->
+<!-- Programa: login.html. Versão do Módulo: v.1.7.002                              -->
 <!-- Data de atualização: 19/11/2026                                                -->
-<!-- Descrição: Tela de login com persistência consistente da sessão e destino.     -->
+<!-- Descrição: Correção definitiva da autenticação (preservação de case) e sessão. -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -66,7 +66,7 @@
         <form onsubmit="realizarLogin(event)">
             <div class="form-group">
                 <label>Usuário (Username)</label>
-                <input type="text" id="username" class="form-control" placeholder="Ex: marcelo" required oninput="buscarFotoOperadorRapido()">
+                <input type="text" id="username" class="form-control" placeholder="Ex: Marcelo" required oninput="buscarFotoOperadorRapido()">
             </div>
             <div class="form-group">
                 <label>Senha de Acesso</label>
@@ -105,37 +105,30 @@
 
     <script src="config.js"></script>
     <script>
-        const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
-        const ICONE_PADRAO_HTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
+        const API_URL = CONFIG.API_URL;
+        const AVATAR_FALLBACK = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
 
         function converterLinkDrive(url) {
             if (!url) return "";
-            const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
             if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
             return url;
-        }
-
-        function restaurarAvatarPadrao() {
-            const avatarBox = document.getElementById('avatarBox');
-            if (avatarBox) {
-                avatarBox.innerHTML = ICONE_PADRAO_HTML;
-            }
         }
 
         let timeoutBusca = null;
         function buscarFotoOperadorRapido() {
             clearTimeout(timeoutBusca);
-            const user = document.getElementById('username').value.trim().toLowerCase();
+            const user = document.getElementById('username').value.trim();
+            const avatarBox = document.getElementById('avatarBox');
             const nameDisplay = document.getElementById('operatorNameDisplay');
 
             if (!user) {
-                restaurarAvatarPadrao();
+                avatarBox.innerHTML = AVATAR_FALLBACK;
                 nameDisplay.innerText = "";
                 return;
             }
 
             timeoutBusca = setTimeout(async () => {
-                if (!API_URL) return;
                 try {
                     const res = await fetch(API_URL, {
                         method: 'POST',
@@ -149,18 +142,15 @@
                     if (data.status === "sucesso") {
                         if (data.foto) {
                             const fotoFinal = converterLinkDrive(data.foto);
-                            const avatarBox = document.getElementById('avatarBox');
                             avatarBox.innerHTML = `<img src="${fotoFinal}" alt="Operador">`;
-                            const imgEl = avatarBox.querySelector('img');
-                            if (imgEl) {
-                                imgEl.onerror = () => restaurarAvatarPadrao();
-                            }
+                            const img = avatarBox.querySelector('img');
+                            if (img) img.onerror = () => { avatarBox.innerHTML = AVATAR_FALLBACK; };
                         } else {
-                            restaurarAvatarPadrao();
+                            avatarBox.innerHTML = AVATAR_FALLBACK;
                         }
                         nameDisplay.innerText = data.nome ? `Operador: ${data.nome}` : "";
                     } else {
-                        restaurarAvatarPadrao();
+                        avatarBox.innerHTML = AVATAR_FALLBACK;
                         nameDisplay.innerText = "";
                     }
                 } catch (e) {
@@ -169,56 +159,54 @@
             }, 350);
         }
 
-        function normalizarOperador(dadosOperador, usernameInformado) {
-            const base = (dadosOperador && typeof dadosOperador === 'object') ? { ...dadosOperador } : {};
-            const usernameFinal = String(base.username || base.usuario || usernameInformado || "").trim();
-            return {
-                ...base,
-                username: usernameFinal,
-                usuario: base.usuario || usernameFinal,
-                nome: base.nome || usernameFinal,
-                tipo: base.tipo || "operador",
-                permissoes: base.permissoes !== undefined ? base.permissoes : ""
-            };
-        }
-
         async function realizarLogin(event) {
             event.preventDefault();
-            const user = document.getElementById('username').value.trim().toLowerCase();
+            const userDigitado = document.getElementById('username').value.trim();
             const pass = document.getElementById('senha').value.trim();
             const erroDiv = document.getElementById('mensagemErro');
 
             erroDiv.style.color = "#0284c7";
             erroDiv.innerText = "A validar acesso na nuvem...";
 
+            // Tenta autenticar preservando exatamente o que foi digitado e, se falhar, tenta em minúsculo
+            const tentativasUsuario = userDigitado !== userDigitado.toLowerCase()
+                ? [userDigitado, userDigitado.toLowerCase()]
+                : [userDigitado];
+
             try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action: "loginUsuario", username: user, senha: pass })
-                });
+                let respostaFinal = null;
 
-                if (!res.ok) throw new Error("Erro HTTP: " + res.status);
+                for (const userTentativa of tentativasUsuario) {
+                    const res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ action: "loginUsuario", username: userTentativa, senha: pass })
+                    });
 
-                const resposta = await res.json();
+                    if (!res.ok) throw new Error("Erro HTTP: " + res.status);
 
-                if (resposta.status === 'sucesso') {
-                    const operadorNormalizado = normalizarOperador(resposta.operador, user);
-                    const operadorSerializado = JSON.stringify(operadorNormalizado);
+                    const resposta = await res.json();
+                    respostaFinal = resposta;
 
-                    localStorage.setItem('usuario_ativo', operadorSerializado);
-                    localStorage.setItem('pbs_usuario_logado', operadorSerializado);
-                    sessionStorage.setItem('usuario_ativo', operadorSerializado);
+                    if (resposta.status === 'sucesso') {
+                        break;
+                    }
+                }
+
+                if (respostaFinal && respostaFinal.status === 'sucesso') {
+                    const operadorObj = respostaFinal.operador || { username: userDigitado, nome: userDigitado };
+                    if (!operadorObj.username) operadorObj.username = userDigitado;
+                    if (!operadorObj.usuario) operadorObj.usuario = operadorObj.username;
+
+                    localStorage.setItem('usuario_ativo', JSON.stringify(operadorObj));
                     sessionStorage.setItem('pbs_autorizado', 'true');
-                    sessionStorage.setItem('pbs_usuario_nome', operadorNormalizado.nome);
-
-                    const destinoRaw = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
-                    const destinoSeguro = destinoRaw.includes('login.html') ? 'atendimentos.html' : destinoRaw;
+                    
+                    const destino = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
                     sessionStorage.removeItem('pbs_destino');
-                    window.location.href = destinoSeguro;
+                    window.location.href = destino;
                 } else {
                     erroDiv.style.color = "#dc2626";
-                    erroDiv.innerText = resposta.message || "Utilizador ou senha inválidos!";
+                    erroDiv.innerText = (respostaFinal && respostaFinal.message) || "Usuário ou senha inválidos!";
                 }
             } catch (e) {
                 erroDiv.style.color = "#dc2626";
@@ -238,7 +226,7 @@
 
         function solicitarAlteracaoSenha(e) {
             e.preventDefault();
-            const user = document.getElementById('modalUser').value.trim().toLowerCase();
+            const user = document.getElementById('modalUser').value.trim();
             const novaSenha = document.getElementById('modalNovaSenha').value.trim();
             const msgDiv = document.getElementById('modalMensagem');
 
