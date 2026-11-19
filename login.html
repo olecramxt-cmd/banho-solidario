@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: login.html. Versão do Módulo: v.1.7.000                              -->
-<!-- Data de atualização: 20/10/2026 - 04:00                                        -->
-<!-- Descrição: Tela de login com persistência correta e segura do operador.         -->
+<!-- Programa: login.html. Versão do Módulo: v.1.7.001                              -->
+<!-- Data de atualização: 19/11/2026                                                -->
+<!-- Descrição: Tela de login com persistência consistente da sessão e destino.     -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -105,29 +105,37 @@
 
     <script src="config.js"></script>
     <script>
-        const API_URL = CONFIG.API_URL;
+        const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
+        const ICONE_PADRAO_HTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
 
         function converterLinkDrive(url) {
             if (!url) return "";
-            let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+            const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
             if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
             return url;
+        }
+
+        function restaurarAvatarPadrao() {
+            const avatarBox = document.getElementById('avatarBox');
+            if (avatarBox) {
+                avatarBox.innerHTML = ICONE_PADRAO_HTML;
+            }
         }
 
         let timeoutBusca = null;
         function buscarFotoOperadorRapido() {
             clearTimeout(timeoutBusca);
             const user = document.getElementById('username').value.trim().toLowerCase();
-            const avatarBox = document.getElementById('avatarBox');
             const nameDisplay = document.getElementById('operatorNameDisplay');
 
             if (!user) {
-                avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
+                restaurarAvatarPadrao();
                 nameDisplay.innerText = "";
                 return;
             }
 
             timeoutBusca = setTimeout(async () => {
+                if (!API_URL) return;
                 try {
                     const res = await fetch(API_URL, {
                         method: 'POST',
@@ -141,19 +149,37 @@
                     if (data.status === "sucesso") {
                         if (data.foto) {
                             const fotoFinal = converterLinkDrive(data.foto);
-                            avatarBox.innerHTML = `<img src="${fotoFinal}" alt="Operador" onerror="this.onerror=null;this.innerHTML='<i class=\'fa-solid fa-user\' style=\'font-size: 2.5rem; color: var(--secondary-color);\'></i>';">`;
+                            const avatarBox = document.getElementById('avatarBox');
+                            avatarBox.innerHTML = `<img src="${fotoFinal}" alt="Operador">`;
+                            const imgEl = avatarBox.querySelector('img');
+                            if (imgEl) {
+                                imgEl.onerror = () => restaurarAvatarPadrao();
+                            }
                         } else {
-                            avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
+                            restaurarAvatarPadrao();
                         }
                         nameDisplay.innerText = data.nome ? `Operador: ${data.nome}` : "";
                     } else {
-                        avatarBox.innerHTML = `<i class="fa-solid fa-user" style="font-size: 2.5rem; color: var(--secondary-color);"></i>`;
+                        restaurarAvatarPadrao();
                         nameDisplay.innerText = "";
                     }
                 } catch (e) {
                     console.error("Busca de foto ignorada", e);
                 }
             }, 350);
+        }
+
+        function normalizarOperador(dadosOperador, usernameInformado) {
+            const base = (dadosOperador && typeof dadosOperador === 'object') ? { ...dadosOperador } : {};
+            const usernameFinal = String(base.username || base.usuario || usernameInformado || "").trim();
+            return {
+                ...base,
+                username: usernameFinal,
+                usuario: base.usuario || usernameFinal,
+                nome: base.nome || usernameFinal,
+                tipo: base.tipo || "operador",
+                permissoes: base.permissoes !== undefined ? base.permissoes : ""
+            };
         }
 
         async function realizarLogin(event) {
@@ -177,12 +203,19 @@
                 const resposta = await res.json();
 
                 if (resposta.status === 'sucesso') {
-                    localStorage.setItem('usuario_ativo', JSON.stringify(resposta.operador));
+                    const operadorNormalizado = normalizarOperador(resposta.operador, user);
+                    const operadorSerializado = JSON.stringify(operadorNormalizado);
+
+                    localStorage.setItem('usuario_ativo', operadorSerializado);
+                    localStorage.setItem('pbs_usuario_logado', operadorSerializado);
+                    sessionStorage.setItem('usuario_ativo', operadorSerializado);
                     sessionStorage.setItem('pbs_autorizado', 'true');
-                    
-                    const destino = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
+                    sessionStorage.setItem('pbs_usuario_nome', operadorNormalizado.nome);
+
+                    const destinoRaw = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
+                    const destinoSeguro = destinoRaw.includes('login.html') ? 'atendimentos.html' : destinoRaw;
                     sessionStorage.removeItem('pbs_destino');
-                    window.location.href = destino;
+                    window.location.href = destinoSeguro;
                 } else {
                     erroDiv.style.color = "#dc2626";
                     erroDiv.innerText = resposta.message || "Utilizador ou senha inválidos!";
