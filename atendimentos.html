@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: atendimentos.html. Versão do Módulo: v.2.16.004                      -->
-<!-- Data de atualização: 09/11/2026 - 10:50                                        -->
-<!-- Descrição: Correção total de responsividade mobile, tabelas e rodapé oficial.  -->
+<!-- Programa: atendimentos.html. Versão do Módulo: v.2.16.005                      -->
+<!-- Data de atualização: 20/11/2026 - 15:20                                        -->
+<!-- Descrição: Atendimentos com validação centralizada de acesso e permissão 3.1.  -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -138,7 +138,9 @@
 
         const estaAutorizado = localStorage.getItem('pbs_autorizado') === 'true' || sessionStorage.getItem('pbs_autorizado') === 'true';
 
-        if (!estaAutorizado || !temOperador) {
+        if (typeof PBS_ACESSO !== "undefined") {
+            PBS_ACESSO.exigirAcessoNaPagina("atendimentos.html");
+        } else if (!estaAutorizado || !temOperador) {
             sessionStorage.setItem('pbs_destino', 'atendimentos.html');
             window.location.href = 'login.html';
         }
@@ -358,6 +360,10 @@
 
     <script>
         function inicializarAtendimentos() {
+            if (typeof PBS_ACESSO !== "undefined") {
+                PBS_ACESSO.vincularMenu();
+            }
+
             const nomeOp = operadorAtivo.nome || operadorAtivo.name || operadorAtivo.username || operadorAtivo.usuario || "Operador";
             document.getElementById('operadorLogadoBadge').innerText = `Operador: ${nomeOp}`;
 
@@ -685,7 +691,7 @@
                     atualizarRodapeEstatistico(0, 0, 0, 0);
 
                     setTimeout(() => { statusDiv.innerText = ""; }, 4000);
-                } else { // 🟢 CORRIGIDO: Removida a chave excedente, unindo corretamente com o else
+                } else {
                     statusDiv.style.color = "red";
                     statusDiv.innerText = data.message || "Erro ao gravar atendimento.";
                 }
