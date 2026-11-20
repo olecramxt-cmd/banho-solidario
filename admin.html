@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.7.001                              -->
-<!-- Data de atualização: 17/11/2026 - 20:04                                        -->
-<!-- Descrição: Painel administrativo com separação correta entre Fotos e Permissões.-->
+<!-- Programa: admin.html. Versão do Módulo: v.2.7.002                              -->
+<!-- Data de atualização: 20/11/2026 - 08:48                                        -->
+<!-- Descrição: Painel administrativo com permissões por módulo e edição segura.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -235,14 +235,14 @@
                 
                 <div class="form-group full-width">
                     <label>Módulos com Acesso Permitido ao Usuário:</label>
-                <div class="permissoes-box">
-                    <label><input type="checkbox" value="1.2" id="perm_1_2"> 1.2 - Meu Perfil de Voluntário</label>
-                    <label><input type="checkbox" value="2.1" id="perm_2_1"> 2.1 - Cadastro de Assistidos</label>
-                    <label><input type="checkbox" value="2.2" id="perm_2_2"> 2.2 - Consulta de Assistidos</label>
-                    <label><input type="checkbox" value="2.3" id="perm_2_3"> 2.3 - Galeria da Dignidade</label>
-                    <label><input type="checkbox" value="3.1" id="perm_3_1"> 3.1 - Registro de Atendimentos</label>
-                    <label><input type="checkbox" value="3.2" id="perm_3_2"> 3.2 - Relatórios & Fichas</label>
-                    <label><input type="checkbox" value="4.1" id="perm_4_1"> 4.1 - Painel Administrativo</label>
+                    <div class="permissoes-box">
+                        <label><input type="checkbox" value="1.2" id="perm_1_2"> 1.2 - Meu Perfil de Voluntário</label>
+                        <label><input type="checkbox" value="2.1" id="perm_2_1"> 2.1 - Cadastro de Assistidos</label>
+                        <label><input type="checkbox" value="2.2" id="perm_2_2"> 2.2 - Consulta de Assistidos</label>
+                        <label><input type="checkbox" value="2.3" id="perm_2_3"> 2.3 - Galeria da Dignidade</label>
+                        <label><input type="checkbox" value="3.1" id="perm_3_1"> 3.1 - Registro de Atendimentos</label>
+                        <label><input type="checkbox" value="3.2" id="perm_3_2"> 3.2 - Relatórios & Fichas</label>
+                        <label><input type="checkbox" value="4.1" id="perm_4_1"> 4.1 - Painel Administrativo</label>
                     </div>
                 </div>
 
@@ -275,6 +275,8 @@
     </div>
 
     <script>
+        let mapaOperadoresAdmin = {};
+
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
@@ -290,6 +292,7 @@
         function carregarVoluntariosAdmin() {
             const tbody = document.getElementById('tabelaVoluntarios');
             tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #0284c7;">Consultando base de dados...</td></tr>`;
+            mapaOperadoresAdmin = {};
 
             fetch(API_URL, {
                 method: "POST",
@@ -300,7 +303,10 @@
             .then(data => {
                 if (data.status === "sucesso" && data.lista && data.lista.length > 0) {
                     tbody.innerHTML = "";
-                    data.lista.forEach(op => {
+                    data.lista.forEach((op, idx) => {
+                        const chaveOp = op.username || String(idx);
+                        mapaOperadoresAdmin[chaveOp] = op;
+
                         const fotoFinal = converterLinkDrive(op.foto);
                         let avatarHtml = `<div class="avatar-mini"><i class="fa-solid fa-user" style="color: var(--secondary-color);"></i></div>`;
                         if (fotoFinal) {
@@ -318,7 +324,7 @@
                             <td>${perfilFormatado}</td>
                             <td><code style="background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-size: 0.8rem; color: #7c3aed;">${permissoesAtivas}</code></td>
                             <td style="text-align: center;">
-                                <button class="btn-acao btn-editar" title="Editar Registro" onclick='prepararEdicaoPorChave("${String(chaveOp).replace(/"/g, '&quot;')}")'><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="btn-acao btn-editar" title="Editar Registro" onclick="prepararEdicaoPorChave('${encodeURIComponent(chaveOp)}')"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button class="btn-acao btn-senha" title="Alterar Senha" onclick='prepararAlterarSenha("${op.username}")'><i class="fa-solid fa-key"></i></button>
                                 <button class="btn-acao btn-excluir" title="Excluir Voluntário" onclick='excluirVoluntario("${op.username}")'><i class="fa-solid fa-trash-can"></i></button>
                             </td>
@@ -391,13 +397,16 @@
                 statusDiv.innerText = "Erro de conexão com o servidor.";
             });
         }
-function prepararEdicaoPorChave(chave) {
-    const op = mapaOperadoresAdmin[chave];
-    if (op) {
-        prepararEdicao(op);
-    }
-}
-function prepararEdicao(op) {
+
+        function prepararEdicaoPorChave(chave) {
+            const chaveLimpa = decodeURIComponent(chave);
+            const op = mapaOperadoresAdmin[chaveLimpa];
+            if (op) {
+                prepararEdicao(op);
+            }
+        }
+
+        function prepararEdicao(op) {
             document.getElementById('modoOperacao').value = "editar";
             document.getElementById('usernameOriginal').value = op.username;
             document.getElementById('nomeCompleto').value = op.nome || "";
@@ -414,8 +423,8 @@ function prepararEdicao(op) {
 
             const listaPermissoesUsuario = permissoesUsuario.split(',').map(item => item.trim()).filter(Boolean);
             document.querySelectorAll('.permissoes-box input[type="checkbox"]').forEach(cb => {
-            cb.checked = listaPermissoesUsuario.includes(cb.value);
-                });
+                cb.checked = listaPermissoesUsuario.includes(cb.value);
+            });
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
