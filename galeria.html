@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: galeria.html. Versão do Módulo: v.3.5.024                            -->
-<!-- Data de atualização: 17/11/2026 - 18:30                                        -->
-<!-- Descrição: Galeria da Dignidade com validação estrita de permissão 2.3.        -->
+<!-- Programa: galeria.html. Versão do Módulo: v.3.5.025                            -->
+<!-- Data de atualização: 20/11/2026 - 15:22                                        -->
+<!-- Descrição: Galeria da Dignidade com validação centralizada de permissão 2.3.   -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -117,27 +117,34 @@
         const ativoLocal = localStorage.getItem('usuario_ativo');
         const sessionAutorizado = sessionStorage.getItem('pbs_usuario_nome');
 
-        if (!autorizado && !ativoLocal && !sessionAutorizado) {
-            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
-            window.location.href = 'login.html';
-        }
-
-        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 2.3 (Galeria da Dignidade)
-        try {
-            const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
-            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
-            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
-            
-            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.3")) {
-                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.3 - Galeria da Dignidade].");
-                window.location.href = 'index.html';
+        let acessoLiberadoGaleria = true;
+        if (typeof PBS_ACESSO !== "undefined") {
+            acessoLiberadoGaleria = PBS_ACESSO.exigirAcessoNaPagina("galeria.html");
+        } else {
+            if (!autorizado && !ativoLocal && !sessionAutorizado) {
+                sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+                window.location.replace('login.html');
+                acessoLiberadoGaleria = false;
+            } else {
+                try {
+                    const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
+                    const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
+                    const permissoesUser = String(usuarioAtivoObj.permissoes || "").split(',').map(p => p.trim());
+                    
+                    if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.3")) {
+                        alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.3 - Galeria da Dignidade].");
+                        window.location.replace('index.html');
+                        acessoLiberadoGaleria = false;
+                    }
+                } catch(permErr) {
+                    console.error("Erro ao validar permissões:", permErr);
+                }
             }
-        } catch(permErr) {
-            console.error("Erro ao validar permissões:", permErr);
         }
 
-        // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
-        document.body.style.visibility = "visible";
+        if (acessoLiberadoGaleria) {
+            document.body.style.visibility = "visible";
+        }
 
         const API_URL = CONFIG.API_URL;
     </script>
@@ -354,6 +361,10 @@
         }
 
         function carregarGaleriaDignidade() {
+            if (typeof PBS_ACESSO !== "undefined") {
+                PBS_ACESSO.vincularMenu();
+            }
+
             const statusDiv = document.getElementById('mensagemStatus');
             const statsBanner = document.getElementById('statsBanner');
             const grid = document.getElementById('galleryGrid');
