@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: consulta.html. Versão do Módulo: v.3.0.007                           -->
-<!-- Data de atualização: 17/11/2026                                                -->
-<!-- Descrição: Consulta com validação restrita de permissão do módulo 2.2.        -->
+<!-- Programa: consulta.html. Versão do Módulo: v.3.0.008                           -->
+<!-- Data de atualização: 20/11/2026 - 09:17                                        -->
+<!-- Descrição: Consulta com validação centralizada de acesso e permissão 2.2.      -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -105,35 +105,35 @@
         const ativoLocal = localStorage.getItem('usuario_ativo');
         const sessionAutorizado = sessionStorage.getItem('pbs_usuario_nome');
 
-        if (!autorizado && !ativoLocal && !sessionAutorizado) {
-            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
-            window.location.href = 'login.html';
+        let acessoLiberadoConsulta = true;
+        if (typeof PBS_ACESSO !== "undefined") {
+            acessoLiberadoConsulta = PBS_ACESSO.exigirAcessoNaPagina("consulta.html");
+        } else {
+            if (!autorizado && !ativoLocal && !sessionAutorizado) {
+                sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+                window.location.replace('login.html');
+                acessoLiberadoConsulta = false;
+            } else {
+                try {
+                    const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
+                    const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
+                    const permissoesUser = String(usuarioAtivoObj.permissoes || "").split(',').map(p => p.trim());
+
+                    if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.2")) {
+                        alert("Acesso Negado: Você não possui autorização para utilizar o módulo [2.2 - Consulta de Assistidos].");
+                        window.location.replace('index.html');
+                        acessoLiberadoConsulta = false;
+                    }
+                } catch(permErr) {
+                    console.error("Erro ao validar permissões:", permErr);
+                }
+            }
         }
 
-        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 2.2
-        try {
-            // 🟢 VALIDAÇÃO CENTRALIZADA DE ACESSO E PERMISSÃO DO MÓDULO 2.2
-      if (typeof PBS_ACESSO !== "undefined") {
-          if (!PBS_ACESSO.exigirAcessoNaPagina("consulta.html")) {
-              throw new Error("Acesso bloqueado pelo guardião PBS_ACESSO.");
-          }
-      } else {
-          try {
-              const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
-              const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
-              const permissoesUser = String(usuarioAtivoObj.permissoes || "").split(',').map(p => p.trim());
+        if (acessoLiberadoConsulta) {
+            document.body.style.visibility = "visible";
+        }
 
-              if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.2")) {
-                  alert("Acesso Negado: Você não possui autorização para utilizar o módulo [2.2 - Consulta de Assistidos].");
-                  window.location.href = 'index.html';
-              }
-          } catch(permErr) {
-              console.error("Erro ao validar permissões:", permErr);
-          }
-      }
-
-      // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
-      document.body.style.visibility = "visible";
         let operadorLogado = "Voluntário / Operador"; 
         try {
             if (ativoLocal) {
@@ -799,16 +799,16 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-          if (typeof PBS_ACESSO !== "undefined") {
-              PBS_ACESSO.vincularMenu();
-          }
+            if (typeof PBS_ACESSO !== "undefined") {
+                PBS_ACESSO.vincularMenu();
+            }
 
-          const hojeStr = new Date().toISOString().split('T')[0];
-          const inputDataReg = document.getElementById('dataRegistro');
-          if (inputDataReg && !inputDataReg.value) {
-              inputDataReg.value = hojeStr;
-          }
-      });
+            const hojeStr = new Date().toISOString().split('T')[0];
+            const inputDataReg = document.getElementById('dataRegistro');
+            if (inputDataReg && !inputDataReg.value) {
+                inputDataReg.value = hojeStr;
+            }
+        });
 
         async function buscarUfPorCidade() {
             const cidadeInput = document.getElementById('naturalidade').value.trim();
