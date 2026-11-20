@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.8.1                              -->
-<!-- Data de atualização: 20/11/2026 - 15:16                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.8.2                              -->
+<!-- Data de atualização: 20/11/2026 - 15:48                                        -->
 <!-- Descrição: Perfil sincronizado com a base centralizada de voluntários.         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
@@ -87,11 +87,22 @@
             usuarioAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
         } catch(e) { usuarioAtivo = {}; }
 
+        let acessoLiberadoPerfil = true;
+
         if (typeof PBS_ACESSO !== "undefined") {
-            PBS_ACESSO.exigirAcessoNaPagina("perfil_voluntario.html");
+            acessoLiberadoPerfil = PBS_ACESSO.exigirAcessoNaPagina("perfil_voluntario.html");
         } else if (!autorizado && !usuarioAtivo.username && !usuarioAtivo.email && !usuarioAtivo.cpf) {
             sessionStorage.setItem('pbs_destino', 'perfil_voluntario.html');
             window.location.href = 'login.html';
+            acessoLiberadoPerfil = false;
+        } else {
+            const tipoUser = String(usuarioAtivo.tipo || "").trim().toLowerCase();
+            const permsUser = String(usuarioAtivo.permissoes || "").split(",").map(p => p.trim());
+            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permsUser.includes("1.2")) {
+                alert("Acesso Negado: Você não possui autorização para utilizar o módulo [1.2 - Meu Perfil].");
+                window.location.href = 'index.html';
+                acessoLiberadoPerfil = false;
+            }
         }
 
         const API_URL = CONFIG.API_URL;
@@ -275,6 +286,8 @@
         }
 
         function inicializarPerfilVoluntario() {
+            if (!acessoLiberadoPerfil) return;
+
             if (typeof PBS_ACESSO !== "undefined") {
                 PBS_ACESSO.vincularMenu();
             }
