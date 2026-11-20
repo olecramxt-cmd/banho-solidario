@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.003             -->
-<!-- Data de atualização: 17/11/2026 - 18:50                                        -->
-<!-- Descrição: Relatórios com validação estrita de permissão 3.2.                  -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.004             -->
+<!-- Data de atualização: 20/11/2026 - 15:24                                        -->
+<!-- Descrição: Relatórios com validação centralizada de acesso e permissão 3.2.     -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -119,27 +119,34 @@
         const ativoLocal = localStorage.getItem('usuario_ativo');
         const sessionAutorizado = sessionStorage.getItem('pbs_usuario_nome');
 
-        if (!autorizado && !ativoLocal && !sessionAutorizado) {
-            sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
-            window.location.href = 'login.html';
-        }
-
-        // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 3.2 (Relatórios & Fichas)
-        try {
-            const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
-            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
-            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
-            
-            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("3.2")) {
-                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [3.2 - Relatórios & Fichas].");
-                window.location.href = 'index.html';
+        let acessoLiberadoRelatorio = true;
+        if (typeof PBS_ACESSO !== "undefined") {
+            acessoLiberadoRelatorio = PBS_ACESSO.exigirAcessoNaPagina("relatorio_atendimentos.html");
+        } else {
+            if (!autorizado && !ativoLocal && !sessionAutorizado) {
+                sessionStorage.setItem('pbs_destino', window.location.pathname.split('/').pop());
+                window.location.replace('login.html');
+                acessoLiberadoRelatorio = false;
+            } else {
+                try {
+                    const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
+                    const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
+                    const permissoesUser = String(usuarioAtivoObj.permissoes || "").split(',').map(p => p.trim());
+                    
+                    if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("3.2")) {
+                        alert("Acesso Negado: Você não tem permissão para utilizar o módulo [3.2 - Relatórios & Fichas].");
+                        window.location.replace('index.html');
+                        acessoLiberadoRelatorio = false;
+                    }
+                } catch(permErr) {
+                    console.error("Erro ao validar permissões:", permErr);
+                }
             }
-        } catch(permErr) {
-            console.error("Erro ao validar permissões:", permErr);
         }
 
-        // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
-        document.body.style.visibility = "visible";
+        if (acessoLiberadoRelatorio) {
+            document.body.style.visibility = "visible";
+        }
 
         const API_URL = CONFIG.API_URL;
     </script>
@@ -300,6 +307,10 @@
         }
 
         function inicializarRelatorioMovimentacao() {
+            if (typeof PBS_ACESSO !== "undefined") {
+                PBS_ACESSO.vincularMenu();
+            }
+
             const agora = new Date();
             const anoAtual = String(agora.getFullYear());
             const mesAtual = String(agora.getMonth() + 1).padStart(2, '0');
