@@ -145,8 +145,15 @@
             operadorLogado = "Voluntário / Operador";
         }
 
-        const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
-    </script>
+const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : "";
+
+      // 🟢 VALIDAÇÃO CENTRALIZADA DE ACESSO E PERMISSÃO DO MÓDULO 2.1
+      if (typeof PBS_ACESSO !== "undefined") {
+          if (!PBS_ACESSO.exigirAcessoNaPagina("cadastro.html")) {
+              throw new Error("Acesso bloqueado pelo guardião PBS_ACESSO.");
+          }
+      }
+  </script>
 
     <div class="navbar">
         <button class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i> Menu</button>
@@ -326,13 +333,17 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const hojeStr = new Date().toISOString().split('T')[0];
-            const inputDataReg = document.getElementById('dataRegistro');
-            if (inputDataReg && !inputDataReg.value) {
-                inputDataReg.value = hojeStr;
-            }
-        });
+document.addEventListener("DOMContentLoaded", function() {
+          if (typeof PBS_ACESSO !== "undefined") {
+              PBS_ACESSO.vincularMenu();
+          }
+
+          const hojeStr = new Date().toISOString().split('T')[0];
+          const inputDataReg = document.getElementById('dataRegistro');
+          if (inputDataReg && !inputDataReg.value) {
+              inputDataReg.value = hojeStr;
+          }
+      });
 
         function calcularIdadeDetalhada() {
             const dataNascStr = document.getElementById('dataNascimento').value;
