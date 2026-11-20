@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: perfil_voluntario.html. Versão: v.3.8.0                              -->
-<!-- Data de atualização: 10/11/2026 - 06:00                                        -->
+<!-- Programa: perfil_voluntario.html. Versão: v.3.8.1                              -->
+<!-- Data de atualização: 20/11/2026 - 15:16                                        -->
 <!-- Descrição: Perfil sincronizado com a base centralizada de voluntários.         -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
@@ -87,7 +87,9 @@
             usuarioAtivo = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
         } catch(e) { usuarioAtivo = {}; }
 
-        if (!autorizado && !usuarioAtivo.username && !usuarioAtivo.email && !usuarioAtivo.cpf) {
+        if (typeof PBS_ACESSO !== "undefined") {
+            PBS_ACESSO.exigirAcessoNaPagina("perfil_voluntario.html");
+        } else if (!autorizado && !usuarioAtivo.username && !usuarioAtivo.email && !usuarioAtivo.cpf) {
             sessionStorage.setItem('pbs_destino', 'perfil_voluntario.html');
             window.location.href = 'login.html';
         }
@@ -273,6 +275,10 @@
         }
 
         function inicializarPerfilVoluntario() {
+            if (typeof PBS_ACESSO !== "undefined") {
+                PBS_ACESSO.vincularMenu();
+            }
+
             const identificador = usuarioAtivo.username || usuarioAtivo.email || usuarioAtivo.cpf || usuarioAtivo.usuario || "";
             if (!identificador) {
                 document.getElementById('mensagemStatus').style.color = "red";
