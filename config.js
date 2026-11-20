@@ -2,8 +2,8 @@
 // QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 // ==============================================================================
 // © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-// Programa: config.js. Versão do Módulo: v.1.3.0
-// Data de atualização: 20/11/2026 - 08:50
+// Programa: config.js. Versão do Módulo: v.1.3.1
+// Data de atualização: 20/11/2026 - 09:17
 // Descrição: Configuração da API e guardião central de login e permissões.
 // ==============================================================================
 
@@ -27,6 +27,7 @@ const PBS_ACESSO = (function () {
     function normalizarArquivo(href) {
         if (!href) return "";
         const limpo = String(href).split("#")[0].split("?")[0].trim();
+        if (!limpo) return "";
         const partes = limpo.split("/");
         return (partes[partes.length - 1] || "").toLowerCase();
     }
@@ -56,9 +57,21 @@ const PBS_ACESSO = (function () {
         };
     }
 
-    function podeAcessarModulo(arquivo) {
+    function podeAcessarModulo(arquivo, rotuloLink) {
+        const texto = String(rotuloLink || "").toLowerCase();
+        if (texto.includes("1.1- inscrição") || texto.includes("1.1 - inscrição") || arquivo.includes("inscricao")) {
+            return { permitido: true, motivo: "publico", modulo: null };
+        }
+
         const modulo = MODULOS_PROTEGIDOS[arquivo];
         if (!modulo) {
+            if (!arquivo || arquivo === "#") {
+                return {
+                    permitido: false,
+                    motivo: "sem_permissao",
+                    modulo: { cod: "", nome: (rotuloLink || "Módulo Restrito").trim() }
+                };
+            }
             return { permitido: true, motivo: "publico", modulo: null };
         }
 
@@ -76,7 +89,7 @@ const PBS_ACESSO = (function () {
 
     function exigirAcessoNaPagina(arquivoAtual) {
         const arquivo = normalizarArquivo(arquivoAtual || window.location.pathname);
-        const resultado = podeAcessarModulo(arquivo);
+        const resultado = podeAcessarModulo(arquivo, "");
 
         if (resultado.permitido) {
             return true;
@@ -84,21 +97,21 @@ const PBS_ACESSO = (function () {
 
         if (resultado.motivo === "sem_login") {
             sessionStorage.setItem("pbs_destino", arquivo);
-            window.location.href = "login.html";
+            window.location.replace("login.html");
             return false;
         }
 
         alert(`Acesso Negado: Você não possui autorização para utilizar o módulo [${resultado.modulo.nome}].`);
-        window.location.href = "index.html";
+        window.location.replace("index.html");
         return false;
     }
 
     function interceptarCliqueLink(event, elementoLink) {
         const href = elementoLink ? elementoLink.getAttribute("href") : "";
         const arquivo = normalizarArquivo(href);
-        if (!arquivo) return true;
+        const rotulo = elementoLink ? elementoLink.textContent : "";
 
-        const resultado = podeAcessarModulo(arquivo);
+        const resultado = podeAcessarModulo(arquivo, rotulo);
         if (resultado.permitido) {
             return true;
         }
@@ -109,7 +122,9 @@ const PBS_ACESSO = (function () {
         }
 
         if (resultado.motivo === "sem_login") {
-            sessionStorage.setItem("pbs_destino", arquivo);
+            if (arquivo) {
+                sessionStorage.setItem("pbs_destino", arquivo);
+            }
             window.location.href = "login.html";
             return false;
         }
