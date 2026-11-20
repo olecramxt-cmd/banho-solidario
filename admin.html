@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: admin.html. Versão do Módulo: v.2.7.002                              -->
-<!-- Data de atualização: 20/11/2026 - 08:48                                        -->
-<!-- Descrição: Painel administrativo com permissões por módulo e edição segura.    -->
+<!-- Programa: admin.html. Versão do Módulo: v.2.7.003                              -->
+<!-- Data de atualização: 20/11/2026 - 15:26                                        -->
+<!-- Descrição: Painel administrativo com validação centralizada e permissões.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -107,6 +107,11 @@
         const API_URL = CONFIG.API_URL;
 
         (async function() {
+            if (typeof PBS_ACESSO !== "undefined") {
+                const ok = PBS_ACESSO.exigirAcessoNaPagina("admin.html");
+                if (!ok) return;
+            }
+
             let ativoLocal = {};
             try {
                 ativoLocal = JSON.parse(localStorage.getItem('usuario_ativo') || '{}');
@@ -144,6 +149,9 @@
                 }
 
                 document.body.style.visibility = "visible";
+                if (typeof PBS_ACESSO !== "undefined") {
+                    PBS_ACESSO.vincularMenu();
+                }
                 carregarVoluntariosAdmin();
 
             } catch (err) {
@@ -415,7 +423,6 @@
             document.getElementById('tipoPerfil').value = (String(op.tipo).trim().toLowerCase() === "admin" || String(op.tipo).trim().toLowerCase() === "administrador") ? "admin" : "comum";
             document.getElementById('fotoUrl').value = op.foto || "";
 
-            // 🟢 Garante que se a permissão contiver uma data (T), ela é ignorada e tratada como vazia
             let permissoesUsuario = String(op.permissoes || "");
             if (permissoesUsuario.includes("T") || permissoesUsuario.includes("2026-")) {
                 permissoesUsuario = "";
