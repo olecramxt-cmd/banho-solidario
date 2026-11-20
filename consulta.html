@@ -112,21 +112,28 @@
 
         // 🟢 VALIDAÇÃO RIGOROSA DE PERMISSÃO DO MÓDULO 2.2
         try {
-            const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
-            const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
-            const permissoesUser = String(usuarioAtivoObj.permissoes || "");
-            
-            if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.2")) {
-                alert("Acesso Negado: Você não tem permissão para utilizar o módulo [2.2 - Consulta de Assistidos].");
-                window.location.href = 'index.html';
-            }
-        } catch(permErr) {
-            console.error("Erro ao validar permissões:", permErr);
-        }
+            // 🟢 VALIDAÇÃO CENTRALIZADA DE ACESSO E PERMISSÃO DO MÓDULO 2.2
+      if (typeof PBS_ACESSO !== "undefined") {
+          if (!PBS_ACESSO.exigirAcessoNaPagina("consulta.html")) {
+              throw new Error("Acesso bloqueado pelo guardião PBS_ACESSO.");
+          }
+      } else {
+          try {
+              const usuarioAtivoObj = JSON.parse(ativoLocal || '{}');
+              const tipoUser = String(usuarioAtivoObj.tipo || "").trim().toLowerCase();
+              const permissoesUser = String(usuarioAtivoObj.permissoes || "").split(',').map(p => p.trim());
 
-        // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
-        document.body.style.visibility = "visible";
+              if (tipoUser !== "admin" && tipoUser !== "administrador" && !permissoesUser.includes("2.2")) {
+                  alert("Acesso Negado: Você não possui autorização para utilizar o módulo [2.2 - Consulta de Assistidos].");
+                  window.location.href = 'index.html';
+              }
+          } catch(permErr) {
+              console.error("Erro ao validar permissões:", permErr);
+          }
+      }
 
+      // 🟢 REVELA A PÁGINA APÓS PASSAR NA VALIDAÇÃO
+      document.body.style.visibility = "visible";
         let operadorLogado = "Voluntário / Operador"; 
         try {
             if (ativoLocal) {
