@@ -318,7 +318,7 @@
                             <td>${perfilFormatado}</td>
                             <td><code style="background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-size: 0.8rem; color: #7c3aed;">${permissoesAtivas}</code></td>
                             <td style="text-align: center;">
-                                <button class="btn-acao btn-editar" title="Editar Registro" onclick='prepararEdicao(${JSON.stringify(op)})'><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="btn-acao btn-editar" title="Editar Registro" onclick='prepararEdicaoPorChave("${String(chaveOp).replace(/"/g, '&quot;')}")'><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button class="btn-acao btn-senha" title="Alterar Senha" onclick='prepararAlterarSenha("${op.username}")'><i class="fa-solid fa-key"></i></button>
                                 <button class="btn-acao btn-excluir" title="Excluir Voluntário" onclick='excluirVoluntario("${op.username}")'><i class="fa-solid fa-trash-can"></i></button>
                             </td>
@@ -391,7 +391,12 @@
                 statusDiv.innerText = "Erro de conexão com o servidor.";
             });
         }
-
+function prepararEdicaoPorChave(chave) {
+    const op = mapaOperadoresAdmin[chave];
+    if (op) {
+        prepararEdicao(op);
+    }
+}
 function prepararEdicao(op) {
             document.getElementById('modoOperacao').value = "editar";
             document.getElementById('usernameOriginal').value = op.username;
