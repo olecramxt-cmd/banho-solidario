@@ -799,12 +799,16 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            const hojeStr = new Date().toISOString().split('T')[0];
-            const inputDataReg = document.getElementById('dataRegistro');
-            if (inputDataReg && !inputDataReg.value) {
-                inputDataReg.value = hojeStr;
-            }
-        });
+          if (typeof PBS_ACESSO !== "undefined") {
+              PBS_ACESSO.vincularMenu();
+          }
+
+          const hojeStr = new Date().toISOString().split('T')[0];
+          const inputDataReg = document.getElementById('dataRegistro');
+          if (inputDataReg && !inputDataReg.value) {
+              inputDataReg.value = hojeStr;
+          }
+      });
 
         async function buscarUfPorCidade() {
             const cidadeInput = document.getElementById('naturalidade').value.trim();
