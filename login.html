@@ -176,14 +176,42 @@
 
                 const resposta = await res.json();
 
-                if (resposta.status === 'sucesso') {
-                    localStorage.setItem('usuario_ativo', JSON.stringify(resposta.operador));
-                    sessionStorage.setItem('pbs_autorizado', 'true');
-                    
-                    const destino = sessionStorage.getItem('pbs_destino') || 'atendimentos.html';
-                    sessionStorage.removeItem('pbs_destino');
-                    window.location.href = destino;
-                } else {
+if (resposta.status === 'sucesso') {
+    const op = resposta.operador || {};
+    localStorage.setItem('usuario_ativo', JSON.stringify(op));
+    sessionStorage.setItem('pbs_autorizado', 'true');
+
+    const destino = sessionStorage.getItem('pbs_destino') || 'index.html';
+    sessionStorage.removeItem('pbs_destino');
+
+    const mapaModulos = {
+        'perfil_voluntario.html': { cod: '1.2', nome: '1.2 - Meu Perfil de Voluntário' },
+        'cadastro.html': { cod: '2.1', nome: '2.1 - Cadastro de Assistidos' },
+        'consulta.html': { cod: '2.2', nome: '2.2 - Consulta de Assistidos' },
+        'galeria.html': { cod: '2.3', nome: '2.3 - Galeria da Dignidade' },
+        'atendimentos.html': { cod: '3.1', nome: '3.1 - Registro de Atendimentos' },
+        'relatorio_atendimentos.html': { cod: '3.2', nome: '3.2 - Relatórios & Fichas' },
+        'relatorios.html': { cod: '3.2', nome: '3.2 - Relatórios & Fichas' },
+        'ficha_impressao.html': { cod: '3.2', nome: '3.2 - Relatórios & Fichas' },
+        'admin.html': { cod: '4.1', nome: '4.1 - Painel Administrativo' }
+    };
+
+    const tipoUser = String(op.tipo || "").trim().toLowerCase();
+    const ehAdmin = (tipoUser === "admin" || tipoUser === "administrador");
+    const listaPerms = String(op.permissoes || "").split(',').map(p => p.trim()).filter(Boolean);
+    const infoDestino = mapaModulos[destino];
+
+    if (infoDestino && !ehAdmin && !listaPerms.includes(infoDestino.cod)) {
+        alert(`Acesso Negado: Você não possui autorização para utilizar o módulo [${infoDestino.nome}].`);
+        window.location.href = 'index.html';
+        return;
+    }
+
+    window.location.href = destino;
+}
+                
+                
+                else {
                     erroDiv.style.color = "#dc2626";
                     erroDiv.innerText = resposta.message || "Utilizador ou senha inválidos!";
                 }
