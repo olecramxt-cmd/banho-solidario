@@ -304,11 +304,17 @@
             statusDiv.style.color = "#0284c7";
             statusDiv.innerText = "Carregando seus dados cadastrados...";
 
-            fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: "consultarVoluntario", termo: identificador })
-            })
+fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+        action: "consultarVoluntario",
+        termo: identificador,
+        nomeUsuario: usuarioAtivo.nome || "",
+        username: usuarioAtivo.username || ""
+    })
+})
+
             .then(res => res.json())
             .then(data => {
                 statusDiv.innerText = "";
@@ -339,10 +345,14 @@
                     if (reg.logisticaApoio) document.getElementById('cargoLogistica').checked = true;
 
                     atualizarCamposImpressao(reg);
-                } else {
-                    statusDiv.style.color = "orange";
-                    statusDiv.innerText = "Nenhum cadastro vinculado encontrado. Preencha e salve suas informações.";
-                }
+} else {
+    if (usuarioAtivo.nome && !document.getElementById('volNome').value) {
+        document.getElementById('volNome').value = usuarioAtivo.nome;
+    }
+    statusDiv.style.color = "orange";
+    statusDiv.innerText = "Nenhum cadastro vinculado encontrado. Preencha e salve suas informações.";
+}
+```[cite: 11]
             })
             .catch(() => {
                 statusDiv.style.color = "red";
