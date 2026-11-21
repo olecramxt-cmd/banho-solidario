@@ -305,16 +305,15 @@
             statusDiv.innerText = "Carregando seus dados cadastrados...";
 
 fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({
-        action: "consultarVoluntario",
-        termo: identificador,
-        nomeUsuario: usuarioAtivo.nome || "",
-        username: usuarioAtivo.username || ""
-    })
-})
-
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    action: "consultarVoluntario",
+                    termo: identificador,
+                    nomeUsuario: usuarioAtivo.nome || "",
+                    username: usuarioAtivo.username || ""
+                })
+            })
             .then(res => res.json())
             .then(data => {
                 statusDiv.innerText = "";
@@ -325,7 +324,7 @@ fetch(API_URL, {
 
                     document.getElementById('volNome').value = reg.nome || "";
                     document.getElementById('volNomeSocial').value = reg.nomeSocial || "";
-                    
+
                     const campoCpf = document.getElementById('volCpf');
                     campoCpf.value = reg.cpf || "";
                     campoCpf.removeAttribute('readonly');
@@ -345,14 +344,13 @@ fetch(API_URL, {
                     if (reg.logisticaApoio) document.getElementById('cargoLogistica').checked = true;
 
                     atualizarCamposImpressao(reg);
-} else {
-    if (usuarioAtivo.nome && !document.getElementById('volNome').value) {
-        document.getElementById('volNome').value = usuarioAtivo.nome;
-    }
-    statusDiv.style.color = "orange";
-    statusDiv.innerText = "Nenhum cadastro vinculado encontrado. Preencha e salve suas informações.";
-}
-```[cite: 11]
+                } else {
+                    if (usuarioAtivo.nome && !document.getElementById('volNome').value) {
+                        document.getElementById('volNome').value = usuarioAtivo.nome;
+                    }
+                    statusDiv.style.color = "orange";
+                    statusDiv.innerText = "Nenhum cadastro vinculado encontrado. Preencha e salve suas informações.";
+                }
             })
             .catch(() => {
                 statusDiv.style.color = "red";
