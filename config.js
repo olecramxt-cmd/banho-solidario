@@ -2,8 +2,8 @@
 // QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 // ==============================================================================
 // © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-// Programa: config.js. Versão do Módulo: v.1.3.1
-// Data de atualização: 20/11/2026 - 09:17
+// Programa: config.js. Versão do Módulo: v.1.3.2
+// Data de atualização: 21/11/2026 - 02:06
 // Descrição: Configuração da API e guardião central de login e permissões.
 // ==============================================================================
 
