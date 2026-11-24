@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: inscricao_voluntario.html. Versão: v.2.4.1                           -->
-<!-- Data de atualização: 17/11/2026 - 19:00                                        -->
-<!-- Descrição: Inscrição pública de voluntários com menu lateral padronizado.      -->
+<!-- Programa: inscricao_voluntario.html. Versão: v.2.4.2                           -->
+<!-- Data de atualização: 24/11/2026 - 03:44                                        -->
+<!-- Descrição: Inscrição pública de voluntários com Suíte VLibras integrada.       -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -66,6 +66,16 @@
         .btn-enviar:hover { background: #6d28d9; }
 
         #mensagemStatus { text-align: center; margin-top: 15px; font-weight: 600; font-size: 0.95rem; }
+
+        /* 🟢 AJUSTES E IMPRESSÃO DA SUÍTE VLIBRAS */
+        div[vw] {
+            z-index: 998;
+        }
+        @media print {
+            div[vw] {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -280,6 +290,18 @@
                 statusDiv.innerText = "Erro de conexão com o servidor.";
             });
         }
+    </script>
+
+    <!-- 🟢 SUÍTE VLIBRAS - ACESSIBILIDADE EM LIBRAS -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
     </script>
 </body>
 </html>
