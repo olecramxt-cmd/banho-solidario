@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: index.html. Versão do Módulo: v.3.3.000                              -->
-<!-- Data de atualização: 15/11/2026 - 09:50                                        -->
-<!-- Descrição: Página inicial completa com carretel automático, bolinhas e modal.  -->
+<!-- Programa: index.html. Versão do Módulo: v.3.3.001                              -->
+<!-- Data de atualização: 24/11/2026 - 03:43                                        -->
+<!-- Descrição: Página inicial com carretel, modal e Suíte VLibras integrada.     -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -99,7 +99,7 @@
         .carretel-viewport {
             width: 100%;
             height: 420px;
-            background: #faf5ff; /* <--- Cor de fundo suave combinando com o box */
+            background: #faf5ff;
             border-radius: 8px;
             overflow: hidden;
             display: flex;
@@ -111,14 +111,13 @@
         .carretel-viewport img, .carretel-viewport video {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* <--- Preenche totalmente o espaço do quadro */
+            object-fit: cover;
             cursor: pointer;
             transition: transform 0.3s ease;
         }
         .carretel-viewport img:hover {
             transform: scale(1.02);
         }
-        /* Indicadores em Bolinhas (Dots) */
         .carretel-dots {
             display: flex;
             justify-content: center;
@@ -137,6 +136,16 @@
         .dot.active {
             background: var(--secondary-color);
             transform: scale(1.2);
+        }
+
+        /* 🟢 AJUSTES E IMPRESSÃO DA SUÍTE VLIBRAS */
+        div[vw] {
+            z-index: 998;
+        }
+        @media print {
+            div[vw] {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -330,7 +339,7 @@
         let listaMidiasGlobal = [];
         let indiceAtual = 0;
         let intervaloCarretel = null;
-        let videoEstaTocando = false; // Controle para pausar o carretel durante vídeos
+        let videoEstaTocando = false;
 
         document.addEventListener("DOMContentLoaded", function() {
             const viewport = document.getElementById('carretelViewport');
@@ -365,7 +374,7 @@
             });
         });
 
-function exibirSlide(index) {
+        function exibirSlide(index) {
             const viewport = document.getElementById('carretelViewport');
             if (!viewport || listaMidiasGlobal.length === 0) return;
 
@@ -385,7 +394,6 @@ function exibirSlide(index) {
                 reiniciarAutomacao();
 
             } else if (midia.tipo === "video") {
-                // Pausa a automação para focar no vídeo
                 videoEstaTocando = true;
                 clearInterval(intervaloCarretel);
 
@@ -404,7 +412,6 @@ function exibirSlide(index) {
 
                 viewport.appendChild(video);
 
-                // Mecanismo de segurança: Se o vídeo do Drive travar e não iniciar em 8 segundos, avança sozinho para não prender o site
                 const tempoLimiteVideo = setTimeout(() => {
                     if (video.paused && video.currentTime === 0) {
                         console.warn("Vídeo demorou a responder do Drive, pulando para o próximo slide...");
@@ -414,17 +421,14 @@ function exibirSlide(index) {
                     }
                 }, 8000);
 
-                // Tenta reproduzir
                 video.play().catch(err => {
                     console.log("Aguardando interação do usuário para play:", err);
                 });
 
-                // Quando o vídeo começar a rodar, limpa o limite de segurança
                 video.onplaying = () => {
                     clearTimeout(tempoLimiteVideo);
                 };
 
-                // Quando o vídeo terminar, avança para o próximo slide
                 video.onended = () => {
                     clearTimeout(tempoLimiteVideo);
                     indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
@@ -467,12 +471,11 @@ function exibirSlide(index) {
 
         function iniciarAutomacao() {
             clearInterval(intervaloCarretel);
-            // Só liga o temporizador automático se NÃO houver um vídeo tocando no momento
             if (!videoEstaTocando) {
                 intervaloCarretel = setInterval(() => {
                     indiceAtual = (indiceAtual + 1) % listaMidiasGlobal.length;
                     exibirSlide(indiceAtual);
-                }, 4000); // 4 segundos para as fotos
+                }, 4000);
             }
         }
 
@@ -487,7 +490,6 @@ function exibirSlide(index) {
             if (!modalConteudo) return;
             modalConteudo.innerHTML = "";
 
-            // Pausa a automação geral do carretel ao abrir o modal de ampliação
             clearInterval(intervaloCarretel);
 
             if (midia.tipo === "imagem") {
@@ -499,11 +501,22 @@ function exibirSlide(index) {
             const modal = new bootstrap.Modal(document.getElementById('modalAmpliar'));
             modal.show();
 
-            // Retoma a automação quando fechar o modal
             document.getElementById('modalAmpliar').addEventListener('hidden.bs.modal', function () {
                 iniciarAutomacao();
             }, { once: true });
         }
+    </script>
+
+    <!-- 🟢 SUÍTE VLIBRAS - ACESSIBILIDADE EM LIBRAS -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
     </script>
 </body>
 </html>
