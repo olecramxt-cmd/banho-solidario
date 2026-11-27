@@ -2,9 +2,10 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.004             -->
-<!-- Data de atualização: 20/11/2026 - 15:24                                        -->
-<!-- Descrição: Relatórios com validação centralizada de acesso e permissão 3.2.     -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.005             -->
+<!-- Data de atualização: 27/11/2026 - 07:38                                        -->
+<!-- Descrição: Consulta de assistido alinhada ao módulo 2.2 (Matrícula, CPF,       -->
+<!--            Nome, Nome Social ou 'TODOS') com instrução explícita.              -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -66,11 +67,18 @@
         @media(min-width: 768px) { .filtros-grid { grid-template-columns: 1fr 1fr; } }
 
         .busca-row { display: flex; flex-direction: column; gap: 15px; width: 100%; }
-        @media(min-width: 768px) { .busca-row { flex-direction: row; align-items: flex-end; } }
+        @media(min-width: 768px) { .busca-row { flex-direction: row; align-items: flex-start; } }
 
-        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 6px 6px; max-height: 200px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; }
-        .autocomplete-item { padding: 10px; cursor: pointer; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
-        .autocomplete-item:hover { background: #e0f2fe; color: var(--primary-dark); font-weight: 500; }
+        .busca-input-wrap { display: flex; gap: 8px; width: 100%; position: relative; }
+        .btn-pesquisar-inline { background-color: var(--primary-color); color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; white-space: nowrap; transition: background 0.2s; }
+        .btn-pesquisar-inline:hover { background-color: var(--primary-dark); }
+        .dica-consulta { font-size: 12px; color: #475569; margin-top: 6px; line-height: 1.4; }
+        .dica-consulta strong { color: var(--primary-dark); }
+
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-color); border-radius: 0 0 6px 6px; max-height: 230px; overflow-y: auto; z-index: 99; box-shadow: 0 4px 10px rgba(0,0,0,0.12); display: none; }
+        .autocomplete-item { padding: 10px 12px; cursor: pointer; font-size: 13.5px; border-bottom: 1px solid #f1f5f9; }
+        .autocomplete-item:hover { background: #e0f2fe; color: var(--primary-dark); }
+        .autocomplete-sub { display: block; font-size: 11.5px; color: #64748b; margin-top: 2px; }
 
         .print-options-panel { background: #e0f2fe; border: 1px solid #bae6fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between; }
         .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--primary-dark); }
@@ -234,11 +242,26 @@
 
             <div class="busca-row">
                 <div class="form-group" style="flex: 1; margin:0;">
-                    <label>Consultar Assistido Específico (Opcional)</label>
-                    <input type="text" id="buscaAssistidoFiltro" placeholder="Digite o nome do assistido..." oninput="filtrarNomesAssistidos()" autocomplete="off">
-                    <div id="listaSugestoesRel" class="autocomplete-list"></div>
+                    <label for="buscaAssistidoFiltro">Consultar Assistido Específico (Opcional)</label>
+                    <div class="busca-input-wrap">
+                        <input
+                            type="text"
+                            id="buscaAssistidoFiltro"
+                            placeholder="Digite a Matrícula, o CPF, o Nome, o Nome Social ou 'TODOS'..."
+                            oninput="filtrarNomesAssistidos()"
+                            onkeydown="if(event.key === 'Enter'){ event.preventDefault(); executarConsultaAssistidoRelatorio(); }"
+                            autocomplete="off"
+                        >
+                        <button type="button" class="btn-pesquisar-inline" onclick="executarConsultaAssistidoRelatorio()">
+                            <i class="fa-solid fa-magnifying-glass"></i> Pesquisar
+                        </button>
+                        <div id="listaSugestoesRel" class="autocomplete-list"></div>
+                    </div>
+                    <small class="dica-consulta">
+                        <i class="fa-solid fa-circle-info"></i> Como consultar: digite a <strong>Matrícula</strong>, o <strong>CPF</strong>, o <strong>Nome</strong>, o <strong>Nome Social</strong> ou <strong>'TODOS'</strong> para listar todos os assistidos do período.
+                    </small>
                 </div>
-                <div style="display: flex; align-items: center; height: 42px;">
+                <div style="display: flex; align-items: center; height: 42px; margin-top: 24px;">
                     <label class="checkbox-label" style="font-size: 14px; margin: 0;">
                         <input type="checkbox" id="chkFiltroIndividual" onchange="processarEAtualizarTudo()"> Ativar Relatório Individual
                     </label>
@@ -296,14 +319,28 @@
 
     <script>
         let listaAtendimentosGeral = [];
-        let listaGeralAssistidosNomes = [];
+        let listaGeralAssistidos = [];
+        let mapaAssistidosPorMatricula = {};
+        let mapaAssistidosPorNome = {};
         let pizzaInstance = null;
         let barInstance = null;
-        let assistidoSelecionadoFiltro = "";
+        let assistidoSelecionadoObj = null;
 
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function normalizarTextoBusca(str) {
+            return String(str || "")
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .trim();
+        }
+
+        function normalizarSomenteNumeros(str) {
+            return String(str || "").replace(/\D/g, "");
         }
 
         function inicializarRelatorioMovimentacao() {
@@ -358,36 +395,82 @@
             })
             .then(res => res.json())
             .then(data => {
-                if (data.status === "encontrado" && data.lista) {
-                    listaGeralAssistidosNomes = data.lista.map(i => i.registro.nomeCompleto);
+                if (data.status === "encontrado" && Array.isArray(data.lista)) {
+                    listaGeralAssistidos = data.lista.map(i => {
+                        const reg = i.registro || {};
+                        const obj = {
+                            matricula: String(reg.matricula || i.matricula || "").trim(),
+                            nomeCompleto: String(reg.nomeCompleto || "").trim(),
+                            nomeSocial: String(reg.nomeSocial || "").trim(),
+                            cpf: String(reg.cpf || "").trim()
+                        };
+                        if (obj.matricula) {
+                            mapaAssistidosPorMatricula[normalizarTextoBusca(obj.matricula)] = obj;
+                        }
+                        if (obj.nomeCompleto) {
+                            mapaAssistidosPorNome[normalizarTextoBusca(obj.nomeCompleto)] = obj;
+                        }
+                        return obj;
+                    });
                 }
             })
-            .catch(err => console.error("Erro ao carregar nomes", err));
+            .catch(err => console.error("Erro ao carregar cadastro de assistidos:", err));
+        }
+
+        function assistidoCorrespondeAoTermo(assistido, termoBruto) {
+            const termoNorm = normalizarTextoBusca(termoBruto);
+            if (!termoNorm || termoNorm === "todos") return true;
+
+            const termoNum = normalizarSomenteNumeros(termoBruto);
+            const matNorm = normalizarTextoBusca(assistido.matricula);
+            const matNum = normalizarSomenteNumeros(assistido.matricula);
+            const nomeNorm = normalizarTextoBusca(assistido.nomeCompleto);
+            const socialNorm = normalizarTextoBusca(assistido.nomeSocial);
+            const cpfNum = normalizarSomenteNumeros(assistido.cpf);
+
+            if (matNorm && matNorm.includes(termoNorm)) return true;
+            if (termoNum && matNum && matNum.includes(termoNum)) return true;
+            if (termoNum && cpfNum && cpfNum.includes(termoNum)) return true;
+            if (nomeNorm && nomeNorm.includes(termoNorm)) return true;
+            if (socialNorm && socialNorm.includes(termoNorm)) return true;
+
+            return false;
         }
 
         function filtrarNomesAssistidos() {
-            const termo = document.getElementById('buscaAssistidoFiltro').value.trim().toLowerCase();
+            const campo = document.getElementById('buscaAssistidoFiltro');
+            const termoBruto = campo.value.trim();
+            const termoNorm = normalizarTextoBusca(termoBruto);
             const container = document.getElementById('listaSugestoesRel');
             container.innerHTML = "";
+            assistidoSelecionadoObj = null;
 
-            if (!termo || termo.length < 1) {
+            if (!termoNorm || termoNorm === "todos") {
                 container.style.display = 'none';
-                assistidoSelecionadoFiltro = "";
                 processarEAtualizarTudo();
                 return;
             }
 
-            const filtrados = listaGeralAssistidosNomes.filter(nome => nome && nome.toLowerCase().includes(termo));
+            const filtrados = listaGeralAssistidos.filter(a => assistidoCorrespondeAoTermo(a, termoBruto));
+
             if (filtrados.length > 0) {
-                filtrados.forEach(nome => {
+                filtrados.slice(0, 30).forEach(a => {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
-                    div.innerText = nome;
+                    const tituloItem = a.nomeCompleto || a.nomeSocial || a.matricula;
+                    const detalhes = [
+                        a.matricula ? `Matrícula: ${a.matricula}` : "",
+                        a.nomeSocial ? `Nome Social: ${a.nomeSocial}` : "",
+                        a.cpf ? `CPF: ${a.cpf}` : ""
+                    ].filter(Boolean).join(" • ");
+
+                    div.innerHTML = `<strong>${tituloItem}</strong>${detalhes ? `<span class="autocomplete-sub">${detalhes}</span>` : ""}`;
                     div.onmousedown = function(e) {
                         e.preventDefault();
-                        document.getElementById('buscaAssistidoFiltro').value = nome;
-                        assistidoSelecionadoFiltro = nome;
+                        campo.value = a.nomeCompleto || a.matricula;
+                        assistidoSelecionadoObj = a;
                         container.style.display = 'none';
+                        document.getElementById('chkFiltroIndividual').checked = true;
                         processarEAtualizarTudo();
                     };
                     container.appendChild(div);
@@ -396,6 +479,34 @@
             } else {
                 container.style.display = 'none';
             }
+
+            processarEAtualizarTudo();
+        }
+
+        function executarConsultaAssistidoRelatorio() {
+            const campo = document.getElementById('buscaAssistidoFiltro');
+            const termoBruto = campo.value.trim();
+            const termoNorm = normalizarTextoBusca(termoBruto);
+            const container = document.getElementById('listaSugestoesRel');
+            container.style.display = 'none';
+
+            if (!termoNorm || termoNorm === "todos") {
+                assistidoSelecionadoObj = null;
+                document.getElementById('chkFiltroIndividual').checked = false;
+                processarEAtualizarTudo();
+                return;
+            }
+
+            const filtrados = listaGeralAssistidos.filter(a => assistidoCorrespondeAoTermo(a, termoBruto));
+            if (filtrados.length === 1) {
+                assistidoSelecionadoObj = filtrados[0];
+                campo.value = filtrados[0].nomeCompleto || filtrados[0].matricula;
+            } else {
+                assistidoSelecionadoObj = null;
+            }
+
+            document.getElementById('chkFiltroIndividual').checked = true;
+            processarEAtualizarTudo();
         }
 
         document.addEventListener('click', function(e) {
@@ -470,11 +581,41 @@
             }
         }
 
+        function atendimentoCorrespondeAoAssistido(item, termoBruto, objSelecionado) {
+            const termoNorm = normalizarTextoBusca(termoBruto);
+            if (!termoNorm || termoNorm === "todos") return true;
+
+            const matItemNorm = normalizarTextoBusca(item.matricula);
+            const nomeItemNorm = normalizarTextoBusca(item.nomeAssistido);
+            const cadastroVinculado =
+                (matItemNorm && mapaAssistidosPorMatricula[matItemNorm]) ||
+                (nomeItemNorm && mapaAssistidosPorNome[nomeItemNorm]) ||
+                null;
+
+            if (objSelecionado) {
+                const matSel = normalizarTextoBusca(objSelecionado.matricula);
+                const nomeSel = normalizarTextoBusca(objSelecionado.nomeCompleto);
+                if (matSel && matItemNorm) return matItemNorm === matSel;
+                if (nomeSel && nomeItemNorm) return nomeItemNorm === nomeSel;
+            }
+
+            const candidato = {
+                matricula: item.matricula || (cadastroVinculado ? cadastroVinculado.matricula : ""),
+                nomeCompleto: item.nomeAssistido || (cadastroVinculado ? cadastroVinculado.nomeCompleto : ""),
+                nomeSocial: item.nomeSocial || (cadastroVinculado ? cadastroVinculado.nomeSocial : ""),
+                cpf: item.cpf || (cadastroVinculado ? cadastroVinculado.cpf : "")
+            };
+
+            return assistidoCorrespondeAoTermo(candidato, termoBruto);
+        }
+
         function processarEAtualizarTudo() {
             const anoSelecionado = document.getElementById('filtroAno').value;
             const mesSelecionado = document.getElementById('filtroMes').value;
             const ativarIndividual = document.getElementById('chkFiltroIndividual').checked;
-            const nomeFiltro = assistidoSelecionadoFiltro.toLowerCase();
+            const termoBruto = document.getElementById('buscaAssistidoFiltro').value.trim();
+            const termoNorm = normalizarTextoBusca(termoBruto);
+            const aplicarFiltroAssistido = Boolean(termoNorm && termoNorm !== "todos") || ativarIndividual;
 
             let totalBanho = 0;
             let totalJanta = 0;
@@ -507,7 +648,7 @@
 
                     let anoCorresponde = (dAno === anoSelecionado);
                     let mesCorresponde = (mesSelecionado === "TODOS" || dMes === mesSelecionado);
-                    let individuoCorresponde = (!ativarIndividual || !nomeFiltro || (item.nomeAssistido && item.nomeAssistido.toLowerCase().includes(nomeFiltro)));
+                    let individuoCorresponde = (!aplicarFiltroAssistido || atendimentoCorrespondeAoAssistido(item, termoBruto, assistidoSelecionadoObj));
 
                     if (anoCorresponde && mesCorresponde && individuoCorresponde) {
                         filtradosTabela.push(item);
