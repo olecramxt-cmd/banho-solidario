@@ -2,9 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.006             -->
-<!-- Data de atualização: 27/11/2026 - 07:42                                        -->
-<!-- Descrição: Pesquisa de assistido em ordem alfabética (A-Z) alinhada ao 2.2.    -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.007             -->
+<!-- Data de atualização: 27/11/2026 - 07:46                                        -->
+<!-- Descrição: Consulta individualizada sem 'TODOS', ordenada em A-Z pelo nome.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -246,7 +246,7 @@
                         <input
                             type="text"
                             id="buscaAssistidoFiltro"
-                            placeholder="Digite a Matrícula, o CPF, o Nome, o Nome Social ou 'TODOS'..."
+                            placeholder="Digite a Matrícula, o CPF, o Nome ou o Nome Social..."
                             oninput="filtrarNomesAssistidos()"
                             onkeydown="if(event.key === 'Enter'){ event.preventDefault(); executarConsultaAssistidoRelatorio(); }"
                             autocomplete="off"
@@ -257,7 +257,7 @@
                         <div id="listaSugestoesRel" class="autocomplete-list"></div>
                     </div>
                     <small class="dica-consulta">
-                        <i class="fa-solid fa-circle-info"></i> Como consultar: digite a <strong>Matrícula</strong>, o <strong>CPF</strong>, o <strong>Nome</strong>, o <strong>Nome Social</strong> ou <strong>'TODOS'</strong> para listar todos os assistidos do período em ordem alfabética.
+                        <i class="fa-solid fa-circle-info"></i> Como consultar: digite a <strong>Matrícula</strong>, o <strong>CPF</strong>, o <strong>Nome</strong> ou o <strong>Nome Social</strong> para localizar o assistido em ordem alfabética pelo nome.
                     </small>
                 </div>
                 <div style="display: flex; align-items: center; height: 42px; margin-top: 24px;">
@@ -342,10 +342,14 @@
             return String(str || "").replace(/\D/g, "");
         }
 
-        function compararOrdemAlfabetica(textoA, textoB) {
-            const a = String(textoA || "").trim();
-            const b = String(textoB || "").trim();
-            return a.localeCompare(b, "pt-BR", { sensitivity: "base" });
+        function obterNomeOrdenacao(assistido) {
+            if (!assistido) return "";
+            if (typeof assistido === "string") return assistido.trim();
+            return String(assistido.nomeCompleto || assistido.nomeAssistido || assistido.nomeSocial || assistido.matricula || "").trim();
+        }
+
+        function compararOrdemAlfabeticaPorNome(a, b) {
+            return obterNomeOrdenacao(a).localeCompare(obterNomeOrdenacao(b), "pt-BR", { sensitivity: "base" });
         }
 
         function inicializarRelatorioMovimentacao() {
@@ -418,10 +422,7 @@
                             }
                             return obj;
                         })
-                        .sort((a, b) => compararOrdemAlfabetica(
-                            a.nomeCompleto || a.nomeSocial || a.matricula,
-                            b.nomeCompleto || b.nomeSocial || b.matricula
-                        ));
+                        .sort(compararOrdemAlfabeticaPorNome);
                 }
             })
             .catch(err => console.error("Erro ao carregar cadastro de assistidos:", err));
@@ -429,7 +430,7 @@
 
         function assistidoCorrespondeAoTermo(assistido, termoBruto) {
             const termoNorm = normalizarTextoBusca(termoBruto);
-            if (!termoNorm || termoNorm === "todos") return true;
+            if (!termoNorm) return false;
 
             const termoNum = normalizarSomenteNumeros(termoBruto);
             const matNorm = normalizarTextoBusca(assistido.matricula);
@@ -463,17 +464,13 @@
 
             const filtrados = listaGeralAssistidos
                 .filter(a => assistidoCorrespondeAoTermo(a, termoBruto))
-                .sort((a, b) => compararOrdemAlfabetica(
-                    a.nomeCompleto || a.nomeSocial || a.matricula,
-                    b.nomeCompleto || b.nomeSocial || b.matricula
-                ));
+                .sort(compararOrdemAlfabeticaPorNome);
 
             if (filtrados.length > 0) {
-                const limite = termoNorm === "todos" ? filtrados.length : 50;
-                filtrados.slice(0, limite).forEach(a => {
+                filtrados.slice(0, 50).forEach(a => {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
-                    const tituloItem = a.nomeCompleto || a.nomeSocial || a.matricula;
+                    const tituloItem = obterNomeOrdenacao(a);
                     const detalhes = [
                         a.matricula ? `Matrícula: ${a.matricula}` : "",
                         a.nomeSocial ? `Nome Social: ${a.nomeSocial}` : "",
@@ -483,7 +480,7 @@
                     div.innerHTML = `<strong>${tituloItem}</strong>${detalhes ? `<span class="autocomplete-sub">${detalhes}</span>` : ""}`;
                     div.onmousedown = function(e) {
                         e.preventDefault();
-                        campo.value = a.nomeCompleto || a.matricula;
+                        campo.value = a.nomeCompleto || a.nomeSocial || a.matricula;
                         assistidoSelecionadoObj = a;
                         container.style.display = 'none';
                         document.getElementById('chkFiltroIndividual').checked = true;
@@ -506,7 +503,7 @@
             const container = document.getElementById('listaSugestoesRel');
             container.style.display = 'none';
 
-            if (!termoNorm || termoNorm === "todos") {
+            if (!termoNorm) {
                 assistidoSelecionadoObj = null;
                 document.getElementById('chkFiltroIndividual').checked = false;
                 processarEAtualizarTudo();
@@ -515,14 +512,11 @@
 
             const filtrados = listaGeralAssistidos
                 .filter(a => assistidoCorrespondeAoTermo(a, termoBruto))
-                .sort((a, b) => compararOrdemAlfabetica(
-                    a.nomeCompleto || a.nomeSocial || a.matricula,
-                    b.nomeCompleto || b.nomeSocial || b.matricula
-                ));
+                .sort(compararOrdemAlfabeticaPorNome);
 
             if (filtrados.length === 1) {
                 assistidoSelecionadoObj = filtrados[0];
-                campo.value = filtrados[0].nomeCompleto || filtrados[0].matricula;
+                campo.value = filtrados[0].nomeCompleto || filtrados[0].nomeSocial || filtrados[0].matricula;
             } else {
                 assistidoSelecionadoObj = null;
             }
@@ -605,7 +599,7 @@
 
         function atendimentoCorrespondeAoAssistido(item, termoBruto, objSelecionado) {
             const termoNorm = normalizarTextoBusca(termoBruto);
-            if (!termoNorm || termoNorm === "todos") return true;
+            if (!termoNorm) return true;
 
             const matItemNorm = normalizarTextoBusca(item.matricula);
             const nomeItemNorm = normalizarTextoBusca(item.nomeAssistido);
@@ -637,7 +631,7 @@
             const ativarIndividual = document.getElementById('chkFiltroIndividual').checked;
             const termoBruto = document.getElementById('buscaAssistidoFiltro').value.trim();
             const termoNorm = normalizarTextoBusca(termoBruto);
-            const aplicarFiltroAssistido = Boolean(termoNorm && termoNorm !== "todos") || ativarIndividual;
+            const aplicarFiltroAssistido = Boolean(termoNorm) || ativarIndividual;
 
             let totalBanho = 0;
             let totalJanta = 0;
@@ -681,8 +675,8 @@
                 }
             });
 
-            if (termoNorm) {
-                filtradosTabela.sort((a, b) => compararOrdemAlfabetica(a.nomeAssistido, b.nomeAssistido));
+            if (aplicarFiltroAssistido) {
+                filtradosTabela.sort(compararOrdemAlfabeticaPorNome);
             }
 
             renderizarGraficos(totalBanho, totalJanta, totalCurativos);
