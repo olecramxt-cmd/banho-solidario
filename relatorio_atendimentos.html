@@ -2,10 +2,9 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.005             -->
-<!-- Data de atualização: 27/11/2026 - 07:38                                        -->
-<!-- Descrição: Consulta de assistido alinhada ao módulo 2.2 (Matrícula, CPF,       -->
-<!--            Nome, Nome Social ou 'TODOS') com instrução explícita.              -->
+<!-- Programa: relatorio_atendimentos.html. Versão do Módulo: v.2.2.006             -->
+<!-- Data de atualização: 27/11/2026 - 07:42                                        -->
+<!-- Descrição: Pesquisa de assistido em ordem alfabética (A-Z) alinhada ao 2.2.    -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -258,7 +257,7 @@
                         <div id="listaSugestoesRel" class="autocomplete-list"></div>
                     </div>
                     <small class="dica-consulta">
-                        <i class="fa-solid fa-circle-info"></i> Como consultar: digite a <strong>Matrícula</strong>, o <strong>CPF</strong>, o <strong>Nome</strong>, o <strong>Nome Social</strong> ou <strong>'TODOS'</strong> para listar todos os assistidos do período.
+                        <i class="fa-solid fa-circle-info"></i> Como consultar: digite a <strong>Matrícula</strong>, o <strong>CPF</strong>, o <strong>Nome</strong>, o <strong>Nome Social</strong> ou <strong>'TODOS'</strong> para listar todos os assistidos do período em ordem alfabética.
                     </small>
                 </div>
                 <div style="display: flex; align-items: center; height: 42px; margin-top: 24px;">
@@ -343,6 +342,12 @@
             return String(str || "").replace(/\D/g, "");
         }
 
+        function compararOrdemAlfabetica(textoA, textoB) {
+            const a = String(textoA || "").trim();
+            const b = String(textoB || "").trim();
+            return a.localeCompare(b, "pt-BR", { sensitivity: "base" });
+        }
+
         function inicializarRelatorioMovimentacao() {
             if (typeof PBS_ACESSO !== "undefined") {
                 PBS_ACESSO.vincularMenu();
@@ -396,22 +401,27 @@
             .then(res => res.json())
             .then(data => {
                 if (data.status === "encontrado" && Array.isArray(data.lista)) {
-                    listaGeralAssistidos = data.lista.map(i => {
-                        const reg = i.registro || {};
-                        const obj = {
-                            matricula: String(reg.matricula || i.matricula || "").trim(),
-                            nomeCompleto: String(reg.nomeCompleto || "").trim(),
-                            nomeSocial: String(reg.nomeSocial || "").trim(),
-                            cpf: String(reg.cpf || "").trim()
-                        };
-                        if (obj.matricula) {
-                            mapaAssistidosPorMatricula[normalizarTextoBusca(obj.matricula)] = obj;
-                        }
-                        if (obj.nomeCompleto) {
-                            mapaAssistidosPorNome[normalizarTextoBusca(obj.nomeCompleto)] = obj;
-                        }
-                        return obj;
-                    });
+                    listaGeralAssistidos = data.lista
+                        .map(i => {
+                            const reg = i.registro || {};
+                            const obj = {
+                                matricula: String(reg.matricula || i.matricula || "").trim(),
+                                nomeCompleto: String(reg.nomeCompleto || "").trim(),
+                                nomeSocial: String(reg.nomeSocial || "").trim(),
+                                cpf: String(reg.cpf || "").trim()
+                            };
+                            if (obj.matricula) {
+                                mapaAssistidosPorMatricula[normalizarTextoBusca(obj.matricula)] = obj;
+                            }
+                            if (obj.nomeCompleto) {
+                                mapaAssistidosPorNome[normalizarTextoBusca(obj.nomeCompleto)] = obj;
+                            }
+                            return obj;
+                        })
+                        .sort((a, b) => compararOrdemAlfabetica(
+                            a.nomeCompleto || a.nomeSocial || a.matricula,
+                            b.nomeCompleto || b.nomeSocial || b.matricula
+                        ));
                 }
             })
             .catch(err => console.error("Erro ao carregar cadastro de assistidos:", err));
@@ -445,16 +455,22 @@
             container.innerHTML = "";
             assistidoSelecionadoObj = null;
 
-            if (!termoNorm || termoNorm === "todos") {
+            if (!termoNorm) {
                 container.style.display = 'none';
                 processarEAtualizarTudo();
                 return;
             }
 
-            const filtrados = listaGeralAssistidos.filter(a => assistidoCorrespondeAoTermo(a, termoBruto));
+            const filtrados = listaGeralAssistidos
+                .filter(a => assistidoCorrespondeAoTermo(a, termoBruto))
+                .sort((a, b) => compararOrdemAlfabetica(
+                    a.nomeCompleto || a.nomeSocial || a.matricula,
+                    b.nomeCompleto || b.nomeSocial || b.matricula
+                ));
 
             if (filtrados.length > 0) {
-                filtrados.slice(0, 30).forEach(a => {
+                const limite = termoNorm === "todos" ? filtrados.length : 50;
+                filtrados.slice(0, limite).forEach(a => {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
                     const tituloItem = a.nomeCompleto || a.nomeSocial || a.matricula;
@@ -497,7 +513,13 @@
                 return;
             }
 
-            const filtrados = listaGeralAssistidos.filter(a => assistidoCorrespondeAoTermo(a, termoBruto));
+            const filtrados = listaGeralAssistidos
+                .filter(a => assistidoCorrespondeAoTermo(a, termoBruto))
+                .sort((a, b) => compararOrdemAlfabetica(
+                    a.nomeCompleto || a.nomeSocial || a.matricula,
+                    b.nomeCompleto || b.nomeSocial || b.matricula
+                ));
+
             if (filtrados.length === 1) {
                 assistidoSelecionadoObj = filtrados[0];
                 campo.value = filtrados[0].nomeCompleto || filtrados[0].matricula;
@@ -658,6 +680,10 @@
                     }
                 }
             });
+
+            if (termoNorm) {
+                filtradosTabela.sort((a, b) => compararOrdemAlfabetica(a.nomeAssistido, b.nomeAssistido));
+            }
 
             renderizarGraficos(totalBanho, totalJanta, totalCurativos);
             preencherTabelaMovimentacao(filtradosTabela, totalBanho, totalJanta, totalCurativos);
