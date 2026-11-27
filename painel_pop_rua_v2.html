@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.002                  -->
-<!-- Data de atualização: 27/11/2026 - 10:47                                        -->
+<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.003                  -->
+<!-- Data de atualização: 27/11/2026 - 16:10                                        -->
 <!-- Descrição: Painel de Observação e Perfil dos Assistidos — POP-RUA.             -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
@@ -12,6 +12,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel de Observação e Perfil dos Assistidos — POP-RUA / Vulnerabilidade</title>
+  <link rel="icon" type="image/png" href="imagens/Logo para icones.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
   <script src="config.js"></script>
@@ -66,13 +69,145 @@
     .brand-left {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
 
+    .menu-toggle-painel {
+      background: linear-gradient(135deg, var(--roxo-principal), var(--azul-principal));
+      border: none;
+      color: #FFFFFF;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 9px 14px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(91, 43, 191, 0.22);
+    }
+
+    .menu-toggle-painel:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100%;
+      background: #FFFFFF;
+      box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
+      transition: left 0.35s ease;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      padding: 1.6rem;
+      overflow-y: auto;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+    }
+
+    .side-menu.active { left: 0; }
+
+    .side-menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #E0F2FE;
+      padding-bottom: 0.9rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .side-menu-header h3 {
+      color: #7C3AED;
+      font-size: 1.15rem;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .close-menu {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: #4B5563;
+      cursor: pointer;
+    }
+
+    .side-menu-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .menu-link-item {
+      background: #F8FAFC;
+      color: #7C3AED;
+      padding: 9px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 4px solid #7C3AED;
+      transition: all 0.25s;
+      font-size: 0.92rem;
+    }
+
+    .menu-link-item:hover {
+      background: #E0F2FE;
+      transform: translateX(4px);
+    }
+
+    .side-menu-sublinks {
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.38rem;
+    }
+
+    .menu-sublink-item {
+      font-size: 0.85rem;
+      color: #4B5563;
+      padding: 6px 10px;
+      background: #F1F5F9;
+      border-radius: 6px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .menu-sublink-item:hover {
+      background: #E0F2FE;
+      color: #7C3AED;
+    }
+
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.48);
+      backdrop-filter: blur(2px);
+      display: none;
+      z-index: 999;
+    }
+
+    .menu-overlay.active { display: block; }
+
     .logo-coracao {
-      height: 62px;
-      width: auto;
+      height: 60px;
+      width: 60px;
       object-fit: contain;
+      border-radius: 10px;
+      flex-shrink: 0;
     }
 
     .title-block h1 {
@@ -327,7 +462,7 @@
     }
 
     @media print {
-      .filter-bar, .header-actions { display: none !important; }
+      .filter-bar, .header-actions, .menu-toggle-painel, .side-menu, .menu-overlay { display: none !important; }
       .header-wrapper { position: static; box-shadow: none; }
       body { background: #FFFFFF; }
     }
@@ -335,10 +470,59 @@
 </head>
 <body>
 
+  <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+  <nav class="side-menu" id="sideMenu" aria-label="Menu do Sistema">
+    <div class="side-menu-header">
+      <h3>Menu do Sistema</h3>
+      <button class="close-menu" onclick="toggleMenu()" aria-label="Fechar Menu"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="side-menu-links">
+      <a href="index.html" class="menu-link-item" style="border-left-color: #16a34a;">
+        <i class="fa-solid fa-house" style="color: #16a34a;"></i> Início (Página Inicial)
+      </a>
+
+      <div style="font-weight: 600; color: #7C3AED; font-size: 0.88rem; margin-top: 6px;">1. Voluntários</div>
+      <div class="side-menu-sublinks">
+        <a href="inscricao_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 1.1- Inscrição</a>
+        <a href="perfil_voluntario.html" class="menu-sublink-item"><i class="fa-solid fa-id-card"></i> 1.2- Meu Perfil</a>
+      </div>
+
+      <div style="font-weight: 600; color: #7C3AED; font-size: 0.88rem; margin-top: 6px;">2. Assistidos (Área Restrita)</div>
+      <div class="side-menu-sublinks">
+        <a href="cadastro.html" class="menu-sublink-item"><i class="fa-solid fa-user-plus"></i> 2.1- Cadastro</a>
+        <a href="consulta.html" class="menu-sublink-item"><i class="fa-solid fa-magnifying-glass"></i> 2.2- Consulta</a>
+        <a href="galeria.html" class="menu-sublink-item"><i class="fa-solid fa-id-card-clip"></i> 2.3- Galeria da Dignidade</a>
+      </div>
+
+      <div style="font-weight: 600; color: #7C3AED; font-size: 0.88rem; margin-top: 6px;">3. Atendimentos &amp; Movimentação</div>
+      <div class="side-menu-sublinks">
+        <a href="atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-clipboard-user"></i> 3.1- Registro de Atendimentos</a>
+        <a href="relatorio_atendimentos.html" class="menu-sublink-item"><i class="fa-solid fa-print"></i> 3.2- Relatórios &amp; Fichas</a>
+        <a href="painel_pop_rua_v2.html" class="menu-sublink-item" style="background: #E0F2FE; color: #7C3AED; font-weight: 600;"><i class="fa-solid fa-chart-column"></i> 3.3- Painel POP-RUA / Vulnerabilidade</a>
+      </div>
+
+      <a href="./admin.html" class="menu-link-item" style="margin-top: 6px;">
+        <i class="fa-solid fa-users-gear"></i> 4. Painel Administrativo
+      </a>
+
+      <a href="./ebook/" target="_blank" class="menu-link-item" style="margin-top: 4px;">
+        <i class="fa-solid fa-book-open"></i> 5. Sobre (Acessar E-book)
+      </a>
+
+      <a href="./E-book Manual do Voluntariado/index.html" target="_blank" class="menu-link-item" style="margin-top: 4px;">
+        <i class="fa-solid fa-book-bookmark"></i> 6. Manual do Voluntariado
+      </a>
+    </div>
+  </nav>
+
   <header class="header-wrapper">
     <div class="header-content">
       <div class="brand-left">
-        <img src="Logo-Coracao-Fundo-Branco.jpg" alt="Emblema Banho Solidário" class="logo-coracao" onerror="this.style.display='none'">
+        <button class="menu-toggle-painel" onclick="toggleMenu()" title="Abrir Menu Lateral">
+          <i class="fa-solid fa-bars"></i> Menu
+        </button>
+        <img src="imagens/Logo para icones.png" alt="Logo Coração Banho Solidário" class="logo-coracao" onerror="this.onerror=null;this.src='Logo-Coracao-Fundo-Branco.jpg';">
         <div class="title-block">
           <h1>Painel de Observação e Perfil dos Assistidos — POP-RUA / Vulnerabilidade</h1>
           <p id="subtituloBase">Projeto Banho Solidário • SISTEMAS iPeC • Unaí-MG | Carregando base de dados...</p>
@@ -566,7 +750,12 @@
     Chart.register(ChartDataLabels);
 
     let baseCompleta = [];
-    let metaGlobal = { totalAtendimentos: 0, matriculasAtendidas: 0, dataAtualizacao: '' };
+    let metaGlobal = { totalAtendimentos: 0, totalBanho: 0, totalJanta: 0, totalCurativos: 0, matriculasAtendidas: 0, dataAtualizacao: '' };
+
+    function toggleMenu() {
+      document.getElementById('sideMenu').classList.toggle('active');
+      document.getElementById('overlay').classList.toggle('active');
+    }
     let charts = {};
 
     function carregarDados() {
@@ -606,6 +795,9 @@
       baseCompleta = res.registros || [];
       metaGlobal = {
         totalAtendimentos: res.totalAtendimentos || 0,
+        totalBanho: res.totalBanho || 0,
+        totalJanta: res.totalJanta || 0,
+        totalCurativos: res.totalCurativos || 0,
         matriculasAtendidas: res.matriculasAtendidas || 0,
         dataAtualizacao: res.dataAtualizacao || ''
       };
@@ -698,6 +890,9 @@
       const maxIdade = idadesValidas.length ? Math.max(...idadesValidas) : '—';
 
       const somaAtend = lista.reduce((acc, r) => acc + (r.qtdAtendimentos || 0), 0);
+      const somaBanho = lista.reduce((acc, r) => acc + (r.qtdBanho || 0), 0);
+      const somaJanta = lista.reduce((acc, r) => acc + (r.qtdJanta || 0), 0);
+      const somaCurativos = lista.reduce((acc, r) => acc + (r.qtdCurativos || 0), 0);
       const matAtend = lista.filter(r => (r.qtdAtendimentos || 0) > 0).length;
 
       document.getElementById('kpiTotal').textContent = n;
@@ -716,7 +911,8 @@
       document.getElementById('kpiIdadeMediaSub').textContent = `${idosos60} idosos 60+ • Mín ${minIdade} / Máx ${maxIdade}`;
 
       document.getElementById('kpiAtendimentos').textContent = somaAtend;
-      document.getElementById('kpiAtendimentosSub').textContent = `${matAtend} matrículas atendidas`;
+      document.getElementById('kpiAtendimentosSub').innerHTML =
+        `Banho: <strong>${somaBanho}</strong> • Janta: <strong>${somaJanta}</strong> • Curativos: <strong>${somaCurativos}</strong><br><span style="font-size:0.71rem;">${matAtend} matrículas atendidas</span>`;
     }
 
     function renderBarChart(id, labels, values, colors, horizontal = false, maxExtra = 1.18) {
@@ -842,3 +1038,4 @@
   </script>
 </body>
 </html>
+```[cite: 20]
