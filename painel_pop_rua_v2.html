@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.001                  -->
-<!-- Data de atualização: 27/11/2026                                                -->
+<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.002                  -->
+<!-- Data de atualização: 27/11/2026 - 10:47                                        -->
 <!-- Descrição: Painel de Observação e Perfil dos Assistidos — POP-RUA.             -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
@@ -14,6 +14,12 @@
   <title>Painel de Observação e Perfil dos Assistidos — POP-RUA / Vulnerabilidade</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <script src="config.js"></script>
+  <script>
+    if (typeof PBS_ACESSO !== "undefined") {
+      PBS_ACESSO.exigirAcessoNaPagina("painel_pop_rua_v2.html");
+    }
+  </script>
   <style>
     :root {
       --roxo-principal: #5B2BBF;
@@ -545,8 +551,8 @@
   </main>
 
   <script>
-    // Informe aqui a mesma URL de implantação do seu Web App (doPost) no Google Apps Script
-    const WEB_APP_URL = '';
+    // Utiliza automaticamente CONFIG.API_URL do config.js ou URL direta de implantação do Web App
+    const WEB_APP_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : '';
 
     const PALETA = {
       roxo: '#5B2BBF',
