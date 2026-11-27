@@ -1,1 +1,838 @@
+<!-- ============================================================================== -->
+<!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
+<!-- ============================================================================== -->
+<!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
+<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.001                  -->
+<!-- Data de atualização: 27/11/2026                                                -->
+<!-- Descrição: Painel de Observação e Perfil dos Assistidos — POP-RUA.             -->
+<!-- ============================================================================== -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Observação e Perfil dos Assistidos — POP-RUA / Vulnerabilidade</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+  <style>
+    :root {
+      --roxo-principal: #5B2BBF;
+      --roxo-claro: #8A5BEA;
+      --azul-principal: #2768D8;
+      --azul-claro: #55BDF2;
+      --azul-destaque: #2464C8;
+      --cinza-neutro: #94A3B8;
+      --bg-pagina: #F6F7FB;
+      --bg-card: #FFFFFF;
+      --borda: #DCE2F0;
+      --texto-principal: #181C32;
+      --texto-secundario: #5A627A;
+      --sombra: 0 4px 16px rgba(24, 28, 50, 0.06);
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-pagina);
+      color: var(--texto-principal);
+      line-height: 1.45;
+    }
+
+    .header-wrapper {
+      background: var(--bg-card);
+      box-shadow: var(--sombra);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-content {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-coracao {
+      height: 62px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .title-block h1 {
+      font-size: 1.28rem;
+      font-weight: 700;
+      color: var(--texto-principal);
+      letter-spacing: -0.01em;
+    }
+
+    .title-block p {
+      font-size: 0.85rem;
+      color: var(--texto-secundario);
+      margin-top: 2px;
+    }
+
+    .brand-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-completa {
+      height: 64px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn-acao {
+      border: 1px solid var(--borda);
+      background: #FFFFFF;
+      color: var(--texto-principal);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-acao:hover {
+      border-color: var(--roxo-principal);
+      color: var(--roxo-principal);
+      background: #F4F0FF;
+    }
+
+    .btn-primario {
+      background: linear-gradient(135deg, var(--roxo-principal), var(--azul-principal));
+      color: #FFFFFF;
+      border: none;
+    }
+
+    .btn-primario:hover {
+      opacity: 0.92;
+      color: #FFFFFF;
+    }
+
+    .brand-stripe {
+      height: 5px;
+      width: 100%;
+      background: linear-gradient(90deg, var(--roxo-principal) 0%, var(--roxo-claro) 33%, var(--azul-principal) 66%, var(--azul-claro) 100%);
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 20px auto;
+      padding: 0 24px 36px;
+    }
+
+    .filter-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--borda);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      align-items: end;
+      box-shadow: var(--sombra);
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--texto-secundario);
+      margin-bottom: 4px;
+      letter-spacing: 0.03em;
+    }
+
+    .filter-group select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--borda);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: var(--texto-principal);
+      background-color: #FAFBFD;
+      outline: none;
+    }
+
+    .filter-group select:focus {
+      border-color: var(--azul-principal);
+      background-color: #FFFFFF;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 24px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--borda);
+    }
+
+    .section-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--roxo-principal);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #EFE9FF;
+      color: var(--roxo-principal);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--borda);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--sombra);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kpi-top-bar { height: 6px; width: 100%; }
+    .kpi-body { padding: 14px 16px; }
+
+    .kpi-title {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--texto-secundario);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--texto-principal);
+      margin: 6px 0 4px;
+    }
+
+    .kpi-sub {
+      font-size: 0.76rem;
+      color: var(--texto-secundario);
+    }
+
+    .charts-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .charts-grid-bottom-sec2 {
+      display: grid;
+      grid-template-columns: 1.25fr 0.875fr 0.875fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--borda);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: var(--sombra);
+    }
+
+    .chart-card h3 {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--texto-principal);
+      margin-bottom: 12px;
+    }
+
+    .chart-box {
+      position: relative;
+      height: 270px;
+      width: 100%;
+    }
+
+    .status-banner {
+      background: #EEF4FF;
+      border: 1px solid #C7DBFF;
+      color: var(--azul-destaque);
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer {
+      margin-top: 32px;
+      padding-top: 14px;
+      border-top: 1px solid var(--borda);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--texto-secundario);
+    }
+
+    @media (max-width: 1180px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+      .charts-grid-bottom-sec2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 820px) {
+      .header-content { flex-direction: column; align-items: flex-start; }
+      .brand-right { width: 100%; justify-content: space-between; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      .filter-bar, .header-actions { display: none !important; }
+      .header-wrapper { position: static; box-shadow: none; }
+      body { background: #FFFFFF; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header-wrapper">
+    <div class="header-content">
+      <div class="brand-left">
+        <img src="Logo-Coracao-Fundo-Branco.jpg" alt="Emblema Banho Solidário" class="logo-coracao" onerror="this.style.display='none'">
+        <div class="title-block">
+          <h1>Painel de Observação e Perfil dos Assistidos — POP-RUA / Vulnerabilidade</h1>
+          <p id="subtituloBase">Projeto Banho Solidário • SISTEMAS iPeC • Unaí-MG | Carregando base de dados...</p>
+        </div>
+      </div>
+
+      <div class="brand-right">
+        <img src="Logo2.png" alt="Banho Solidário — Cada gota, um ato de amor!" class="logo-completa" onerror="this.style.display='none'">
+        <div class="header-actions">
+          <button class="btn-acao btn-primario" onclick="carregarDados()">↻ Atualizar Dados</button>
+          <button class="btn-acao" onclick="window.print()">🖨️ Imprimir / PDF</button>
+        </div>
+      </div>
+    </div>
+    <div class="brand-stripe"></div>
+  </header>
+
+  <main class="container">
+    <div id="statusBanner" class="status-banner">
+      <span>Conectando à base <strong>BanhoSolidario_DB</strong> (abas <em>Triagem</em> e <em>Atendimentos</em>)...</span>
+    </div>
+
+    <section class="filter-bar" aria-label="Filtros do Painel">
+      <div class="filter-group">
+        <label for="filtroStatus">Status Cadastral</label>
+        <select id="filtroStatus" onchange="aplicarFiltros()">
+          <option value="TODOS">Todos os Status</option>
+          <option value="Ativo">Ativo</option>
+          <option value="Inativo">Inativo</option>
+          <option value="Não informado">Não informado</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroSexo">Sexo</label>
+        <select id="filtroSexo" onchange="aplicarFiltros()">
+          <option value="TODOS">Todos</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroTipo">Tipo de Usuário</label>
+        <select id="filtroTipo" onchange="aplicarFiltros()">
+          <option value="TODOS">Todos os Tipos</option>
+          <option value="Adulto">Adulto</option>
+          <option value="Trecheiro">Trecheiro</option>
+          <option value="Assistido">Assistido</option>
+          <option value="Pessoa Idosa">Pessoa Idosa</option>
+          <option value="PCD">PCD</option>
+          <option value="Criança/Adolescente">Criança/Adolescente</option>
+          <option value="Não informado">Não informado</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroTempoRua">Tempo na Rua</label>
+        <select id="filtroTempoRua" onchange="aplicarFiltros()">
+          <option value="TODOS">Todos os Períodos</option>
+          <option value="Até 30 dias">Até 30 dias</option>
+          <option value="30 a 90 dias">30 a 90 dias</option>
+          <option value="90 dias a 01 ano">90 dias a 01 ano</option>
+          <option value="01 ano ou mais">01 ano ou mais</option>
+          <option value="Não informado">Não informado</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroFaixa">Faixa Etária</label>
+        <select id="filtroFaixa" onchange="aplicarFiltros()">
+          <option value="TODOS">Todas as Idades</option>
+          <option value="0–17">0–17 anos</option>
+          <option value="18–29">18–29 anos</option>
+          <option value="30–39">30–39 anos</option>
+          <option value="40–49">40–49 anos</option>
+          <option value="50–59">50–59 anos</option>
+          <option value="60+">60+ anos (Idosos)</option>
+          <option value="Não informado">Não informado</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <button class="btn-acao" style="width:100%; padding:8px;" onclick="limparFiltros()">Limpar Filtros</button>
+      </div>
+    </section>
+
+    <div class="section-header">
+      <h2>Seção 1 — Panorama Geral, Trajetória na Rua e Proteção Social</h2>
+      <span class="section-badge" id="badgeAmostra">n = 0 registros</span>
+    </div>
+
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top-bar" style="background: var(--roxo-principal);"></div>
+        <div class="kpi-body">
+          <div class="kpi-title">Total na Triagem</div>
+          <div class="kpi-value" id="kpiTotal">0</div>
+          <div class="kpi-sub" id="kpiTotalSub">—</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top-bar" style="background: var(--azul-principal);"></div>
+        <div class="kpi-body">
+          <div class="kpi-title">Sem Benefício</div>
+          <div class="kpi-value" id="kpiSemBenef">0</div>
+          <div class="kpi-sub" id="kpiSemBenefSub">—</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top-bar" style="background: var(--roxo-claro);"></div>
+        <div class="kpi-body">
+          <div class="kpi-title">Pendência Doc.</div>
+          <div class="kpi-value" id="kpiPendDoc">0</div>
+          <div class="kpi-sub" id="kpiPendDocSub">—</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top-bar" style="background: var(--azul-destaque);"></div>
+        <div class="kpi-body">
+          <div class="kpi-title">Rua ≥ 1 Ano</div>
+          <div class="kpi-value" id="kpiRua1Ano">0</div>
+          <div class="kpi-sub" id="kpiRua1AnoSub">—</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top-bar" style="background: var(--azul-claro);"></div>
+        <div class="kpi-body">
+          <div class="kpi-title">Idade Média</div>
+          <div class="kpi-value" id="kpiIdadeMedia">—</div>
+          <div class="kpi-sub" id="kpiIdadeMediaSub">—</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-top-bar" style="background: var(--roxo-principal);"></div>
+        <div class="kpi-body">
+          <div class="kpi-title">Atendimentos</div>
+          <div class="kpi-value" id="kpiAtendimentos">0</div>
+          <div class="kpi-sub" id="kpiAtendimentosSub">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="charts-grid-2">
+      <div class="chart-card">
+        <h3>Principais Motivos da Permanência na Rua (Triagem)</h3>
+        <div class="chart-box"><canvas id="chartMotivos"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Tempo de Permanência na Rua</h3>
+        <div class="chart-box"><canvas id="chartTempoRua"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Classificação por Tipo de Usuário</h3>
+        <div class="chart-box"><canvas id="chartTipoUsuario"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Proteção Social e Documentação</h3>
+        <div class="chart-box"><canvas id="chartProtecao"></canvas></div>
+      </div>
+    </section>
+
+    <div class="section-header" style="margin-top: 32px;">
+      <h2>Seção 2 — Perfil Sociodemográfico, Escolaridade, Raça/Cor e Vínculos em Unaí</h2>
+      <span class="section-badge">Decreto nº 7.053/2009 • Observatório Social</span>
+    </div>
+
+    <section class="charts-grid-2">
+      <div class="chart-card">
+        <h3>Distribuição por Faixa Etária</h3>
+        <div class="chart-box"><canvas id="chartFaixaEtaria"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Autodeclaração de Cor / Raça</h3>
+        <div class="chart-box"><canvas id="chartRacaCor"></canvas></div>
+      </div>
+    </section>
+
+    <section class="charts-grid-bottom-sec2">
+      <div class="chart-card">
+        <h3>Nível de Escolaridade</h3>
+        <div class="chart-box"><canvas id="chartEscolaridade"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Distribuição por Sexo</h3>
+        <div class="chart-box"><canvas id="chartSexo"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Residência / Família em Unaí</h3>
+        <div class="chart-box"><canvas id="chartVinculoUnai"></canvas></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Painel de Observação e Perfil dos Assistidos — POP-RUA / Vulnerabilidade • Projeto Banho Solidário (Unaí-MG)</span>
+      <span>© Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC • Dados agregados sob sigilo institucional</span>
+    </footer>
+  </main>
+
+  <script>
+    // Informe aqui a mesma URL de implantação do seu Web App (doPost) no Google Apps Script
+    const WEB_APP_URL = '';
+
+    const PALETA = {
+      roxo: '#5B2BBF',
+      lavanda: '#8A5BEA',
+      azulVivo: '#2768D8',
+      ciano: '#55BDF2',
+      azulIntenso: '#2464C8',
+      cinza: '#94A3B8'
+    };
+
+    Chart.register(ChartDataLabels);
+
+    let baseCompleta = [];
+    let metaGlobal = { totalAtendimentos: 0, matriculasAtendidas: 0, dataAtualizacao: '' };
+    let charts = {};
+
+    function carregarDados() {
+      const banner = document.getElementById('statusBanner');
+      banner.style.display = 'flex';
+      banner.style.background = '#EEF4FF';
+      banner.style.borderColor = '#C7DBFF';
+      banner.style.color = '#2464C8';
+      banner.innerHTML = '<span>⏳ Atualizando indicadores diretamente da base <strong>BanhoSolidario_DB</strong>...</span>';
+
+      if (WEB_APP_URL) {
+        fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'obterDadosPainelPopRua' })
+        })
+          .then(r => r.json())
+          .then(processarRespostaBackend)
+          .catch(tratarErroBackend);
+      } else if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(processarRespostaBackend)
+          .withFailureHandler(tratarErroBackend)
+          .obterDadosPainelPopRua_();
+      } else {
+        banner.innerHTML = '<span>⚠️ Configure <code>WEB_APP_URL</code> com a URL do seu Web App do Google Apps Script (<code>Código.gs.v.3.1.201</code>).</span>';
+      }
+    }
+
+    function processarRespostaBackend(res) {
+      const banner = document.getElementById('statusBanner');
+      const sucesso = res && (res.status === 'sucesso' || res.ok === true);
+      if (!sucesso) {
+        tratarErroBackend(res ? (res.message || res.erro) : 'Resposta inválida do servidor.');
+        return;
+      }
+      baseCompleta = res.registros || [];
+      metaGlobal = {
+        totalAtendimentos: res.totalAtendimentos || 0,
+        matriculasAtendidas: res.matriculasAtendidas || 0,
+        dataAtualizacao: res.dataAtualizacao || ''
+      };
+      document.getElementById('subtituloBase').textContent =
+        `Projeto Banho Solidário • SISTEMAS iPeC • Unaí-MG  |  Base: Triagem (n = ${baseCompleta.length}) & Atendimentos (n = ${metaGlobal.totalAtendimentos}) • Atualizado em ${metaGlobal.dataAtualizacao}`;
+      banner.style.display = 'none';
+      aplicarFiltros();
+    }
+
+    function tratarErroBackend(err) {
+      const banner = document.getElementById('statusBanner');
+      banner.style.background = '#FEF2F2';
+      banner.style.borderColor = '#FECACA';
+      banner.style.color = '#991B1B';
+      banner.innerHTML = `<span>❌ Erro ao carregar dados do Google Sheets: ${err && err.message ? err.message : err}</span>`;
+    }
+
+    function limparFiltros() {
+      document.getElementById('filtroStatus').value = 'TODOS';
+      document.getElementById('filtroSexo').value = 'TODOS';
+      document.getElementById('filtroTipo').value = 'TODOS';
+      document.getElementById('filtroTempoRua').value = 'TODOS';
+      document.getElementById('filtroFaixa').value = 'TODOS';
+      aplicarFiltros();
+    }
+
+    function aplicarFiltros() {
+      const fStatus = document.getElementById('filtroStatus').value;
+      const fSexo = document.getElementById('filtroSexo').value;
+      const fTipo = document.getElementById('filtroTipo').value;
+      const fTempo = document.getElementById('filtroTempoRua').value;
+      const fFaixa = document.getElementById('filtroFaixa').value;
+
+      const filtrados = baseCompleta.filter(r => {
+        if (fStatus !== 'TODOS' && r.status !== fStatus) return false;
+        if (fSexo !== 'TODOS' && r.sexo !== fSexo) return false;
+        if (fTipo !== 'TODOS' && r.tipoUsuario !== fTipo) return false;
+        if (fTempo !== 'TODOS' && r.tempoRua !== fTempo) return false;
+        if (fFaixa !== 'TODOS' && r.faixaEtaria !== fFaixa) return false;
+        return true;
+      });
+
+      document.getElementById('badgeAmostra').textContent = `n = ${filtrados.length} registros`;
+      atualizarKPIs(filtrados);
+      atualizarGraficos(filtrados);
+    }
+
+    function contarPor(lista, campo, ordemFixa) {
+      const mapa = {};
+      lista.forEach(item => {
+        const k = item[campo] || 'Não informado';
+        mapa[k] = (mapa[k] || 0) + 1;
+      });
+      if (ordemFixa && ordemFixa.length) {
+        return {
+          labels: ordemFixa,
+          values: ordemFixa.map(k => mapa[k] || 0)
+        };
+      }
+      const entries = Object.entries(mapa).sort((a, b) => b[1] - a[1]);
+      return {
+        labels: entries.map(e => e[0]),
+        values: entries.map(e => e[1])
+      };
+    }
+
+    function atualizarKPIs(lista) {
+      const n = lista.length;
+      const ativos = lista.filter(r => r.status === 'Ativo').length;
+      const inativos = lista.filter(r => r.status === 'Inativo').length;
+      const semStatus = n - ativos - inativos;
+
+      const semBenef = lista.filter(r => r.recebeBeneficio === 'Não').length;
+      const comBenef = lista.filter(r => r.recebeBeneficio === 'Sim').length;
+      const pctSemBenef = n > 0 ? ((semBenef / n) * 100).toFixed(1).replace('.', ',') : '0,0';
+
+      const pendDoc = lista.filter(r => r.todosDocumentos === 'Não').length;
+      const semCtps = lista.filter(r => r.carteiraTrabalho === 'Não').length;
+
+      const rua1Ano = lista.filter(r => r.tempoRua === '01 ano ou mais').length;
+      const rua30d = lista.filter(r => r.tempoRua === 'Até 30 dias').length;
+      const ruaNInf = lista.filter(r => r.tempoRua === 'Não informado').length;
+
+      const idadesValidas = lista.map(r => r.idadeAnos).filter(v => v !== null && !isNaN(v));
+      const idosos60 = idadesValidas.filter(v => v >= 60).length;
+      const mediaIdade = idadesValidas.length
+        ? (idadesValidas.reduce((a, b) => a + b, 0) / idadesValidas.length).toFixed(1).replace('.', ',') + ' a'
+        : '—';
+      const minIdade = idadesValidas.length ? Math.min(...idadesValidas) : '—';
+      const maxIdade = idadesValidas.length ? Math.max(...idadesValidas) : '—';
+
+      const somaAtend = lista.reduce((acc, r) => acc + (r.qtdAtendimentos || 0), 0);
+      const matAtend = lista.filter(r => (r.qtdAtendimentos || 0) > 0).length;
+
+      document.getElementById('kpiTotal').textContent = n;
+      document.getElementById('kpiTotalSub').textContent = `${ativos} Ativos • ${inativos} Inativos • ${semStatus} s/ status`;
+
+      document.getElementById('kpiSemBenef').textContent = semBenef;
+      document.getElementById('kpiSemBenefSub').textContent = `${pctSemBenef}% sem auxílio (${comBenef} recebem)`;
+
+      document.getElementById('kpiPendDoc').textContent = pendDoc;
+      document.getElementById('kpiPendDocSub').textContent = `Sem todos docs • ${semCtps} s/ CTPS`;
+
+      document.getElementById('kpiRua1Ano').textContent = rua1Ano;
+      document.getElementById('kpiRua1AnoSub').textContent = `${rua30d} até 30d • ${ruaNInf} não informados`;
+
+      document.getElementById('kpiIdadeMedia').textContent = mediaIdade;
+      document.getElementById('kpiIdadeMediaSub').textContent = `${idosos60} idosos 60+ • Mín ${minIdade} / Máx ${maxIdade}`;
+
+      document.getElementById('kpiAtendimentos').textContent = somaAtend;
+      document.getElementById('kpiAtendimentosSub').textContent = `${matAtend} matrículas atendidas`;
+    }
+
+    function renderBarChart(id, labels, values, colors, horizontal = false, maxExtra = 1.18) {
+      if (charts[id]) charts[id].destroy();
+      const ctx = document.getElementById(id).getContext('2d');
+      const maxVal = Math.max(...values, 1);
+
+      charts[id] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: colors,
+            borderRadius: 6,
+            barPercentage: 0.65
+          }]
+        },
+        options: {
+          indexAxis: horizontal ? 'y' : 'x',
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: horizontal ? { right: 34 } : { top: 22 }
+          },
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              anchor: 'end',
+              align: horizontal ? 'end' : 'top',
+              color: '#181C32',
+              font: { weight: 'bold', size: 11 },
+              formatter: v => v
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              suggestedMax: horizontal ? Math.ceil(maxVal * maxExtra) : undefined,
+              grid: { display: horizontal, color: '#E2E8F0' },
+              ticks: { color: '#181C32', font: { size: 11 } }
+            },
+            y: {
+              beginAtZero: true,
+              suggestedMax: !horizontal ? Math.ceil(maxVal * maxExtra) : undefined,
+              grid: { display: !horizontal, color: '#E2E8F0' },
+              ticks: { color: '#181C32', font: { size: 11 } }
+            }
+          }
+        }
+      });
+    }
+
+    function atualizarGraficos(lista) {
+      const mData = contarPor(lista, 'motivo', ['Alcoolismo e/ou drogas', 'Conflitos familiares', 'Desemprego', 'Separação Conjugal', 'Não informado']);
+      const mCols = mData.labels.map(l => l === 'Não informado' ? PALETA.cinza : (l === 'Alcoolismo e/ou drogas' ? PALETA.roxo : PALETA.azulVivo));
+      renderBarChart('chartMotivos', mData.labels, mData.values, mCols, true);
+
+      const tData = contarPor(lista, 'tempoRua', ['Até 30 dias', '30 a 90 dias', '90 dias a 01 ano', '01 ano ou mais', 'Não informado']);
+      renderBarChart('chartTempoRua', tData.labels, tData.values, [PALETA.ciano, PALETA.azulVivo, PALETA.lavanda, PALETA.roxo, PALETA.cinza], false);
+
+      const uData = contarPor(lista, 'tipoUsuario', ['Adulto', 'Trecheiro', 'Assistido', 'Não informado', 'Pessoa Idosa', 'PCD', 'Criança/Adolescente']);
+      const uCols = uData.labels.map((l, i) => l === 'Não informado' ? PALETA.cinza : (i % 2 === 0 ? PALETA.azulVivo : PALETA.roxo));
+      renderBarChart('chartTipoUsuario', uData.labels, uData.values, uCols, true);
+
+      if (charts['chartProtecao']) charts['chartProtecao'].destroy();
+      const simVals = [
+        lista.filter(r => r.recebeBeneficio === 'Sim').length,
+        lista.filter(r => r.todosDocumentos === 'Sim').length,
+        lista.filter(r => r.carteiraTrabalho === 'Sim').length
+      ];
+      const naoVals = [
+        lista.filter(r => r.recebeBeneficio === 'Não').length,
+        lista.filter(r => r.todosDocumentos === 'Não').length,
+        lista.filter(r => r.carteiraTrabalho === 'Não').length
+      ];
+      charts['chartProtecao'] = new Chart(document.getElementById('chartProtecao').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: ['Recebe Benefício', 'Todos os Documentos', 'Carteira de Trabalho'],
+          datasets: [
+            { label: 'Sim', data: simVals, backgroundColor: PALETA.azulVivo, borderRadius: 4, barPercentage: 0.52 },
+            { label: 'Não', data: naoVals, backgroundColor: PALETA.lavanda, borderRadius: 4, barPercentage: 0.52 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { usePointStyle: true, font: { size: 11 } } },
+            datalabels: {
+              color: '#FFFFFF',
+              font: { weight: 'bold', size: 11 },
+              formatter: v => (v > 0 ? v : '')
+            }
+          },
+          scales: {
+            x: { stacked: true, grid: { display: false }, ticks: { color: '#181C32', font: { size: 11 } } },
+            y: { stacked: true, beginAtZero: true, grid: { color: '#E2E8F0' }, ticks: { color: '#181C32', font: { size: 11 } } }
+          }
+        }
+      });
+
+      const fData = contarPor(lista, 'faixaEtaria', ['0–17', '18–29', '30–39', '40–49', '50–59', '60+', 'Não informado']);
+      renderBarChart('chartFaixaEtaria', fData.labels, fData.values, [PALETA.ciano, PALETA.azulVivo, PALETA.azulIntenso, PALETA.roxo, PALETA.lavanda, PALETA.azulVivo, PALETA.cinza], false);
+
+      const rData = contarPor(lista, 'corRaca', ['Parda', 'Preta', 'Branca', 'Amarela', 'Não informado']);
+      const rCols = rData.labels.map(l => l === 'Não informado' ? PALETA.cinza : (l === 'Parda' || l === 'Preta' ? PALETA.roxo : PALETA.azulVivo));
+      renderBarChart('chartRacaCor', rData.labels, rData.values, rCols, true);
+
+      const eData = contarPor(lista, 'escolaridade', ['Ensino Fundamental I', 'Ensino Fundamental II', 'Ensino Médio', 'Não Alfabetizado', 'Ensino Superior', 'Não informado']);
+      const eCols = eData.labels.map((l, i) => l === 'Não informado' ? PALETA.cinza : (i % 2 === 0 ? PALETA.azulVivo : PALETA.lavanda));
+      renderBarChart('chartEscolaridade', eData.labels, eData.values, eCols, true);
+
+      const sData = contarPor(lista, 'sexo', ['Masculino', 'Feminino', 'Outro']);
+      renderBarChart('chartSexo', sData.labels, sData.values, [PALETA.azulVivo, PALETA.roxo, PALETA.ciano], false);
+
+      const vData = contarPor(lista, 'vinculoUnai', ['Não', 'Sim', 'Não informado']);
+      renderBarChart('chartVinculoUnai', ['Não', 'Sim', 'N/Inf.'], vData.values, [PALETA.roxo, PALETA.azulVivo, PALETA.cinza], false);
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarDados);
+  </script>
+</body>
+</html>
