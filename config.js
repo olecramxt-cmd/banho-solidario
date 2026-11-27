@@ -2,8 +2,8 @@
 // QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC
 // ==============================================================================
 // © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.
-// Programa: config.js. Versão do Módulo: v.1.3.2
-// Data de atualização: 21/11/2026 - 02:06
+// Programa: config.js. Versão do Módulo: v.1.3.003
+// Data de atualização: 27/11/2026 - 10:44
 // Descrição: Configuração da API e guardião central de login e permissões.
 // ==============================================================================
 
@@ -21,6 +21,7 @@ const PBS_ACESSO = (function () {
         "relatorio_atendimentos.html": { cod: "3.2", nome: "3.2 - Relatórios & Fichas" },
         "relatorios.html": { cod: "3.2", nome: "3.2 - Relatórios & Fichas" },
         "ficha_impressao.html": { cod: "3.2", nome: "3.2 - Relatórios & Fichas" },
+        "painel_pop_rua_v2.html": { cod: "3.3", nome: "3.3 - Painel POP-RUA / Vulnerabilidade" },
         "admin.html": { cod: "4.1", nome: "4.1 - Painel Administrativo" }
     };
 
