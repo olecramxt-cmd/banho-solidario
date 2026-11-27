@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.004                  -->
-<!-- Data de atualização: 27/11/2026 - 16:33                                        -->
+<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.005                  -->
+<!-- Data de atualização: 27/11/2026 - 16:52                                        -->
 <!-- Descrição: Painel de Observação e Perfil dos Assistidos — POP-RUA.             -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
@@ -444,6 +444,27 @@
       justify-content: space-between;
     }
 
+    .alert-periodo {
+      display: none;
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      border-left: 5px solid #DC2626;
+      color: #991B1B;
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-size: 0.88rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--sombra);
+    }
+
+    .filter-group select.campo-alerta {
+      border-color: #DC2626;
+      background-color: #FEF2F2;
+    }
+
     .footer {
       margin-top: 32px;
       padding-top: 14px;
@@ -672,6 +693,11 @@
         <button class="btn-acao" style="width:100%; padding:8px;" onclick="limparFiltros()">Limpar Filtros</button>
       </div>
     </section>
+
+    <div id="alertaPeriodo" class="alert-periodo" role="alert">
+      <span id="alertaPeriodoTexto">⚠️ Período inválido: a data inicial não pode ser maior que a data final.</span>
+      <button type="button" class="btn-acao" style="border-color:#FCA5A5; color:#991B1B;" onclick="limparFiltros()">Corrigir / Limpar</button>
+    </div>
 
     <div class="section-header">
       <h2>Seção 1 — Panorama Geral, Trajetória na Rua e Proteção Social</h2>
@@ -917,6 +943,26 @@
       });
     }
 
+    function ocultarAlertaPeriodo() {
+      const alerta = document.getElementById('alertaPeriodo');
+      if (alerta) alerta.style.display = 'none';
+      ['filtroMesInicio', 'filtroAnoInicio', 'filtroMesFim', 'filtroAnoFim'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('campo-alerta');
+      });
+    }
+
+    function exibirAlertaPeriodo(msg, idsDestaque) {
+      const alerta = document.getElementById('alertaPeriodo');
+      const texto = document.getElementById('alertaPeriodoTexto');
+      if (texto) texto.innerHTML = msg;
+      if (alerta) alerta.style.display = 'flex';
+      ['filtroMesInicio', 'filtroAnoInicio', 'filtroMesFim', 'filtroAnoFim'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('campo-alerta', (idsDestaque || []).includes(id));
+      });
+    }
+
     function limparFiltros() {
       document.getElementById('filtroStatus').value = 'TODOS';
       document.getElementById('filtroSexo').value = 'TODOS';
@@ -927,6 +973,7 @@
       document.getElementById('filtroAnoInicio').value = 'TODOS';
       document.getElementById('filtroMesFim').value = 'TODOS';
       document.getElementById('filtroAnoFim').value = 'TODOS';
+      ocultarAlertaPeriodo();
       aplicarFiltros();
     }
 
@@ -941,6 +988,35 @@
       const aIni = document.getElementById('filtroAnoInicio').value;
       const mFim = document.getElementById('filtroMesFim').value;
       const aFim = document.getElementById('filtroAnoFim').value;
+
+      ocultarAlertaPeriodo();
+
+      if (aIni !== 'TODOS' && aFim !== 'TODOS' && Number(aIni) > Number(aFim)) {
+        exibirAlertaPeriodo(
+          `⚠️ <strong>Intervalo inválido:</strong> o <strong>Início — Ano (${aIni})</strong> não pode ser maior que o <strong>Fim — Ano (${aFim})</strong>. Ajuste o período para aplicar o filtro.`,
+          ['filtroAnoInicio', 'filtroAnoFim']
+        );
+        document.getElementById('badgeAmostra').textContent = 'n = 0 registros (período inválido)';
+        atualizarKPIs([]);
+        atualizarGraficos([]);
+        return;
+      }
+
+      if (
+        aIni !== 'TODOS' && aFim !== 'TODOS' &&
+        Number(aIni) === Number(aFim) &&
+        mIni !== 'TODOS' && mFim !== 'TODOS' &&
+        Number(mIni) > Number(mFim)
+      ) {
+        exibirAlertaPeriodo(
+          `⚠️ <strong>Intervalo inválido no ano ${aIni}:</strong> o <strong>Início — Mês (${mIni})</strong> não pode ser maior que o <strong>Fim — Mês (${mFim})</strong>.`,
+          ['filtroMesInicio', 'filtroMesFim']
+        );
+        document.getElementById('badgeAmostra').textContent = 'n = 0 registros (período inválido)';
+        atualizarKPIs([]);
+        atualizarGraficos([]);
+        return;
+      }
 
       const temFiltroInicio = (mIni !== 'TODOS' || aIni !== 'TODOS');
       const temFiltroFim = (mFim !== 'TODOS' || aFim !== 'TODOS');
