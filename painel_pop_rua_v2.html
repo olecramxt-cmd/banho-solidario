@@ -2,8 +2,8 @@
 <!-- QUADRO DE CONTROLE DE VERSÃO - SISTEMAS iPeC                                   -->
 <!-- ============================================================================== -->
 <!-- © Prof. Esp. Marcelo Xavier Travassos - SISTEMAS iPeC.                         -->
-<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.003                  -->
-<!-- Data de atualização: 27/11/2026 - 16:10                                        -->
+<!-- Programa: painel_pop_rua_v2.html. Versão do Módulo: v.1.0.004                  -->
+<!-- Data de atualização: 27/11/2026 - 16:33                                        -->
 <!-- Descrição: Painel de Observação e Perfil dos Assistidos — POP-RUA.             -->
 <!-- ============================================================================== -->
 <!DOCTYPE html>
@@ -352,9 +352,16 @@
 
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
       margin-bottom: 22px;
+    }
+
+    .charts-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 18px;
     }
 
     .kpi-card {
@@ -449,9 +456,12 @@
       color: var(--texto-secundario);
     }
 
+    @media (max-width: 1280px) {
+      .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+    }
     @media (max-width: 1180px) {
       .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-      .charts-grid-bottom-sec2 { grid-template-columns: 1fr; }
+      .charts-grid-3, .charts-grid-bottom-sec2 { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 820px) {
@@ -607,6 +617,58 @@
       </div>
 
       <div class="filter-group">
+        <label for="filtroMesInicio">Início — Mês</label>
+        <select id="filtroMesInicio" onchange="aplicarFiltros()">
+          <option value="TODOS">Todos os Meses</option>
+          <option value="01">01 - Janeiro</option>
+          <option value="02">02 - Fevereiro</option>
+          <option value="03">03 - Março</option>
+          <option value="04">04 - Abril</option>
+          <option value="05">05 - Maio</option>
+          <option value="06">06 - Junho</option>
+          <option value="07">07 - Julho</option>
+          <option value="08">08 - Agosto</option>
+          <option value="09">09 - Setembro</option>
+          <option value="10">10 - Outubro</option>
+          <option value="11">11 - Novembro</option>
+          <option value="12">12 - Dezembro</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroAnoInicio">Início — Ano</label>
+        <select id="filtroAnoInicio" onchange="aplicarFiltros()">
+          <option value="TODOS">Todos os Anos</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroMesFim">Fim — Mês</label>
+        <select id="filtroMesFim" onchange="aplicarFiltros()">
+          <option value="TODOS">Todos os Meses</option>
+          <option value="01">01 - Janeiro</option>
+          <option value="02">02 - Fevereiro</option>
+          <option value="03">03 - Março</option>
+          <option value="04">04 - Abril</option>
+          <option value="05">05 - Maio</option>
+          <option value="06">06 - Junho</option>
+          <option value="07">07 - Julho</option>
+          <option value="08">08 - Agosto</option>
+          <option value="09">09 - Setembro</option>
+          <option value="10">10 - Outubro</option>
+          <option value="11">11 - Novembro</option>
+          <option value="12">12 - Dezembro</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroAnoFim">Fim — Ano</label>
+        <select id="filtroAnoFim" onchange="aplicarFiltros()">
+          <option value="TODOS">Todos os Anos</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
         <button class="btn-acao" style="width:100%; padding:8px;" onclick="limparFiltros()">Limpar Filtros</button>
       </div>
     </section>
@@ -654,6 +716,15 @@
       </div>
 
       <div class="kpi-card">
+        <div class="kpi-top-bar" style="background: var(--roxo-claro);"></div>
+        <div class="kpi-body">
+          <div class="kpi-title">Unaí ≥ 1 Ano</div>
+          <div class="kpi-value" id="kpiUnai1Ano">0</div>
+          <div class="kpi-sub" id="kpiUnai1AnoSub">—</div>
+        </div>
+      </div>
+
+      <div class="kpi-card">
         <div class="kpi-top-bar" style="background: var(--azul-claro);"></div>
         <div class="kpi-body">
           <div class="kpi-title">Idade Média</div>
@@ -679,13 +750,20 @@
       </div>
 
       <div class="chart-card">
+        <h3>Classificação por Tipo de Usuário</h3>
+        <div class="chart-box"><canvas id="chartTipoUsuario"></canvas></div>
+      </div>
+    </section>
+
+    <section class="charts-grid-3">
+      <div class="chart-card">
         <h3>Tempo de Permanência na Rua</h3>
         <div class="chart-box"><canvas id="chartTempoRua"></canvas></div>
       </div>
 
       <div class="chart-card">
-        <h3>Classificação por Tipo de Usuário</h3>
-        <div class="chart-box"><canvas id="chartTipoUsuario"></canvas></div>
+        <h3>Tempo de Permanência em Unaí</h3>
+        <div class="chart-box"><canvas id="chartTempoUnai"></canvas></div>
       </div>
 
       <div class="chart-card">
@@ -801,6 +879,7 @@
         matriculasAtendidas: res.matriculasAtendidas || 0,
         dataAtualizacao: res.dataAtualizacao || ''
       };
+      popularFiltrosPeriodo();
       document.getElementById('subtituloBase').textContent =
         `Projeto Banho Solidário • SISTEMAS iPeC • Unaí-MG  |  Base: Triagem (n = ${baseCompleta.length}) & Atendimentos (n = ${metaGlobal.totalAtendimentos}) • Atualizado em ${metaGlobal.dataAtualizacao}`;
       banner.style.display = 'none';
@@ -815,12 +894,39 @@
       banner.innerHTML = `<span>❌ Erro ao carregar dados do Google Sheets: ${err && err.message ? err.message : err}</span>`;
     }
 
+    function popularFiltrosPeriodo() {
+      const anosSet = new Set();
+      baseCompleta.forEach(r => {
+        if (r.dataRegistro && /^\d{4}-\d{2}-\d{2}$/.test(String(r.dataRegistro))) {
+          anosSet.add(String(r.dataRegistro).slice(0, 4));
+        }
+      });
+      if (anosSet.size === 0) {
+        anosSet.add(String(new Date().getFullYear()));
+      }
+      const anosOrdenados = Array.from(anosSet).sort();
+
+      ['filtroAnoInicio', 'filtroAnoFim'].forEach(id => {
+        const sel = document.getElementById(id);
+        const valorAtual = sel.value;
+        sel.innerHTML = '<option value="TODOS">Todos os Anos</option>' +
+          anosOrdenados.map(ano => `<option value="${ano}">${ano}</option>`).join('');
+        if (anosOrdenados.includes(valorAtual)) {
+          sel.value = valorAtual;
+        }
+      });
+    }
+
     function limparFiltros() {
       document.getElementById('filtroStatus').value = 'TODOS';
       document.getElementById('filtroSexo').value = 'TODOS';
       document.getElementById('filtroTipo').value = 'TODOS';
       document.getElementById('filtroTempoRua').value = 'TODOS';
       document.getElementById('filtroFaixa').value = 'TODOS';
+      document.getElementById('filtroMesInicio').value = 'TODOS';
+      document.getElementById('filtroAnoInicio').value = 'TODOS';
+      document.getElementById('filtroMesFim').value = 'TODOS';
+      document.getElementById('filtroAnoFim').value = 'TODOS';
       aplicarFiltros();
     }
 
@@ -831,12 +937,48 @@
       const fTempo = document.getElementById('filtroTempoRua').value;
       const fFaixa = document.getElementById('filtroFaixa').value;
 
+      const mIni = document.getElementById('filtroMesInicio').value;
+      const aIni = document.getElementById('filtroAnoInicio').value;
+      const mFim = document.getElementById('filtroMesFim').value;
+      const aFim = document.getElementById('filtroAnoFim').value;
+
+      const temFiltroInicio = (mIni !== 'TODOS' || aIni !== 'TODOS');
+      const temFiltroFim = (mFim !== 'TODOS' || aFim !== 'TODOS');
+
       const filtrados = baseCompleta.filter(r => {
         if (fStatus !== 'TODOS' && r.status !== fStatus) return false;
         if (fSexo !== 'TODOS' && r.sexo !== fSexo) return false;
         if (fTipo !== 'TODOS' && r.tipoUsuario !== fTipo) return false;
         if (fTempo !== 'TODOS' && r.tempoRua !== fTempo) return false;
         if (fFaixa !== 'TODOS' && r.faixaEtaria !== fFaixa) return false;
+
+        if (temFiltroInicio || temFiltroFim) {
+          const dr = r.dataRegistro ? String(r.dataRegistro) : '';
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(dr)) return false;
+          const anoReg = dr.slice(0, 4);
+          const mesReg = dr.slice(5, 7);
+
+          if (temFiltroInicio) {
+            if (aIni !== 'TODOS' && mIni !== 'TODOS') {
+              if (Number(anoReg + mesReg) < Number(aIni + mIni)) return false;
+            } else if (aIni !== 'TODOS') {
+              if (Number(anoReg) < Number(aIni)) return false;
+            } else if (mIni !== 'TODOS') {
+              if (mesReg < mIni) return false;
+            }
+          }
+
+          if (temFiltroFim) {
+            if (aFim !== 'TODOS' && mFim !== 'TODOS') {
+              if (Number(anoReg + mesReg) > Number(aFim + mFim)) return false;
+            } else if (aFim !== 'TODOS') {
+              if (Number(anoReg) > Number(aFim)) return false;
+            } else if (mFim !== 'TODOS') {
+              if (mesReg > mFim) return false;
+            }
+          }
+        }
+
         return true;
       });
 
@@ -881,6 +1023,10 @@
       const rua30d = lista.filter(r => r.tempoRua === 'Até 30 dias').length;
       const ruaNInf = lista.filter(r => r.tempoRua === 'Não informado').length;
 
+      const unai1Ano = lista.filter(r => r.tempoUnai === '01 ano ou mais').length;
+      const unai30d = lista.filter(r => r.tempoUnai === 'Até 30 dias').length;
+      const unaiNInf = lista.filter(r => r.tempoUnai === 'Não informado').length;
+
       const idadesValidas = lista.map(r => r.idadeAnos).filter(v => v !== null && !isNaN(v));
       const idosos60 = idadesValidas.filter(v => v >= 60).length;
       const mediaIdade = idadesValidas.length
@@ -906,6 +1052,9 @@
 
       document.getElementById('kpiRua1Ano').textContent = rua1Ano;
       document.getElementById('kpiRua1AnoSub').textContent = `${rua30d} até 30d • ${ruaNInf} não informados`;
+
+      document.getElementById('kpiUnai1Ano').textContent = unai1Ano;
+      document.getElementById('kpiUnai1AnoSub').textContent = `${unai30d} até 30d • ${unaiNInf} não informados`;
 
       document.getElementById('kpiIdadeMedia').textContent = mediaIdade;
       document.getElementById('kpiIdadeMediaSub').textContent = `${idosos60} idosos 60+ • Mín ${minIdade} / Máx ${maxIdade}`;
@@ -973,6 +1122,9 @@
 
       const tData = contarPor(lista, 'tempoRua', ['Até 30 dias', '30 a 90 dias', '90 dias a 01 ano', '01 ano ou mais', 'Não informado']);
       renderBarChart('chartTempoRua', tData.labels, tData.values, [PALETA.ciano, PALETA.azulVivo, PALETA.lavanda, PALETA.roxo, PALETA.cinza], false);
+
+      const uTempoData = contarPor(lista, 'tempoUnai', ['Até 30 dias', '30 a 90 dias', '90 dias a 01 ano', '01 ano ou mais', 'Não informado']);
+      renderBarChart('chartTempoUnai', uTempoData.labels, uTempoData.values, [PALETA.ciano, PALETA.azulVivo, PALETA.lavanda, PALETA.roxo, PALETA.cinza], false);
 
       const uData = contarPor(lista, 'tipoUsuario', ['Adulto', 'Trecheiro', 'Assistido', 'Não informado', 'Pessoa Idosa', 'PCD', 'Criança/Adolescente']);
       const uCols = uData.labels.map((l, i) => l === 'Não informado' ? PALETA.cinza : (i % 2 === 0 ? PALETA.azulVivo : PALETA.roxo));
